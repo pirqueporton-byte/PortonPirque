@@ -1,114 +1,626 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Portón</title>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Portón Pirque</title>
+<meta name="theme-color" content="#1F4A32">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Portón Pirque">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%233C7A57'/%3E%3Cstop offset='1' stop-color='%231F4A32'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23g)'/%3E%3Cpath d='M28 74 V34 Q28 26 36 26 H64 Q72 26 72 34 V74' stroke='%23F4EFE3' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cline x1='50' y1='34' x2='50' y2='74' stroke='%23F4EFE3' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='50' cy='58' r='5' fill='%23C99A3B'/%3E%3C/svg%3E">
 
-    <style>
-        :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; --bg: #f4f7f6; --dark: #333; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; text-align: center; }
-        .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
-        h1, h2, h3 { color: var(--dark); }
-        button { border: none; padding: 12px 20px; border-radius: 8px; font-size: 16px; cursor: pointer; margin: 10px 0; width: 100%; color: white; font-weight: bold; transition: 0.3s; }
-        .btn-google { background-color: #4285F4; }
-        .btn-abrir { background-color: var(--success); font-size: 24px; padding: 30px 20px; box-shadow: 0 6px 0 #1e7e34; margin-top: 10px; }
-        .btn-abrir:active { transform: translateY(6px); box-shadow: none; }
-        .btn-abrir:disabled { background-color: #ccc; box-shadow: none; cursor: not-allowed; }
-        .btn-admin { background-color: var(--dark); width: auto; font-size: 14px; padding: 8px 15px; position: absolute; top: 10px; right: 10px; }
-        .btn-solicitar { background-color: #ffc107; color: var(--dark); }
-        .btn-cerrar { background-color: var(--danger); width: auto; padding: 8px 15px; font-size: 14px; }
-        input { width: calc(100% - 20px); padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
-        th, td { padding: 8px; border-bottom: 1px solid #ddd; text-align: left; }
-        .hidden { display: none; }
-        .card { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee; text-align: left; }
-        .acciones-btn { width: auto; padding: 5px 10px; margin: 0 2px; font-size: 12px; }
-        #user-info { font-size: 0.9em; color: #666; margin-bottom: 10px; text-align: center; }
-        
-        /* Estilos del Semáforo de Estado */
-        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 15px; color: white; background-color: #ccc; transition: all 0.3s ease; }
-        .status-online { background-color: var(--success); }
-        .status-offline { background-color: var(--danger); animation: parpadeo 1.5s infinite; }
-        @keyframes parpadeo { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-    </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<style>
+  :root{
+    --bg:#EFF3EE;
+    --bg-alt:#E6ECE3;
+    --card:#FFFFFF;
+    --ink:#1E2A22;
+    --muted:#657367;
+    --line:#DEE5DB;
+    --accent:#2F6B4F;
+    --accent-dark:#1F4A32;
+    --accent-soft:#E4EEE7;
+    --brass:#B8863F;
+    --brass-soft:#F3E6CE;
+    --danger:#B23B2E;
+    --danger-soft:#F7E4E1;
+    --warn:#C98A2A;
+    --warn-soft:#FBEEDB;
+    --radius-lg:26px;
+    --radius-md:16px;
+    --radius-sm:10px;
+    --shadow:0 20px 50px -18px rgba(31,74,50,0.28);
+    --font-display:'Fraunces', Georgia, serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono:'JetBrains Mono', 'SFMono-Regular', monospace;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:var(--font-body);
+    color:var(--ink);
+    background:
+      repeating-linear-gradient(90deg, rgba(31,74,50,0.035) 0 2px, transparent 2px 46px),
+      radial-gradient(circle at 15% 10%, var(--bg-alt), transparent 55%),
+      var(--bg);
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:28px 16px 60px;
+  }
+
+  .phone{
+    width:100%;
+    max-width:440px;
+    background:var(--card);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    position:relative;
+    border:1px solid rgba(31,74,50,0.06);
+  }
+
+  @media (min-width:760px){
+    body{ padding:64px 24px; }
+    .phone{ max-width:460px; }
+  }
+
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 20px 0;
+    min-height:44px;
+  }
+
+  .brand-mini{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+
+  .dot-live{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 0 0 rgba(47,107,79,.5);
+    animation:pulse 2.4s infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(47,107,79,.45); }
+    70%{ box-shadow:0 0 0 8px rgba(47,107,79,0); }
+    100%{ box-shadow:0 0 0 0 rgba(47,107,79,0); }
+  }
+  @keyframes blink-dot{
+    0%,100%{ opacity:1; } 50%{ opacity:.3; }
+  }
+
+  /* estado de conexión del portón (ESP32 heartbeat) */
+  .status-bar{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em;
+    text-transform:uppercase; font-weight:500;
+    padding:6px 13px; border-radius:999px;
+    margin:2px 20px 0;
+    transition:.25s;
+  }
+  .status-bar .status-dot{ width:7px;height:7px;border-radius:50%; flex-shrink:0; }
+  .status-connecting{ background:var(--bg); color:var(--muted); }
+  .status-connecting .status-dot{ background:var(--muted); }
+  .status-online{ background:var(--accent-soft); color:var(--accent-dark); }
+  .status-online .status-dot{ background:var(--accent); animation:pulse 2.4s infinite; }
+  .status-offline{ background:var(--danger-soft); color:var(--danger); }
+  .status-offline .status-dot{ background:var(--danger); animation:blink-dot 1.3s infinite; }
+
+  .gate-btn:disabled{ cursor:not-allowed; filter:grayscale(.55) brightness(.82); }
+  .gate-btn:disabled:active{ transform:none; box-shadow:inset 0 8px 18px rgba(0,0,0,.28), inset 0 -6px 14px rgba(255,255,255,.12); }
+
+  .offline-msg{
+    display:none;
+    text-align:center; font-size:12.5px; font-weight:600; color:var(--danger);
+    background:var(--danger-soft); border-radius:var(--radius-sm);
+    padding:10px 14px; margin-top:16px; line-height:1.4;
+  }
+
+  .icon-btn{
+    width:38px;height:38px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--card);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:.2s;
+    color:var(--ink);
+  }
+  .icon-btn:hover{ background:var(--accent-soft); border-color:var(--accent); }
+  .icon-btn svg{ width:18px;height:18px; }
+
+  .screen{
+    padding:8px 28px 34px;
+    display:none;
+    animation:rise .38s ease;
+  }
+  .screen.active{ display:block; }
+  @keyframes rise{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--brass);
+    margin:18px 0 6px;
+  }
+
+  h1.title{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:34px;
+    line-height:1.05;
+    margin:0 0 8px;
+    color:var(--accent-dark);
+  }
+
+  p.sub{
+    color:var(--muted);
+    font-size:14.5px;
+    line-height:1.5;
+    margin:0 0 28px;
+  }
+
+  .gate-mark{ width:64px; height:64px; margin-bottom:6px; }
+
+  /* Google button */
+  .btn-google{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    background:#fff;
+    border:1px solid #DADCE0;
+    color:#3C4043;
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:15px;
+    padding:13px 18px;
+    border-radius:999px;
+    cursor:pointer;
+    box-shadow:0 1px 2px rgba(0,0,0,0.06);
+    transition:.2s;
+  }
+  .btn-google:hover{ box-shadow:0 4px 14px rgba(0,0,0,0.12); transform:translateY(-1px); }
+  .btn-google:active{ transform:translateY(0); }
+  .btn-google svg{ width:20px;height:20px; flex-shrink:0; }
+  .btn-google.loading{ opacity:.7; pointer-events:none; }
+
+  .divider-note{
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+    margin-top:16px;
+  }
+
+  /* generic buttons */
+  .btn{
+    width:100%;
+    border:none;
+    border-radius:999px;
+    padding:13px 18px;
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:14.5px;
+    cursor:pointer;
+    transition:.2s;
+  }
+  .btn-primary{ background:var(--accent); color:#fff; }
+  .btn-primary:hover{ background:var(--accent-dark); }
+  .btn-ghost{ background:transparent; color:var(--muted); border:1px solid var(--line); }
+  .btn-ghost:hover{ border-color:var(--danger); color:var(--danger); }
+  .btn-warn{ background:var(--warn-soft); color:var(--warn); }
+  .btn-small{ width:auto; padding:9px 16px; font-size:13px; }
+
+  .link-quiet{
+    background:none;border:none;color:var(--muted);
+    font-size:13px; cursor:pointer; text-decoration:underline;
+    text-underline-offset:3px;
+  }
+
+  /* user chip */
+  .user-chip{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 14px;
+    background:var(--bg);
+    border-radius:999px;
+    margin-bottom:26px;
+  }
+  .user-chip img{ width:32px;height:32px;border-radius:50%; object-fit:cover; }
+  .user-chip .avatar-fallback{
+    width:32px;height:32px;border-radius:50%;
+    background:var(--accent); color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px; font-weight:700; font-family:var(--font-body);
+  }
+  .user-chip .who{ font-size:13px; line-height:1.25; }
+  .user-chip .who b{ display:block; font-size:13.5px; }
+  .user-chip .who span{ color:var(--muted); font-size:11.5px; }
+
+  /* circular gate button */
+  .gate-stage{
+    display:flex; flex-direction:column; align-items:center;
+    padding:14px 0 8px;
+  }
+  .status-label{
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:22px;
+  }
+
+  .gate-btn-wrap{ position:relative; width:220px; height:220px; }
+
+  .gate-bezel{
+    width:220px; height:220px; border-radius:50%;
+    background:
+      radial-gradient(circle at 32% 28%, #d9b878, transparent 55%),
+      conic-gradient(from 210deg, #D9B166, #8F6423, #D9B166, #8F6423, #D9B166);
+    padding:10px;
+    box-shadow:
+      0 22px 40px -14px rgba(31,74,50,.45),
+      inset 0 2px 4px rgba(255,255,255,.5);
+  }
+
+  .gate-btn{
+    width:100%; height:100%; border-radius:50%;
+    border:none; cursor:pointer;
+    background:radial-gradient(circle at 34% 30%, #3E8863, var(--accent-dark) 78%);
+    background-size:cover; background-position:center;
+    position:relative;
+    overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:
+      inset 0 8px 18px rgba(0,0,0,.28),
+      inset 0 -6px 14px rgba(255,255,255,.12);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .gate-btn.has-photo{ background-color:#000; }
+  .gate-btn.has-photo .gate-btn-icon{ display:none; }
+  .gate-btn.has-photo::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(0,0,0,.45), rgba(0,0,0,0) 45%);
+  }
+  .gate-btn:active{
+    transform:scale(.96);
+    box-shadow:inset 0 12px 22px rgba(0,0,0,.4);
+  }
+  .gate-btn-icon{ width:52px; height:52px; color:#EAF3EC; opacity:.92; }
+  .gate-btn-caption{
+    position:absolute; bottom:16px; left:0; right:0;
+    text-align:center; z-index:2;
+    color:#fff; font-family:var(--font-body); font-weight:700;
+    font-size:13px; letter-spacing:.04em; text-transform:uppercase;
+    text-shadow:0 1px 4px rgba(0,0,0,.4);
+  }
+
+  .gate-edit-badge{
+    position:absolute; right:2px; bottom:2px;
+    width:42px; height:42px; border-radius:50%;
+    background:var(--card); border:2px solid var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow:0 6px 14px rgba(0,0,0,.18);
+    color:var(--accent-dark);
+    transition:.2s;
+    z-index:3;
+  }
+  .gate-edit-badge:hover{ background:var(--accent-soft); }
+  .gate-edit-badge svg{ width:18px;height:18px; }
+
+  .gate-reset-badge{
+    position:absolute; left:2px; top:2px;
+    width:32px; height:32px; border-radius:50%;
+    background:rgba(30,42,34,.55); backdrop-filter:blur(2px);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:#fff; z-index:3;
+    border:none;
+  }
+  .gate-reset-badge svg{ width:15px;height:15px; }
+
+  .gate-hint{
+    font-size:12px; color:var(--muted); margin-top:18px; text-align:center;
+    max-width:260px;
+  }
+
+  .toast{
+    position:fixed; left:50%; bottom:28px; transform:translate(-50%, 18px);
+    background:var(--ink); color:#fff; padding:12px 18px;
+    border-radius:999px; font-size:13.5px; font-weight:500;
+    box-shadow:0 12px 30px rgba(0,0,0,.25);
+    opacity:0; pointer-events:none; transition:.28s ease;
+    display:flex; align-items:center; gap:8px; z-index:50;
+    max-width:88vw;
+  }
+  .toast.show{ opacity:1; transform:translate(-50%, 0); }
+  .toast.success{ background:var(--accent-dark); }
+  .toast.error{ background:var(--danger); }
+  .toast .tdot{ width:7px;height:7px;border-radius:50%; background:currentColor; flex-shrink:0; }
+
+  /* panel */
+  .panel-header{
+    display:flex; align-items:center; gap:12px;
+    padding:18px 0 6px;
+  }
+  .panel-header h2{
+    font-family:var(--font-display);
+    font-size:22px; margin:0; color:var(--accent-dark); font-weight:600;
+  }
+
+  .card{
+    background:var(--bg);
+    border-radius:var(--radius-md);
+    padding:18px;
+    margin-top:14px;
+    border:1px solid var(--line);
+  }
+  .card h3{
+    margin:0 0 4px;
+    font-size:13.5px;
+    font-weight:700;
+    display:flex; align-items:center; gap:8px;
+  }
+  .card p.card-note{ margin:0 0 12px; font-size:12px; color:var(--muted); }
+
+  .row-input{
+    width:100%; padding:10px 12px; margin-bottom:8px;
+    border:1px solid var(--line); border-radius:var(--radius-sm);
+    font-family:var(--font-body); font-size:13.5px; background:#fff;
+  }
+  .row-input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+
+  .list-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:9px 0; border-bottom:1px solid var(--line);
+    font-size:13px; gap:10px;
+  }
+  .list-row:last-child{ border-bottom:none; }
+  .list-row .meta{ font-family:var(--font-mono); font-size:11.5px; color:var(--muted); }
+  .list-row .name{ font-weight:600; }
+  .list-row small{ color:var(--muted); font-weight:400; }
+
+  .pill{
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--warn-soft); color:var(--warn);
+    font-size:11px; font-weight:700; padding:3px 10px; border-radius:999px;
+    text-transform:uppercase; letter-spacing:.04em;
+  }
+
+  .icon-action{
+    width:28px;height:28px; border-radius:50%; border:none;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex-shrink:0; transition:.2s;
+  }
+  .icon-action svg{ width:14px;height:14px; }
+  .ia-ok{ background:var(--accent-soft); color:var(--accent-dark); }
+  .ia-ok:hover{ background:var(--accent); color:#fff; }
+  .ia-no{ background:var(--danger-soft); color:var(--danger); }
+  .ia-no:hover{ background:var(--danger); color:#fff; }
+
+  .empty-note{ font-size:12.5px; color:var(--muted); font-style:italic; padding:4px 0; }
+
+  .demo-flag{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--brass);
+    background:var(--brass-soft); padding:5px 10px; border-radius:999px;
+    margin-bottom:16px;
+  }
+
+  ::selection{ background:var(--accent-soft); }
+</style>
 </head>
 <body>
 
-    <button id="btn-vista-admin" class="btn-admin hidden" onclick="mostrarVista('admin')">⚙️ Panel Admin</button>
+<canvas id="icon-canvas" width="512" height="512" style="display:none"></canvas>
 
-    <div class="container">
-        <h1 style="text-align: center; margin-bottom: 5px;">Portón Pirque</h1>
-        
-        <div id="conexion-status" class="status-badge">Conectando...</div>
-        
-        <div id="user-info" class="hidden"></div>
+<div class="phone">
 
-        <div id="vista-login">
-            <p>Inicia sesión para continuar</p>
-            <button class="btn-google" onclick="iniciarSesion()">Inicia sesión con Google</button>
+  <div class="topbar">
+    <div class="brand-mini"><span class="dot-live"></span> Portón Pirque</div>
+    <button id="btn-panel-shortcut" class="icon-btn hidden" onclick="mostrarVista('admin')" title="Panel de control" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
+  </div>
+
+  <div id="conexion-status" class="status-bar status-connecting">
+    <span class="status-dot"></span><span id="conexion-status-text">Conectando…</span>
+  </div>
+
+  <!-- PANTALLA 1: INICIO -->
+  <section id="vista-login" class="screen active">
+    <div class="eyebrow">Acceso privado</div>
+    <svg class="gate-mark" viewBox="0 0 100 100" fill="none">
+      <rect width="100" height="100" rx="22" fill="#1F4A32"/>
+      <path d="M28 74 V34 Q28 26 36 26 H64 Q72 26 72 34 V74" stroke="#F4EFE3" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="50" y1="34" x2="50" y2="74" stroke="#F4EFE3" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="50" cy="58" r="5" fill="#C99A3B"/>
+    </svg>
+    <h1 class="title">Portón Pirque</h1>
+    <p class="sub">Inicia sesión con tu cuenta de Google para ver si tienes acceso al portón.</p>
+
+    <div id="demo-flag" class="demo-flag" style="display:none">● Vista previa local — sin servidor</div>
+
+    <button class="btn-google" id="btn-google" onclick="iniciarSesion()">
+      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 6 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 6 29.5 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.6 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.6 39.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.6l6.2 5.2C39.9 37 44 31 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+      <span id="btn-google-label">Continuar con Google</span>
+    </button>
+    <p class="divider-note">Solo personas autorizadas pueden abrir el portón.</p>
+  </section>
+
+  <!-- PANTALLA: NO AUTORIZADO -->
+  <section id="vista-no-autorizado" class="screen">
+    <div class="eyebrow" style="color:var(--danger)">Sin acceso</div>
+    <h1 class="title" style="font-size:26px;">Aún no estás en la lista</h1>
+    <p class="sub">Tu cuenta no figura entre los usuarios autorizados de la Web App. Puedes solicitar acceso y Darío lo revisará.</p>
+    <button class="btn btn-primary" onclick="solicitarAcceso()">Solicitar acceso</button>
+    <div style="height:10px"></div>
+    <button class="btn btn-ghost" onclick="cerrarSesion()">Cerrar sesión</button>
+  </section>
+
+  <!-- PANTALLA 2: BOTÓN -->
+  <section id="vista-autorizado" class="screen">
+    <div id="user-chip" class="user-chip"></div>
+
+    <div class="gate-stage">
+      <div class="status-label" id="gate-status-label">Portón listo</div>
+
+      <div class="gate-btn-wrap">
+        <div class="gate-bezel">
+          <button id="gate-btn" class="gate-btn" onclick="abrirPorton()">
+            <svg class="gate-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 15v2"></path>
+              <path d="M6 10V7a6 6 0 0 1 11.3-2.8"></path>
+              <rect x="5" y="10" width="14" height="11" rx="2"></rect>
+            </svg>
+            <span class="gate-btn-caption">Abrir</span>
+          </button>
         </div>
+        <button class="gate-reset-badge" id="gate-reset" onclick="quitarFotoBoton(event)" style="display:none" title="Quitar foto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+        </button>
+        <button class="gate-edit-badge" onclick="document.getElementById('foto-input').click()" title="Personalizar botón">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        </button>
+        <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="cambiarFotoBoton(event)">
+      </div>
 
-        <div id="vista-no-autorizado" class="hidden" style="text-align: center;">
-            <h2 style="color: var(--danger);">Acceso Denegado</h2>
-            <p>No estás en la lista de usuarios autorizados.</p>
-            <button class="btn-solicitar" onclick="solicitarAcceso()">Solicitar Acceso</button>
-            <button class="btn-cerrar" onclick="cerrarSesion()">Cerrar Sesión</button>
-        </div>
+      <p class="gate-hint">Toca el ícono de cámara para poner una foto tuya en el botón — solo tú la verás al iniciar sesión con esta cuenta.</p>
 
-        <div id="vista-autorizado" class="hidden" style="text-align: center;">
-            <h2 style="color: var(--success); margin-top: 0;">¡Acceso Concedido!</h2>
-            <button id="btn-gatillo" class="btn-abrir" onclick="abrirPorton()">🔓 ABRIR PORTÓN</button>
-            <p id="msg-offline" class="hidden" style="color: var(--danger); font-size: 13px; font-weight: bold;">
-                ⚠️ El portón está desconectado.<br>Por favor, comparte internet o revisa la energía.
-            </p>
-            <br>
-            <button class="btn-cerrar" onclick="cerrarSesion()">Cerrar Sesión</button>
-        </div>
-
-        <div id="vista-admin" class="hidden">
-            <h2 style="text-align: center;">Panel Integral</h2>
-            <button class="btn-google" onclick="mostrarVista('autorizado')">Volver al Botón de Abrir</button>
-            
-            <div class="card">
-                <h3>📜 Últimas Aperturas</h3>
-                <table id="tabla-historial"><tr><th>Fecha/Hora</th><th>Usuario</th></tr></table>
-            </div>
-
-            <div class="card">
-                <h3>🤖 Usuarios de Telegram</h3>
-                <input type="text" id="tg-id" placeholder="ID (Ej: 123456789)">
-                <input type="text" id="tg-nombre" placeholder="Nombre (Ej: Bruno)">
-                <button style="background: var(--primary);" onclick="agregarTelegram()">Autorizar en Telegram</button>
-                <table id="tabla-telegram"><tr><th>Nombre</th><th>ID</th><th>Acción</th></tr></table>
-            </div>
-
-            <div class="card">
-                <h3>✅ Usuarios Web App</h3>
-                <table id="tabla-solicitudes"></table>
-                <table id="tabla-autorizados" style="margin-top: 15px;"><tr><th>Correo Autorizado</th><th>Acción</th></tr></table>
-            </div>
-
-            <div class="card">
-                <h3>📱 Redes WiFi de Rescate</h3>
-                <input type="text" id="red-ssid" placeholder="Nombre de red (SSID)">
-                <input type="password" id="red-pass" placeholder="Contraseña">
-                <button style="background: #17a2b8;" onclick="agregarRed()">Añadir Red</button>
-                <table id="tabla-redes"><tr><th>Redes Guardadas</th><th>Acción</th></tr></table>
-            </div>
-
-            <button class="btn-cerrar" onclick="cerrarSesion()" style="width: 100%;">Cerrar Sesión</button>
-        </div>
+      <p id="offline-msg" class="offline-msg">⚠️ El portón está desconectado.<br>Comparte internet o revisa la energía en la casa.</p>
     </div>
 
-    <script>
-        // ==========================================
-        // 1. CONFIGURACIÓN
-        // ==========================================
-        const firebaseConfig = {
+    <div style="height:8px"></div>
+    <button class="link-quiet" onclick="cerrarSesion()" style="display:block; margin:22px auto 0;">Cerrar sesión</button>
+  </section>
+
+  <!-- PANTALLA 3: PANEL ADMIN -->
+  <section id="vista-admin" class="screen">
+    <div class="panel-header">
+      <button class="icon-btn" onclick="mostrarVista('autorizado')" title="Volver">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      </button>
+      <h2>Panel de control</h2>
+    </div>
+
+    <div class="card">
+      <h3>📜 Últimas aperturas</h3>
+      <p class="card-note">Registro de quién abrió el portón y cuándo.</p>
+      <div id="lista-historial"></div>
+    </div>
+
+    <div class="card">
+      <h3>🤖 Usuarios de Telegram</h3>
+      <p class="card-note">Autoriza cuentas para abrir el portón por bot.</p>
+      <input type="text" id="tg-id" class="row-input" placeholder="ID de Telegram (ej. 123456789)">
+      <input type="text" id="tg-nombre" class="row-input" placeholder="Nombre (ej. Bruno)">
+      <button class="btn btn-primary btn-small" onclick="agregarTelegram()">Autorizar en Telegram</button>
+      <div id="lista-telegram" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <h3>✅ Usuarios Web App</h3>
+      <p class="card-note">Solicitudes pendientes y cuentas ya autorizadas.</p>
+      <div id="lista-solicitudes"></div>
+      <div id="lista-autorizados" style="margin-top:6px"></div>
+    </div>
+
+    <div class="card">
+      <h3>📶 Redes WiFi de rescate</h3>
+      <p class="card-note">Redes de respaldo si el portón pierde conexión.</p>
+      <input type="text" id="red-ssid" class="row-input" placeholder="Nombre de red (SSID)">
+      <input type="password" id="red-pass" class="row-input" placeholder="Contraseña">
+      <button class="btn btn-warn btn-small" onclick="agregarRed()">Añadir red</button>
+      <div id="lista-redes" style="margin-top:10px"></div>
+    </div>
+
+    <div style="height:20px"></div>
+    <button class="btn btn-ghost" onclick="cerrarSesion()">Cerrar sesión</button>
+  </section>
+
+</div>
+
+<div id="toast" class="toast"><span class="tdot"></span><span id="toast-msg"></span></div>
+
+<script>
+/* ==========================================================
+   0. ÍCONO DE APP (para "Agregar a pantalla de inicio")
+   ========================================================== */
+(function generarIconoApp(){
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3C7A57"/><stop offset="1" stop-color="#1F4A32"/>
+    </linearGradient></defs>
+    <rect width="100" height="100" rx="22" fill="url(#g)"/>
+    <path d="M28 74 V34 Q28 26 36 26 H64 Q72 26 72 34 V74" stroke="#F4EFE3" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="50" y1="34" x2="50" y2="74" stroke="#F4EFE3" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="50" cy="58" r="5" fill="#C99A3B"/>
+  </svg>`;
+  const img = new Image();
+  const svgUrl = "data:image/svg+xml;base64," + btoa(svg);
+  img.onload = function(){
+    const canvas = document.getElementById('icon-canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, 512, 512);
+    const pngUrl = canvas.toDataURL('image/png');
+
+    const applyIcon = document.createElement('link');
+    applyIcon.rel = 'apple-touch-icon';
+    applyIcon.href = pngUrl;
+    document.head.appendChild(applyIcon);
+
+    const manifest = {
+      name: "Portón Pirque",
+      short_name: "Portón",
+      display: "standalone",
+      background_color: "#EFF3EE",
+      theme_color: "#1F4A32",
+      icons: [
+        { src: pngUrl, sizes: "192x192", type: "image/png" },
+        { src: pngUrl, sizes: "512x512", type: "image/png" }
+      ]
+    };
+    const manifestLink = document.createElement('link');
+    manifestLink.rel = 'manifest';
+    manifestLink.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(manifest));
+    document.head.appendChild(manifestLink);
+  };
+  img.src = svgUrl;
+})();
+
+/* ==========================================================
+   1. CONFIGURACIÓN FIREBASE
+   ========================================================== */
+const firebaseConfig = {
             apiKey: "AIzaSyCABy9Rpn1wc1gYBzDEm8Mf05x0gu9lpyQ",
             authDomain: "portonpirque.firebaseapp.com",
             databaseURL: "https://portonpique-default-rtdb.firebaseio.com/",
@@ -116,207 +628,446 @@
             storageBucket: "portonpique.firebasestorage.app",
             messagingSenderId: "556068512549",
             appId: "1:556068512549:web:7e71d2d9b199ec610c30cc"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
-        const provider = new firebase.auth.GoogleAuthProvider();
+};
 
-        const ADMIN_EMAIL = "tu_correo@gmail.com"; 
-        let currentUser = null;
-        let ultimoLatido = 0; // Guardará la marca de tiempo de la ESP32
+// Modo demo: se activa solo mientras el config de arriba siga con los valores de ejemplo.
+// Al reemplazarlo por tus credenciales reales, la app funciona 100% conectada a Firebase.
+const DEMO_MODE = firebaseConfig.apiKey === "TU_API_KEY";
 
-        // ==========================================
-        // 2. EL MONITOR DE ESTADO (HEARTBEAT)
-        // ==========================================
-        
-        // Escuchamos el latido en tiempo real desde Firebase
-        db.ref('estado_porton/ultima_conexion').on('value', (snapshot) => {
-            if(snapshot.exists()) { ultimoLatido = snapshot.val(); }
-        });
+let db, auth, provider;
+try{
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.database();
+  auth = firebase.auth();
+  provider = new firebase.auth.GoogleAuthProvider();
+}catch(e){ /* config de ejemplo: sin problema en modo demo */ }
 
-        // Verificamos matemáticamente el estado cada 1 segundo
-        setInterval(() => {
-            const ahora = Date.now();
-            const diferenciaSegundos = (ahora - ultimoLatido) / 1000;
-            const badge = document.getElementById('conexion-status');
-            const btnGatillo = document.getElementById('btn-gatillo');
-            const msgOffline = document.getElementById('msg-offline');
+const ADMIN_EMAIL = "pirqueporton@gmail.com";
+let currentUser = null;
 
-            // Si el último latido fue hace más de 18 segundos, asumimos que se cayó
-            if (diferenciaSegundos > 18) {
-                badge.className = 'status-badge status-offline';
-                badge.innerHTML = '🔴 FUERA DE LÍNEA';
-                if(btnGatillo) { 
-                    btnGatillo.disabled = true; 
-                    btnGatillo.style.backgroundColor = '#ccc';
-                    msgOffline.classList.remove('hidden');
-                }
-            } else {
-                badge.className = 'status-badge status-online';
-                badge.innerHTML = '🟢 EN LÍNEA';
-                if(btnGatillo) { 
-                    btnGatillo.disabled = false; 
-                    btnGatillo.style.backgroundColor = 'var(--success)';
-                    msgOffline.classList.add('hidden');
-                }
-            }
-        }, 1000);
+if(DEMO_MODE){
+  document.getElementById('demo-flag').style.display = 'inline-flex';
+  document.getElementById('btn-google-label').textContent = 'Iniciar (vista previa)';
+}
 
-        // ==========================================
-        // 3. NAVEGACIÓN
-        // ==========================================
-        function mostrarVista(vista) {
-            document.getElementById('vista-login').classList.add('hidden');
-            document.getElementById('vista-no-autorizado').classList.add('hidden');
-            document.getElementById('vista-autorizado').classList.add('hidden');
-            document.getElementById('vista-admin').classList.add('hidden');
-            document.getElementById(`vista-${vista}`).classList.remove('hidden');
-        }
+/* ==========================================================
+   1b. MONITOR DE CONEXIÓN (heartbeat de la ESP32)
+   ========================================================== */
+let ultimoLatido = 0;
 
-        // ==========================================
-        // 4. AUTENTICACIÓN
-        // ==========================================
-        function iniciarSesion() { auth.signInWithPopup(provider); }
-        function cerrarSesion() { auth.signOut(); }
+function setEstadoConexion(estado){
+  const badge = document.getElementById('conexion-status');
+  const texto = document.getElementById('conexion-status-text');
+  const gateBtn = document.getElementById('gate-btn');
+  const offlineMsg = document.getElementById('offline-msg');
 
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('user-info').innerText = `Sesión: ${user.email}`;
-                document.getElementById('user-info').classList.remove('hidden');
+  badge.className = 'status-bar status-' + estado;
+  texto.textContent = estado === 'online' ? 'En línea' : estado === 'offline' ? 'Fuera de línea' : 'Conectando…';
 
-                if (user.email === ADMIN_EMAIL) {
-                    document.getElementById('btn-vista-admin').classList.remove('hidden');
-                    cargarDatosAdmin(); 
-                }
-                verificarAcceso(user);
-            } else {
-                currentUser = null;
-                document.getElementById('user-info').classList.add('hidden');
-                document.getElementById('btn-vista-admin').classList.add('hidden');
-                mostrarVista('login');
-            }
-        });
+  if(gateBtn) gateBtn.disabled = (estado === 'offline');
+  if(offlineMsg) offlineMsg.style.display = (estado === 'offline') ? 'block' : 'none';
+}
 
-        // ==========================================
-        // 5. LÓGICA DE USUARIOS WEB APP
-        // ==========================================
-        function verificarAcceso(user) {
-            if (user.email === ADMIN_EMAIL) { mostrarVista('autorizado'); return; }
-            db.ref(`lista_blanca/${user.uid}`).once('value').then((snapshot) => {
-                if (snapshot.exists()) { mostrarVista('autorizado'); } 
-                else { mostrarVista('no-autorizado'); }
-            });
-        }
+if(DEMO_MODE){
+  // En vista previa no hay ESP32 real: mostramos "en línea" fijo.
+  setEstadoConexion('online');
+} else {
+  db.ref('estado_porton/ultima_conexion').on('value', (snap) => {
+    if(snap.exists()) ultimoLatido = snap.val();
+  });
+  setInterval(() => {
+    const diferenciaSegundos = (Date.now() - ultimoLatido) / 1000;
+    setEstadoConexion(diferenciaSegundos > 18 ? 'offline' : 'online');
+  }, 1000);
+}
 
-        function solicitarAcceso() {
-            db.ref(`solicitudes/${currentUser.uid}`).set({
-                nombre: currentUser.displayName,
-                correo: currentUser.email
-            }).then(() => alert("Solicitud enviada al administrador."));
-        }
+/* ==========================================================
+   2. NAVEGACIÓN
+   ========================================================== */
+function mostrarVista(vista){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`vista-${vista}`).classList.add('active');
+}
 
-        // ==========================================
-        // 6. ABRIR PORTÓN
-        // ==========================================
-        function abrirPorton() {
-            db.ref('estado_porton').update({
-                comando: "abrir",
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            }).then(() => {
-                const fecha = new Date().toLocaleString('es-CL');
-                db.ref('historial').push({
-                    fecha: fecha,
-                    usuario: currentUser.displayName + " (Web App)"
-                });
-            }).catch(e => alert("Error: " + e.message));
-        }
+function showToast(msg, type){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
 
-        // ==========================================
-        // 7. FUNCIONES DEL ADMINISTRADOR
-        // ==========================================
-        function agregarTelegram() {
-            const id = document.getElementById('tg-id').value;
-            const nombre = document.getElementById('tg-nombre').value;
-            if(!id || !nombre) return alert("Completa ID y Nombre");
-            db.ref(`telegram_usuarios/${id}`).set({ nombre: nombre }).then(() => {
-                document.getElementById('tg-id').value = '';
-                document.getElementById('tg-nombre').value = '';
-            });
-        }
-        function eliminarTelegram(id) { db.ref(`telegram_usuarios/${id}`).remove(); }
+/* ==========================================================
+   3. AUTENTICACIÓN
+   ========================================================== */
+function iniciarSesion(){
+  const btn = document.getElementById('btn-google');
+  btn.classList.add('loading');
 
-        function agregarRed() {
-            const ssid = document.getElementById('red-ssid').value;
-            const pass = document.getElementById('red-pass').value;
-            if(!ssid || !pass) return alert("Completa los datos WiFi");
-            db.ref(`configuracion/redes_rescate/${ssid}`).set({ ssid: ssid, pass: pass })
-              .then(() => {
-                  document.getElementById('red-ssid').value = '';
-                  document.getElementById('red-pass').value = '';
-              });
-        }
-        function eliminarRed(ssid) { db.ref(`configuracion/redes_rescate/${ssid}`).remove(); }
-        
-        function aprobarUsuario(uid, correo, nombre) {
-            db.ref(`lista_blanca/${uid}`).set({ correo: correo, nombre: nombre });
-            db.ref(`solicitudes/${uid}`).remove(); 
-        }
-        function rechazarUsuario(uid) { db.ref(`solicitudes/${uid}`).remove(); }
-        function revocarAcceso(uid) { db.ref(`lista_blanca/${uid}`).remove(); }
+  if(DEMO_MODE){
+    setTimeout(() => {
+      btn.classList.remove('loading');
+      currentUser = {
+        uid: 'demo-uid',
+        displayName: 'Vista Previa',
+        email: 'demo@portonpirque.cl',
+        photoURL: null
+      };
+      onLoginSuccess(currentUser);
+      mostrarVista('autorizado');
+    }, 500);
+    return;
+  }
 
-        function cargarDatosAdmin() {
-            db.ref('historial').limitToLast(10).on('value', (snap) => {
-                let html = '<tr><th>Fecha/Hora</th><th>Usuario</th></tr>';
-                let records = [];
-                snap.forEach(child => { records.push(child.val()); });
-                records.reverse().forEach(d => { html += `<tr><td>${d.fecha}</td><td>${d.usuario}</td></tr>`; });
-                document.getElementById('tabla-historial').innerHTML = html;
-            });
+  auth.signInWithPopup(provider).catch(e => {
+    btn.classList.remove('loading');
+    showToast('No se pudo iniciar sesión: ' + e.message, 'error');
+  });
+}
 
-            db.ref('telegram_usuarios').on('value', (snap) => {
-                let html = '<tr><th>Nombre</th><th>ID</th><th>Acción</th></tr>';
-                snap.forEach(child => {
-                    html += `<tr><td>${child.val().nombre}</td><td>${child.key}</td>
-                             <td><button class="acciones-btn" style="background:var(--danger)" onclick="eliminarTelegram('${child.key}')">Borrar</button></td></tr>`;
-                });
-                document.getElementById('tabla-telegram').innerHTML = html;
-            });
+function cerrarSesion(){
+  if(DEMO_MODE){
+    currentUser = null;
+    document.getElementById('btn-panel-shortcut').style.display = 'none';
+    mostrarVista('login');
+    return;
+  }
+  auth.signOut();
+}
 
-            db.ref('solicitudes').on('value', (snap) => {
-                let html = '';
-                if(snap.exists()) {
-                    html = '<tr><th colspan="2" style="background:#ffc107; text-align:center;">Nuevas Solicitudes</th></tr>';
-                    snap.forEach(child => {
-                        const d = child.val();
-                        html += `<tr><td>${d.nombre}<br><small>${d.correo}</small></td>
-                                 <td><button class="acciones-btn" style="background:var(--success)" onclick="aprobarUsuario('${child.key}', '${d.correo}', '${d.nombre}')">✅</button>
-                                     <button class="acciones-btn" style="background:var(--danger)" onclick="rechazarUsuario('${child.key}')">❌</button></td></tr>`;
-                    });
-                }
-                document.getElementById('tabla-solicitudes').innerHTML = html;
-            });
+if(!DEMO_MODE && auth){
+  auth.onAuthStateChanged((user) => {
+    if(user){
+      currentUser = user;
+      onLoginSuccess(user);
+      if(user.email === ADMIN_EMAIL){
+        document.getElementById('btn-panel-shortcut').style.display = 'flex';
+        cargarDatosAdmin();
+      }
+      verificarAcceso(user);
+    } else {
+      currentUser = null;
+      document.getElementById('btn-panel-shortcut').style.display = 'none';
+      mostrarVista('login');
+    }
+  });
+}
 
-            db.ref('lista_blanca').on('value', (snap) => {
-                let html = '<tr><th>Correo Autorizado</th><th>Acción</th></tr>';
-                snap.forEach(child => {
-                    const d = child.val();
-                    html += `<tr><td>${d.nombre || 'Usuario'}<br><small>${d.correo}</small></td>
-                             <td><button class="acciones-btn" style="background:var(--danger)" onclick="revocarAcceso('${child.key}')">Borrar</button></td></tr>`;
-                });
-                document.getElementById('tabla-autorizados').innerHTML = html;
-            });
+function onLoginSuccess(user){
+  document.getElementById('btn-google').classList.remove('loading');
+  renderUserChip(user);
+  cargarFotoBoton(user.uid);
+  if(DEMO_MODE){
+    document.getElementById('btn-panel-shortcut').style.display = 'flex';
+    cargarDatosAdmin();
+  }
+}
 
-            db.ref('configuracion/redes_rescate').on('value', (snap) => {
-                let html = '<tr><th>Redes Guardadas</th><th>Acción</th></tr>';
-                snap.forEach(child => {
-                    html += `<tr><td>${child.val().ssid}</td>
-                             <td><button class="acciones-btn" style="background:var(--danger)" onclick="eliminarRed('${child.key}')">Borrar</button></td></tr>`;
-                });
-                document.getElementById('tabla-redes').innerHTML = html;
-            });
-        }
-    </script>
+function renderUserChip(user){
+  const initials = (user.displayName || user.email || '?').trim()[0].toUpperCase();
+  const avatar = user.photoURL
+    ? `<img src="${user.photoURL}" alt="">`
+    : `<div class="avatar-fallback">${initials}</div>`;
+  document.getElementById('user-chip').innerHTML = `
+    ${avatar}
+    <div class="who"><b>${user.displayName || 'Usuario'}</b><span>${user.email}</span></div>
+  `;
+}
+
+/* ==========================================================
+   4. ACCESO WEB APP
+   ========================================================== */
+function verificarAcceso(user){
+  if(DEMO_MODE || user.email === ADMIN_EMAIL){ mostrarVista('autorizado'); return; }
+  db.ref(`lista_blanca/${user.uid}`).once('value').then((snap) => {
+    mostrarVista(snap.exists() ? 'autorizado' : 'no-autorizado');
+  });
+}
+
+function solicitarAcceso(){
+  if(DEMO_MODE){ showToast('Vista previa: solicitud enviada.', 'success'); return; }
+  db.ref(`solicitudes/${currentUser.uid}`).set({
+    nombre: currentUser.displayName,
+    correo: currentUser.email
+  }).then(() => showToast('Solicitud enviada a Darío.', 'success'));
+}
+
+/* ==========================================================
+   5. FOTO PERSONALIZADA DEL BOTÓN
+   (se guarda en este navegador, ligada al uid de la cuenta que
+   inició sesión — así solo esa persona la ve al volver a entrar)
+   ========================================================== */
+function fotoKey(uid){ return `porton_foto_${uid}`; }
+
+function cargarFotoBoton(uid){
+  const data = localStorage.getItem(fotoKey(uid));
+  const gateBtn = document.getElementById('gate-btn');
+  const resetBtn = document.getElementById('gate-reset');
+  if(data){
+    gateBtn.style.backgroundImage = `url('${data}')`;
+    gateBtn.classList.add('has-photo');
+    resetBtn.style.display = 'flex';
+  } else {
+    gateBtn.style.backgroundImage = 'none';
+    gateBtn.classList.remove('has-photo');
+    resetBtn.style.display = 'none';
+  }
+}
+
+function cambiarFotoBoton(event){
+  const file = event.target.files[0];
+  if(!file || !currentUser) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const size = 400;
+      const canvas = document.createElement('canvas');
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const scale = Math.max(size / img.width, size / img.height);
+      const w = img.width * scale, h = img.height * scale;
+      ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      localStorage.setItem(fotoKey(currentUser.uid), dataUrl);
+      cargarFotoBoton(currentUser.uid);
+      showToast('Foto del botón actualizada.', 'success');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function quitarFotoBoton(event){
+  event.stopPropagation();
+  if(!currentUser) return;
+  localStorage.removeItem(fotoKey(currentUser.uid));
+  cargarFotoBoton(currentUser.uid);
+  showToast('Foto del botón eliminada.');
+}
+
+/* ==========================================================
+   6. ABRIR PORTÓN
+   ========================================================== */
+function abrirPorton(){
+  const gateBtn = document.getElementById('gate-btn');
+  if(gateBtn.disabled) return; // portón desconectado, no se envía la orden
+
+  const label = document.getElementById('gate-status-label');
+  label.textContent = 'Enviando orden…';
+
+  const registrar = () => {
+    const fecha = new Date().toLocaleString('es-CL');
+    const usuario = (currentUser.displayName || currentUser.email) + (DEMO_MODE ? ' (vista previa)' : ' (Web App)');
+    if(DEMO_MODE){
+      demoDB.historial.unshift({ fecha, usuario });
+      demoDB.historial = demoDB.historial.slice(0, 10);
+      renderHistorial(demoDB.historial);
+    } else {
+      db.ref('historial').push({ fecha, usuario });
+    }
+  };
+
+  if(DEMO_MODE){
+    setTimeout(() => {
+      label.textContent = '¡Portón abierto!';
+      showToast('Orden enviada — abriendo portón (vista previa).', 'success');
+      registrar();
+      setTimeout(() => label.textContent = 'Portón listo', 2200);
+    }, 450);
+    return;
+  }
+
+  // update() en vez de set(): así no se pisa ultima_conexion del heartbeat de la ESP32
+  db.ref('estado_porton').update({
+    comando: 'abrir',
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  }).then(() => {
+    label.textContent = '¡Portón abierto!';
+    showToast('Orden enviada — abriendo portón.', 'success');
+    registrar();
+    setTimeout(() => label.textContent = 'Portón listo', 2200);
+  }).catch(e => {
+    label.textContent = 'Portón listo';
+    showToast('Error: ' + e.message, 'error');
+  });
+}
+
+/* ==========================================================
+   7. DATOS DE DEMO (solo memoria local, sin servidor)
+   ========================================================== */
+const demoDB = {
+  historial: [
+    { fecha: new Date().toLocaleString('es-CL'), usuario: 'Vista Previa (demo)' }
+  ],
+  telegram: { '123456789': { nombre: 'Bruno' } },
+  solicitudes: { 'uid-demo-1': { nombre: 'Camila Rojas', correo: 'camila@ejemplo.cl' } },
+  lista_blanca: { 'uid-demo-2': { nombre: 'Darío', correo: 'dario@ejemplo.cl' } },
+  redes: { 'CasaPirque_Rescate': { ssid: 'CasaPirque_Rescate' } }
+};
+
+/* ==========================================================
+   8. FUNCIONES DEL ADMINISTRADOR
+   ========================================================== */
+function agregarTelegram(){
+  const id = document.getElementById('tg-id').value.trim();
+  const nombre = document.getElementById('tg-nombre').value.trim();
+  if(!id || !nombre) return showToast('Completa ID y nombre.', 'error');
+
+  if(DEMO_MODE){
+    demoDB.telegram[id] = { nombre };
+    renderTelegram(demoDB.telegram);
+  } else {
+    db.ref(`telegram_usuarios/${id}`).set({ nombre });
+  }
+  document.getElementById('tg-id').value = '';
+  document.getElementById('tg-nombre').value = '';
+  showToast('Usuario autorizado en Telegram.', 'success');
+}
+function eliminarTelegram(id){
+  if(DEMO_MODE){ delete demoDB.telegram[id]; renderTelegram(demoDB.telegram); }
+  else db.ref(`telegram_usuarios/${id}`).remove();
+}
+
+function agregarRed(){
+  const ssid = document.getElementById('red-ssid').value.trim();
+  const pass = document.getElementById('red-pass').value.trim();
+  if(!ssid || !pass) return showToast('Completa los datos WiFi.', 'error');
+
+  if(DEMO_MODE){
+    demoDB.redes[ssid] = { ssid };
+    renderRedes(demoDB.redes);
+  } else {
+    db.ref(`configuracion/redes_rescate/${ssid}`).set({ ssid, pass });
+  }
+  document.getElementById('red-ssid').value = '';
+  document.getElementById('red-pass').value = '';
+  showToast('Red añadida.', 'success');
+}
+function eliminarRed(ssid){
+  if(DEMO_MODE){ delete demoDB.redes[ssid]; renderRedes(demoDB.redes); }
+  else db.ref(`configuracion/redes_rescate/${ssid}`).remove();
+}
+
+function aprobarUsuario(uid, correo, nombre){
+  if(DEMO_MODE){
+    demoDB.lista_blanca[uid] = { correo, nombre };
+    delete demoDB.solicitudes[uid];
+    renderSolicitudes(demoDB.solicitudes);
+    renderAutorizados(demoDB.lista_blanca);
+  } else {
+    db.ref(`lista_blanca/${uid}`).set({ correo, nombre });
+    db.ref(`solicitudes/${uid}`).remove();
+  }
+  showToast('Usuario aprobado.', 'success');
+}
+function rechazarUsuario(uid){
+  if(DEMO_MODE){ delete demoDB.solicitudes[uid]; renderSolicitudes(demoDB.solicitudes); }
+  else db.ref(`solicitudes/${uid}`).remove();
+}
+function revocarAcceso(uid){
+  if(DEMO_MODE){ delete demoDB.lista_blanca[uid]; renderAutorizados(demoDB.lista_blanca); }
+  else db.ref(`lista_blanca/${uid}`).remove();
+  showToast('Acceso revocado.');
+}
+
+/* ==========================================================
+   9. RENDER DE LISTAS (reutilizado por demo y por Firebase)
+   ========================================================== */
+function renderHistorial(records){
+  const el = document.getElementById('lista-historial');
+  if(!records || !records.length){ el.innerHTML = '<p class="empty-note">Todavía no hay aperturas registradas.</p>'; return; }
+  el.innerHTML = records.map(d => `
+    <div class="list-row">
+      <span class="name">${d.usuario}</span>
+      <span class="meta">${d.fecha}</span>
+    </div>`).join('');
+}
+
+function renderTelegram(obj){
+  const el = document.getElementById('lista-telegram');
+  const keys = Object.keys(obj || {});
+  if(!keys.length){ el.innerHTML = '<p class="empty-note">Sin usuarios de Telegram autorizados.</p>'; return; }
+  el.innerHTML = keys.map(id => `
+    <div class="list-row">
+      <span><span class="name">${obj[id].nombre}</span> <span class="meta">${id}</span></span>
+      <button class="icon-action ia-no" onclick="eliminarTelegram('${id}')" title="Quitar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>`).join('');
+}
+
+function renderSolicitudes(obj){
+  const el = document.getElementById('lista-solicitudes');
+  const keys = Object.keys(obj || {});
+  if(!keys.length){ el.innerHTML = ''; return; }
+  el.innerHTML = `<span class="pill">Nuevas solicitudes</span>` + keys.map(uid => {
+    const d = obj[uid];
+    return `
+    <div class="list-row">
+      <span><span class="name">${d.nombre}</span><br><small>${d.correo}</small></span>
+      <span style="display:flex; gap:6px;">
+        <button class="icon-action ia-ok" onclick="aprobarUsuario('${uid}','${d.correo}','${d.nombre}')" title="Aprobar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </button>
+        <button class="icon-action ia-no" onclick="rechazarUsuario('${uid}')" title="Rechazar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </span>
+    </div>`;
+  }).join('');
+}
+
+function renderAutorizados(obj){
+  const el = document.getElementById('lista-autorizados');
+  const keys = Object.keys(obj || {});
+  if(!keys.length){ el.innerHTML = '<p class="empty-note">Sin usuarios autorizados todavía.</p>'; return; }
+  el.innerHTML = keys.map(uid => {
+    const d = obj[uid];
+    return `
+    <div class="list-row">
+      <span><span class="name">${d.nombre || 'Usuario'}</span><br><small>${d.correo}</small></span>
+      <button class="icon-action ia-no" onclick="revocarAcceso('${uid}')" title="Revocar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function renderRedes(obj){
+  const el = document.getElementById('lista-redes');
+  const keys = Object.keys(obj || {});
+  if(!keys.length){ el.innerHTML = '<p class="empty-note">Sin redes de rescate guardadas.</p>'; return; }
+  el.innerHTML = keys.map(ssid => `
+    <div class="list-row">
+      <span class="name">${obj[ssid].ssid}</span>
+      <button class="icon-action ia-no" onclick="eliminarRed('${ssid}')" title="Quitar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>`).join('');
+}
+
+function cargarDatosAdmin(){
+  if(DEMO_MODE){
+    renderHistorial(demoDB.historial);
+    renderTelegram(demoDB.telegram);
+    renderSolicitudes(demoDB.solicitudes);
+    renderAutorizados(demoDB.lista_blanca);
+    renderRedes(demoDB.redes);
+    return;
+  }
+
+  db.ref('historial').limitToLast(10).on('value', (snap) => {
+    let records = [];
+    snap.forEach(child => records.push(child.val()));
+    renderHistorial(records.reverse());
+  });
+  db.ref('telegram_usuarios').on('value', (snap) => renderTelegram(snap.val()));
+  db.ref('solicitudes').on('value', (snap) => renderSolicitudes(snap.val()));
+  db.ref('lista_blanca').on('value', (snap) => renderAutorizados(snap.val()));
+  db.ref('configuracion/redes_rescate').on('value', (snap) => renderRedes(snap.val()));
+}
+</script>
 </body>
 </html>
