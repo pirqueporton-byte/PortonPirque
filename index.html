@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control de Portón</title>
-    <!-- Firebase SDK (Versión Compat para simplicidad en un solo archivo) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -13,7 +12,7 @@
         :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; text-align: center; }
         .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1, h2 { color: #333; }
+        h1, h2, h3 { color: #333; }
         button { border: none; padding: 12px 20px; border-radius: 8px; font-size: 16px; cursor: pointer; margin: 10px 0; width: 100%; color: white; font-weight: bold; transition: 0.3s; }
         .btn-google { background-color: #4285F4; }
         .btn-abrir { background-color: var(--success); font-size: 24px; padding: 30px 20px; box-shadow: 0 6px 0 #1e7e34; margin-top: 20px; }
@@ -21,86 +20,89 @@
         .btn-admin { background-color: #333; width: auto; font-size: 14px; padding: 8px 15px; position: absolute; top: 10px; right: 10px; }
         .btn-solicitar { background-color: #ffc107; color: #333; }
         .btn-cerrar { background-color: var(--danger); width: auto; padding: 8px 15px; font-size: 14px; }
-        input { width: calc(100% - 20px); padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        input { width: calc(100% - 20px); padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        th, td { padding: 8px; border-bottom: 1px solid #ddd; text-align: left; }
         .hidden { display: none; }
-        .card { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee; }
-        .acciones-btn { width: auto; padding: 5px 10px; margin: 0 5px; font-size: 12px; }
-        #user-info { font-size: 0.9em; color: #666; margin-bottom: 20px; }
+        .card { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee; text-align: left; }
+        .acciones-btn { width: auto; padding: 5px 10px; margin: 0 2px; font-size: 12px; }
+        #user-info { font-size: 0.9em; color: #666; margin-bottom: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <!-- Botón flotante para el Admin -->
     <button id="btn-vista-admin" class="btn-admin hidden" onclick="mostrarVista('admin')">⚙️ Panel Admin</button>
 
     <div class="container">
-        <h1>Portón Pirque</h1>
+        <h1 style="text-align: center;">Portón Pirque</h1>
         <div id="user-info" class="hidden"></div>
 
-        <!-- VISTA 1: INICIO DE SESIÓN -->
         <div id="vista-login">
             <p>Inicia sesión para continuar</p>
             <button class="btn-google" onclick="iniciarSesion()">Inicia sesión con Google</button>
         </div>
 
-        <!-- VISTA 2: ESPERANDO APROBACIÓN (No autorizado) -->
-        <div id="vista-no-autorizado" class="hidden">
+        <div id="vista-no-autorizado" class="hidden" style="text-align: center;">
             <h2 style="color: var(--danger);">Acceso Denegado</h2>
-            <p>No estás en la lista de usuarios autorizados.</p>
+            <p>No estás en la lista de usuarios de la Web App.</p>
             <button class="btn-solicitar" onclick="solicitarAcceso()">Solicitar Acceso</button>
             <button class="btn-cerrar" onclick="cerrarSesion()">Cerrar Sesión</button>
         </div>
 
-        <!-- VISTA 3: USUARIO AUTORIZADO (El botón gigante) -->
-        <div id="vista-autorizado" class="hidden">
+        <div id="vista-autorizado" class="hidden" style="text-align: center;">
             <h2 style="color: var(--success);">¡Acceso Concedido!</h2>
-            <p>Presiona el botón para abrir el portón.</p>
             <button class="btn-abrir" onclick="abrirPorton()">🔓 ABRIR PORTÓN</button>
             <br><br>
             <button class="btn-cerrar" onclick="cerrarSesion()">Cerrar Sesión</button>
         </div>
 
-        <!-- VISTA 4: PANEL DE ADMINISTRADOR -->
         <div id="vista-admin" class="hidden">
-            <h2>Panel de Control</h2>
-            <button class="btn-google" onclick="mostrarVista('autorizado')">Volver al Botón</button>
+            <h2 style="text-align: center;">Panel de Control Integral</h2>
+            <button class="btn-google" onclick="mostrarVista('autorizado')">Volver al Botón de Abrir</button>
             
-            <!-- Gestión de WiFi de Rescate -->
+            <div class="card">
+                <h3>📜 Últimas Aperturas</h3>
+                <table id="tabla-historial">
+                    <tr><th>Fecha/Hora</th><th>Usuario</th></tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>🤖 Usuarios de Telegram (Bot)</h3>
+                <input type="text" id="tg-id" placeholder="ID de Telegram (Ej: 123456789)">
+                <input type="text" id="tg-nombre" placeholder="Nombre (Ej: Bruno)">
+                <button style="background: var(--primary);" onclick="agregarTelegram()">Autorizar en Telegram</button>
+                <table id="tabla-telegram">
+                    <tr><th>Nombre</th><th>ID</th><th>Acción</th></tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>✅ Usuarios Web App (Google)</h3>
+                <table id="tabla-solicitudes">
+                    </table>
+                <table id="tabla-autorizados" style="margin-top: 15px;">
+                    <tr><th>Correo Autorizado</th><th>Acción</th></tr>
+                </table>
+            </div>
+
             <div class="card">
                 <h3>📱 Redes WiFi de Rescate</h3>
                 <input type="text" id="red-ssid" placeholder="Nombre de red (SSID)">
                 <input type="password" id="red-pass" placeholder="Contraseña">
-                <button style="background: var(--primary);" onclick="agregarRed()">Añadir Red</button>
+                <button style="background: #17a2b8;" onclick="agregarRed()">Añadir Red</button>
                 <table id="tabla-redes">
-                    <tr><th>Redes Guardadas</th></tr>
+                    <tr><th>Redes Guardadas</th><th>Acción</th></tr>
                 </table>
             </div>
 
-            <!-- Gestión de Solicitudes -->
-            <div class="card">
-                <h3>🔔 Solicitudes de Acceso</h3>
-                <table id="tabla-solicitudes">
-                    <tr><th>Usuario</th><th>Acción</th></tr>
-                </table>
-            </div>
-
-            <!-- Lista Blanca -->
-            <div class="card">
-                <h3>✅ Usuarios Autorizados</h3>
-                <table id="tabla-autorizados">
-                    <tr><th>Correo</th><th>Acción</th></tr>
-                </table>
-            </div>
-
-            <button class="btn-cerrar" onclick="cerrarSesion()">Cerrar Sesión</button>
+            <button class="btn-cerrar" onclick="cerrarSesion()" style="width: 100%;">Cerrar Sesión</button>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // 1. CONFIGURACIÓN DE FIREBASE Y VARIABLES
+        // 1. CONFIGURACIÓN
         // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyCABy9Rpn1wc1gYBzDEm8Mf05x0gu9lpyQ",
@@ -116,13 +118,11 @@
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        // ⚠️ CAMBIA ESTO POR TU CORREO REAL ⚠️
-        const ADMIN_EMAIL = "darioignacio20@gmail.com"; 
-        
+        const ADMIN_EMAIL = "pirqueporton@gmail.com"; 
         let currentUser = null;
 
         // ==========================================
-        // 2. GESTIÓN DE VISTAS (SPA)
+        // 2. NAVEGACIÓN
         // ==========================================
         function mostrarVista(vista) {
             document.getElementById('vista-login').classList.add('hidden');
@@ -133,7 +133,7 @@
         }
 
         // ==========================================
-        // 3. AUTENTICACIÓN (GOOGLE)
+        // 3. AUTENTICACIÓN
         // ==========================================
         function iniciarSesion() { auth.signInWithPopup(provider); }
         function cerrarSesion() { auth.signOut(); }
@@ -144,12 +144,10 @@
                 document.getElementById('user-info').innerText = `Sesión: ${user.email}`;
                 document.getElementById('user-info').classList.remove('hidden');
 
-                // Si eres tú, mostramos el botón de admin
                 if (user.email === ADMIN_EMAIL) {
                     document.getElementById('btn-vista-admin').classList.remove('hidden');
-                    cargarDatosAdmin(); // Empezamos a escuchar la base de datos
+                    cargarDatosAdmin(); 
                 }
-
                 verificarAcceso(user);
             } else {
                 currentUser = null;
@@ -160,21 +158,13 @@
         });
 
         // ==========================================
-        // 4. LÓGICA DE USUARIOS
+        // 4. LÓGICA DE USUARIOS WEB APP
         // ==========================================
         function verificarAcceso(user) {
-            // El admin siempre tiene acceso
-            if (user.email === ADMIN_EMAIL) {
-                mostrarVista('autorizado');
-                return;
-            }
-            // Revisamos si el usuario está en la lista blanca
+            if (user.email === ADMIN_EMAIL) { mostrarVista('autorizado'); return; }
             db.ref(`lista_blanca/${user.uid}`).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    mostrarVista('autorizado');
-                } else {
-                    mostrarVista('no-autorizado');
-                }
+                if (snapshot.exists()) { mostrarVista('autorizado'); } 
+                else { mostrarVista('no-autorizado'); }
             });
         }
 
@@ -186,7 +176,7 @@
         }
 
         // ==========================================
-        // 5. ACCIÓN PRINCIPAL (EL GATILLO)
+        // 5. ABRIR PORTÓN (Desde la Web App)
         // ==========================================
         function abrirPorton() {
             db.ref('estado_porton').set({
@@ -194,58 +184,107 @@
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             }).then(() => {
                 alert("¡Orden enviada! Abriendo portón...");
-                // Lo devolvemos a reposo rápido para que esté listo para el siguiente click
+                
+                // Guardar en el historial
+                const fecha = new Date().toLocaleString('es-CL');
+                db.ref('historial').push({
+                    fecha: fecha,
+                    usuario: currentUser.displayName + " (Web App)"
+                });
+
                 setTimeout(() => db.ref('estado_porton/comando').set("reposo"), 2000);
-            }).catch(e => alert("Error: No tienes permisos (" + e.message + ")"));
+            }).catch(e => alert("Error: " + e.message));
         }
 
         // ==========================================
         // 6. FUNCIONES DEL ADMINISTRADOR
         // ==========================================
+        
+        // --- TELEGRAM ---
+        function agregarTelegram() {
+            const id = document.getElementById('tg-id').value;
+            const nombre = document.getElementById('tg-nombre').value;
+            if(!id || !nombre) return alert("Completa ID y Nombre");
+            db.ref(`telegram_usuarios/${id}`).set({ nombre: nombre }).then(() => {
+                alert("Usuario autorizado en Telegram.");
+                document.getElementById('tg-id').value = '';
+                document.getElementById('tg-nombre').value = '';
+            });
+        }
+        function eliminarTelegram(id) { db.ref(`telegram_usuarios/${id}`).remove(); }
+
+        // --- WIFI RESCATE ---
         function agregarRed() {
             const ssid = document.getElementById('red-ssid').value;
             const pass = document.getElementById('red-pass').value;
             if(!ssid || !pass) return alert("Completa los datos WiFi");
             db.ref(`configuracion/redes_rescate/${ssid}`).set({ ssid: ssid, pass: pass })
-              .then(() => alert("Red guardada."));
+              .then(() => {
+                  document.getElementById('red-ssid').value = '';
+                  document.getElementById('red-pass').value = '';
+              });
         }
-
         function eliminarRed(ssid) { db.ref(`configuracion/redes_rescate/${ssid}`).remove(); }
         
+        // --- USUARIOS WEB APP ---
         function aprobarUsuario(uid, correo, nombre) {
             db.ref(`lista_blanca/${uid}`).set({ correo: correo, nombre: nombre });
-            db.ref(`solicitudes/${uid}`).remove(); // Lo sacamos de la lista de espera
+            db.ref(`solicitudes/${uid}`).remove(); 
         }
-
         function rechazarUsuario(uid) { db.ref(`solicitudes/${uid}`).remove(); }
-        
         function revocarAcceso(uid) { db.ref(`lista_blanca/${uid}`).remove(); }
 
+        // --- CARGAR TABLAS EN TIEMPO REAL ---
         function cargarDatosAdmin() {
-            // Cargar Solicitudes
-            db.ref('solicitudes').on('value', (snap) => {
-                let html = '<tr><th>Usuario</th><th>Acción</th></tr>';
-                snap.forEach(child => {
-                    const d = child.val();
-                    html += `<tr><td>${d.nombre}<br><small>${d.correo}</small></td>
-                             <td><button class="acciones-btn" style="background:var(--success)" onclick="aprobarUsuario('${child.key}', '${d.correo}', '${d.nombre}')">✅</button>
-                                 <button class="acciones-btn" style="background:var(--danger)" onclick="rechazarUsuario('${child.key}')">❌</button></td></tr>`;
+            
+            // Historial (Últimos 10)
+            db.ref('historial').limitToLast(10).on('value', (snap) => {
+                let html = '<tr><th>Fecha/Hora</th><th>Usuario</th></tr>';
+                let records = [];
+                snap.forEach(child => { records.push(child.val()); });
+                records.reverse().forEach(d => {
+                    html += `<tr><td>${d.fecha}</td><td>${d.usuario}</td></tr>`;
                 });
+                document.getElementById('tabla-historial').innerHTML = html;
+            });
+
+            // Usuarios Telegram
+            db.ref('telegram_usuarios').on('value', (snap) => {
+                let html = '<tr><th>Nombre</th><th>ID</th><th>Acción</th></tr>';
+                snap.forEach(child => {
+                    html += `<tr><td>${child.val().nombre}</td><td>${child.key}</td>
+                             <td><button class="acciones-btn" style="background:var(--danger)" onclick="eliminarTelegram('${child.key}')">Borrar</button></td></tr>`;
+                });
+                document.getElementById('tabla-telegram').innerHTML = html;
+            });
+
+            // Solicitudes Web App
+            db.ref('solicitudes').on('value', (snap) => {
+                let html = '';
+                if(snap.exists()) {
+                    html = '<tr><th colspan="2" style="background:#ffc107; text-align:center;">Nuevas Solicitudes</th></tr>';
+                    snap.forEach(child => {
+                        const d = child.val();
+                        html += `<tr><td>${d.nombre}<br><small>${d.correo}</small></td>
+                                 <td><button class="acciones-btn" style="background:var(--success)" onclick="aprobarUsuario('${child.key}', '${d.correo}', '${d.nombre}')">✅</button>
+                                     <button class="acciones-btn" style="background:var(--danger)" onclick="rechazarUsuario('${child.key}')">❌</button></td></tr>`;
+                    });
+                }
                 document.getElementById('tabla-solicitudes').innerHTML = html;
             });
 
-            // Cargar Lista Blanca
+            // Autorizados Web App
             db.ref('lista_blanca').on('value', (snap) => {
-                let html = '<tr><th>Correo</th><th>Acción</th></tr>';
+                let html = '<tr><th>Correo Autorizado</th><th>Acción</th></tr>';
                 snap.forEach(child => {
                     const d = child.val();
                     html += `<tr><td>${d.nombre || 'Usuario'}<br><small>${d.correo}</small></td>
-                             <td><button class="acciones-btn" style="background:var(--danger)" onclick="revocarAcceso('${child.key}')">Eliminar</button></td></tr>`;
+                             <td><button class="acciones-btn" style="background:var(--danger)" onclick="revocarAcceso('${child.key}')">Borrar</button></td></tr>`;
                 });
                 document.getElementById('tabla-autorizados').innerHTML = html;
             });
 
-            // Cargar Redes WiFi
+            // Redes WiFi
             db.ref('configuracion/redes_rescate').on('value', (snap) => {
                 let html = '<tr><th>Redes Guardadas</th><th>Acción</th></tr>';
                 snap.forEach(child => {
