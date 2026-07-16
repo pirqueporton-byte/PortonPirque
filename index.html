@@ -513,7 +513,7 @@
 
       <p class="gate-hint">Toca el ícono de cámara para poner una foto tuya en el botón — solo tú la verás al iniciar sesión con esta cuenta.</p>
 
-      <p id="offline-msg" class="offline-msg">⚠️ El portón está desconectado.<br>Comparte internet o revisa la energía en la casa.</p>
+      <p id="offline-msg" class="offline-msg">⚠️ El portón está desconectado.<br>Acércate a la reja: en un rato debería aparecer la red WiFi "Porton-Ayuda" para compartir internet y abrir manualmente.</p>
     </div>
 
     <div style="height:8px"></div>
@@ -551,12 +551,22 @@
     </div>
 
     <div class="card">
-      <h3>📶 Redes WiFi de rescate</h3>
-      <p class="card-note">Redes de respaldo si el portón pierde conexión.</p>
-      <input type="text" id="red-ssid" class="row-input" placeholder="Nombre de red (SSID)">
-      <input type="password" id="red-pass" class="row-input" placeholder="Contraseña">
-      <button class="btn btn-warn btn-small" onclick="agregarRed()">Añadir red</button>
-      <div id="lista-redes" style="margin-top:10px"></div>
+      <h3>📶 Redes WiFi fijas</h3>
+      <p class="card-note">El portón solo intenta conectarse a estas dos redes. Si ninguna responde, levanta su propio punto de acceso <b>"Porton-Ayuda"</b> para que alguien cercano pueda compartir internet y abrir manualmente.</p>
+
+      <p style="font-size:12px;font-weight:700;margin:10px 0 4px;color:var(--muted)">Red fija 1</p>
+      <div id="estado-red1" class="empty-note" style="margin-bottom:6px"></div>
+      <input type="text" id="red1-ssid" class="row-input" placeholder="Nombre de red (SSID)">
+      <input type="password" id="red1-pass" class="row-input" placeholder="Contraseña">
+      <button class="btn btn-warn btn-small" onclick="guardarRed(1)">Guardar Red 1</button>
+
+      <p style="font-size:12px;font-weight:700;margin:18px 0 4px;color:var(--muted)">Red fija 2</p>
+      <div id="estado-red2" class="empty-note" style="margin-bottom:6px"></div>
+      <input type="text" id="red2-ssid" class="row-input" placeholder="Nombre de red (SSID)">
+      <input type="password" id="red2-pass" class="row-input" placeholder="Contraseña">
+      <button class="btn btn-warn btn-small" onclick="guardarRed(2)">Guardar Red 2</button>
+
+      <p class="empty-note" style="margin-top:10px">Al guardar una red, el portón se reinicia solo para aplicar el cambio.</p>
     </div>
 
     <div style="height:20px"></div>
@@ -864,7 +874,8 @@ const demoDB = {
   telegram: { '123456789': { nombre: 'Bruno' } },
   solicitudes: { 'uid-demo-1': { nombre: 'Camila Rojas', correo: 'camila@ejemplo.cl' } },
   lista_blanca: { 'uid-demo-2': { nombre: 'Darío', correo: 'dario@ejemplo.cl' } },
-  redes: { 'CasaPirque_Rescate': { ssid: 'CasaPirque_Rescate', estado: 'confirmada' } }
+  red1: { ssid: 'CasaPirque' },
+  red2: { ssid: 'CasaPirque_Datos' }
 };
 
 /* ==========================================================
@@ -890,26 +901,20 @@ function eliminarTelegram(id){
   else db.ref(`telegram_usuarios/${id}`).remove();
 }
 
-function agregarRed(){
-  const ssid = document.getElementById('red-ssid').value.trim();
-  const pass = document.getElementById('red-pass').value.trim();
-  if(!ssid || !pass) return showToast('Completa los datos WiFi.', 'error');
+function guardarRed(n){
+  const ssid = document.getElementById(`red${n}-ssid`).value.trim();
+  const pass = document.getElementById(`red${n}-pass`).value;
+  if(!ssid) return showToast('Escribe el nombre de la red.', 'error');
 
   if(DEMO_MODE){
-    demoDB.redes[ssid] = { ssid, estado: 'pendiente' };
-    renderRedes(demoDB.redes);
-    setTimeout(() => { demoDB.redes[ssid].estado = 'confirmada'; renderRedes(demoDB.redes); }, 3000);
+    demoDB[`red${n}`] = { ssid };
+    document.getElementById(`estado-red${n}`).textContent = `Configurada: ${ssid}`;
   } else {
-    // Al guardar, la enviamos obligatoriamente en estado 'pendiente'
-    db.ref(`configuracion/redes_rescate/${ssid}`).set({ ssid, pass, estado: 'pendiente' });
+    db.ref(`configuracion/wifi_red${n}`).set({ ssid, pass });
   }
-  document.getElementById('red-ssid').value = '';
-  document.getElementById('red-pass').value = '';
-  showToast('Red enviada a la placa.', 'success');
-}
-function eliminarRed(ssid){
-  if(DEMO_MODE){ delete demoDB.redes[ssid]; renderRedes(demoDB.redes); }
-  else db.ref(`configuracion/redes_rescate/${ssid}`).remove();
+  document.getElementById(`red${n}-ssid`).value = '';
+  document.getElementById(`red${n}-pass`).value = '';
+  showToast(`Red ${n} guardada — el portón se reiniciará para aplicarla.`, 'success');
 }
 
 function aprobarUsuario(uid, correo, nombre){
@@ -997,28 +1002,10 @@ function renderAutorizados(obj){
   }).join('');
 }
 
-// Rediseñado sutilmente para mostrar el Doble Handshake (Pendiente/Confirmada)
-function renderRedes(obj){
-  const el = document.getElementById('lista-redes');
-  const keys = Object.keys(obj || {});
-  if(!keys.length){ el.innerHTML = '<p class="empty-note">Sin redes de rescate guardadas.</p>'; return; }
-  el.innerHTML = keys.map(ssid => {
-    const red = obj[ssid];
-    const isConfirmed = red.estado === 'confirmada';
-    const statusColor = isConfirmed ? 'color: var(--accent);' : 'color: var(--warn);';
-    const statusText = isConfirmed ? '✅ Confirmada' : '⏳ Pendiente';
-
-    return `
-    <div class="list-row">
-      <span style="display:flex; flex-direction:column; gap:2px;">
-          <span class="name">${red.ssid}</span>
-          <span style="font-size: 11px; font-weight: 600; ${statusColor}">${statusText}</span>
-      </span>
-      <button class="icon-action ia-no" onclick="eliminarRed('${ssid}')" title="Quitar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-      </button>
-    </div>`;
-  }).join('');
+// Muestra el SSID actualmente configurado para la Red 1 o la Red 2 (no mostramos la contraseña)
+function mostrarEstadoRed(n, ssid){
+  const el = document.getElementById(`estado-red${n}`);
+  el.textContent = ssid ? `Configurada: ${ssid}` : 'Todavía no configurada';
 }
 
 function cargarDatosAdmin(){
@@ -1027,7 +1014,8 @@ function cargarDatosAdmin(){
     renderTelegram(demoDB.telegram);
     renderSolicitudes(demoDB.solicitudes);
     renderAutorizados(demoDB.lista_blanca);
-    renderRedes(demoDB.redes);
+    mostrarEstadoRed(1, demoDB.red1.ssid);
+    mostrarEstadoRed(2, demoDB.red2.ssid);
     return;
   }
 
@@ -1039,7 +1027,8 @@ function cargarDatosAdmin(){
   db.ref('telegram_usuarios').on('value', (snap) => renderTelegram(snap.val()));
   db.ref('solicitudes').on('value', (snap) => renderSolicitudes(snap.val()));
   db.ref('lista_blanca').on('value', (snap) => renderAutorizados(snap.val()));
-  db.ref('configuracion/redes_rescate').on('value', (snap) => renderRedes(snap.val()));
+  db.ref('configuracion/wifi_red1/ssid').on('value', (snap) => mostrarEstadoRed(1, snap.val()));
+  db.ref('configuracion/wifi_red2/ssid').on('value', (snap) => mostrarEstadoRed(2, snap.val()));
 }
 </script>
 </body>
