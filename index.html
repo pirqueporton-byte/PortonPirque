@@ -456,7 +456,6 @@
     <span class="status-dot"></span><span id="conexion-status-text">Conectando…</span>
   </div>
 
-  <!-- PANTALLA 1: INICIO -->
   <section id="vista-login" class="screen active">
     <div class="eyebrow">Acceso privado</div>
     <svg class="gate-mark" viewBox="0 0 100 100" fill="none">
@@ -477,7 +476,6 @@
     <p class="divider-note">Solo personas autorizadas pueden abrir el portón.</p>
   </section>
 
-  <!-- PANTALLA: NO AUTORIZADO -->
   <section id="vista-no-autorizado" class="screen">
     <div class="eyebrow" style="color:var(--danger)">Sin acceso</div>
     <h1 class="title" style="font-size:26px;">Aún no estás en la lista</h1>
@@ -487,7 +485,6 @@
     <button class="btn btn-ghost" onclick="cerrarSesion()">Cerrar sesión</button>
   </section>
 
-  <!-- PANTALLA 2: BOTÓN -->
   <section id="vista-autorizado" class="screen">
     <div id="user-chip" class="user-chip"></div>
 
@@ -523,7 +520,6 @@
     <button class="link-quiet" onclick="cerrarSesion()" style="display:block; margin:22px auto 0;">Cerrar sesión</button>
   </section>
 
-  <!-- PANTALLA 3: PANEL ADMIN -->
   <section id="vista-admin" class="screen">
     <div class="panel-header">
       <button class="icon-btn" onclick="mostrarVista('autorizado')" title="Volver">
@@ -812,7 +808,7 @@ function quitarFotoBoton(event){
 }
 
 /* ==========================================================
-   6. ABRIR PORTÓN
+   6. ABRIR PORTÓN (VERSIÓN SELLO DE TIEMPO)
    ========================================================== */
 function abrirPorton(){
   const gateBtn = document.getElementById('gate-btn');
@@ -843,8 +839,9 @@ function abrirPorton(){
     return;
   }
 
+  // EL TRUCO INDUSTRIAL: Le pegamos la hora exacta en milisegundos para que sea un comando único
   db.ref('estado_porton').update({
-    comando: 'abrir',
+    comando: 'abrir_' + Date.now(), 
     timestamp: firebase.database.ServerValue.TIMESTAMP
   }).then(() => {
     label.textContent = '¡Portón abierto!';
