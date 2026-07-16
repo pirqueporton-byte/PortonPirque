@@ -606,9 +606,10 @@ if(DEMO_MODE){
 }
 
 /* ==========================================================
-   1b. MONITOR DE CONEXIÓN (heartbeat de la ESP32)
+   1b. MONITOR DE CONEXIÓN (heartbeat de la ESP32) - SINCRONIZADO
    ========================================================== */
 let ultimoLatido = 0;
+let serverTimeOffset = 0; // Sincronizador de reloj maestro
 
 function setEstadoConexion(estado){
   const badge = document.getElementById('conexion-status');
@@ -624,15 +625,25 @@ function setEstadoConexion(estado){
 }
 
 if(DEMO_MODE){
-  // En vista previa no hay ESP32 real: mostramos "en línea" fijo.
   setEstadoConexion('online');
 } else {
+  // 1. Sincroniza el reloj del HTML con el reloj exacto de Google
+  db.ref('.info/serverTimeOffset').on('value', (snap) => {
+    serverTimeOffset = snap.val() || 0;
+  });
+
+  // 2. Escucha el latido de la ESP32
   db.ref('estado_porton/ultima_conexion').on('value', (snap) => {
     if(snap.exists()) ultimoLatido = snap.val();
   });
+
+  // 3. Calculadora de estado con tolerancia a latencia móvil
   setInterval(() => {
-    const diferenciaSegundos = (Date.now() - ultimoLatido) / 1000;
-    setEstadoConexion(diferenciaSegundos > 18 ? 'offline' : 'online');
+    const ahoraFirebase = Date.now() + serverTimeOffset; // Hora perfecta compensada
+    const diferenciaSegundos = (ahoraFirebase - ultimoLatido) / 1000;
+    
+    // Tolerancia de 30 segundos (ideal para internet 3G/4G/Hotspot)
+    setEstadoConexion(diferenciaSegundos > 30 ? 'offline' : 'online');
   }, 1000);
 }
 
@@ -749,8 +760,6 @@ function solicitarAcceso(){
 
 /* ==========================================================
    5. FOTO PERSONALIZADA DEL BOTÓN
-   (se guarda en este navegador, ligada al uid de la cuenta que
-   inició sesión — así solo esa persona la ve al volver a entrar)
    ========================================================== */
 function fotoKey(uid){ return `porton_foto_${uid}`; }
 
@@ -807,7 +816,7 @@ function quitarFotoBoton(event){
    ========================================================== */
 function abrirPorton(){
   const gateBtn = document.getElementById('gate-btn');
-  if(gateBtn.disabled) return; // portón desconectado, no se envía la orden
+  if(gateBtn.disabled) return; 
 
   const label = document.getElementById('gate-status-label');
   label.textContent = 'Enviando orden…';
@@ -834,7 +843,6 @@ function abrirPorton(){
     return;
   }
 
-  // update() en vez de set(): así no se pisa ultima_conexion del heartbeat de la ESP32
   db.ref('estado_porton').update({
     comando: 'abrir',
     timestamp: firebase.database.ServerValue.TIMESTAMP
@@ -859,7 +867,7 @@ const demoDB = {
   telegram: { '123456789': { nombre: 'Bruno' } },
   solicitudes: { 'uid-demo-1': { nombre: 'Camila Rojas', correo: 'camila@ejemplo.cl' } },
   lista_blanca: { 'uid-demo-2': { nombre: 'Darío', correo: 'dario@ejemplo.cl' } },
-  redes: { 'CasaPirque_Rescate': { ssid: 'CasaPirque_Rescate' } }
+  redes: { 'CasaPirque_Rescate': { ssid: 'CasaPirque_Rescate', estado: 'confirmada' } }
 };
 
 /* ==========================================================
@@ -891,14 +899,16 @@ function agregarRed(){
   if(!ssid || !pass) return showToast('Completa los datos WiFi.', 'error');
 
   if(DEMO_MODE){
-    demoDB.redes[ssid] = { ssid };
+    demoDB.redes[ssid] = { ssid, estado: 'pendiente' };
     renderRedes(demoDB.redes);
+    setTimeout(() => { demoDB.redes[ssid].estado = 'confirmada'; renderRedes(demoDB.redes); }, 3000);
   } else {
-    db.ref(`configuracion/redes_rescate/${ssid}`).set({ ssid, pass });
+    // Al guardar, la enviamos obligatoriamente en estado 'pendiente'
+    db.ref(`configuracion/redes_rescate/${ssid}`).set({ ssid, pass, estado: 'pendiente' });
   }
   document.getElementById('red-ssid').value = '';
   document.getElementById('red-pass').value = '';
-  showToast('Red añadida.', 'success');
+  showToast('Red enviada a la placa.', 'success');
 }
 function eliminarRed(ssid){
   if(DEMO_MODE){ delete demoDB.redes[ssid]; renderRedes(demoDB.redes); }
@@ -990,17 +1000,28 @@ function renderAutorizados(obj){
   }).join('');
 }
 
+// Rediseñado sutilmente para mostrar el Doble Handshake (Pendiente/Confirmada)
 function renderRedes(obj){
   const el = document.getElementById('lista-redes');
   const keys = Object.keys(obj || {});
   if(!keys.length){ el.innerHTML = '<p class="empty-note">Sin redes de rescate guardadas.</p>'; return; }
-  el.innerHTML = keys.map(ssid => `
+  el.innerHTML = keys.map(ssid => {
+    const red = obj[ssid];
+    const isConfirmed = red.estado === 'confirmada';
+    const statusColor = isConfirmed ? 'color: var(--accent);' : 'color: var(--warn);';
+    const statusText = isConfirmed ? '✅ Confirmada' : '⏳ Pendiente';
+
+    return `
     <div class="list-row">
-      <span class="name">${obj[ssid].ssid}</span>
+      <span style="display:flex; flex-direction:column; gap:2px;">
+          <span class="name">${red.ssid}</span>
+          <span style="font-size: 11px; font-weight: 600; ${statusColor}">${statusText}</span>
+      </span>
       <button class="icon-action ia-no" onclick="eliminarRed('${ssid}')" title="Quitar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function cargarDatosAdmin(){
