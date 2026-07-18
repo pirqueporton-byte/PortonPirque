@@ -552,21 +552,19 @@
 
     <div class="card">
       <h3>📶 Redes WiFi fijas</h3>
-      <p class="card-note">El portón solo intenta conectarse a estas dos redes. Si ninguna responde, levanta su propio punto de acceso <b>"Porton-Ayuda"</b> para que alguien cercano pueda compartir internet y abrir manualmente.</p>
+      <p class="card-note">El portón intenta conectarse a todas estas redes (puedes agregar las que quieras). Si ninguna responde, levanta su propio punto de acceso <b>"Porton-Ayuda"</b> para que alguien cercano pueda compartir internet y abrir manualmente.</p>
+      <input type="text" id="red-ssid" class="row-input" placeholder="Nombre de red (SSID)">
+      <input type="password" id="red-pass" class="row-input" placeholder="Contraseña">
+      <button class="btn btn-warn btn-small" onclick="agregarRed()">Añadir red</button>
+      <div id="lista-redes" style="margin-top:10px"></div>
+      <p class="empty-note" style="margin-top:10px">Al agregar o quitar una red, el portón se reinicia solo para aplicar el cambio.</p>
+    </div>
 
-      <p style="font-size:12px;font-weight:700;margin:10px 0 4px;color:var(--muted)">Red fija 1</p>
-      <div id="estado-red1" class="empty-note" style="margin-bottom:6px"></div>
-      <input type="text" id="red1-ssid" class="row-input" placeholder="Nombre de red (SSID)">
-      <input type="password" id="red1-pass" class="row-input" placeholder="Contraseña">
-      <button class="btn btn-warn btn-small" onclick="guardarRed(1)">Guardar Red 1</button>
-
-      <p style="font-size:12px;font-weight:700;margin:18px 0 4px;color:var(--muted)">Red fija 2</p>
-      <div id="estado-red2" class="empty-note" style="margin-bottom:6px"></div>
-      <input type="text" id="red2-ssid" class="row-input" placeholder="Nombre de red (SSID)">
-      <input type="password" id="red2-pass" class="row-input" placeholder="Contraseña">
-      <button class="btn btn-warn btn-small" onclick="guardarRed(2)">Guardar Red 2</button>
-
-      <p class="empty-note" style="margin-top:10px">Al guardar una red, el portón se reinicia solo para aplicar el cambio.</p>
+    <div class="card">
+      <h3>📡 Controles remotos (ESP-NOW)</h3>
+      <p class="card-note">Permite abrir el portón desde otras placas ESP32 con un botón físico, sin necesitar WiFi ni internet — se comunican directo con el portón. Para agregar una placa nueva, actívalo y enciende el control dentro de los 60 segundos siguientes.</p>
+      <button class="btn btn-warn btn-small" onclick="activarEmparejamiento()">Activar emparejamiento (60s)</button>
+      <div id="lista-controles" style="margin-top:10px"></div>
     </div>
 
     <div style="height:20px"></div>
@@ -874,8 +872,13 @@ const demoDB = {
   telegram: { '123456789': { nombre: 'Bruno' } },
   solicitudes: { 'uid-demo-1': { nombre: 'Camila Rojas', correo: 'camila@ejemplo.cl' } },
   lista_blanca: { 'uid-demo-2': { nombre: 'Darío', correo: 'dario@ejemplo.cl' } },
-  red1: { ssid: 'CasaPirque' },
-  red2: { ssid: 'CasaPirque_Datos' }
+  redes: {
+    'demo1': { ssid: 'CasaPirque' },
+    'demo2': { ssid: 'CasaPirque_Datos' }
+  },
+  controles_espnow: {
+    'demoA': { nombre: 'Control-Remoto', mac: 'AA:BB:CC:DD:EE:FF' }
+  }
 };
 
 /* ==========================================================
@@ -901,20 +904,57 @@ function eliminarTelegram(id){
   else db.ref(`telegram_usuarios/${id}`).remove();
 }
 
-function guardarRed(n){
-  const ssid = document.getElementById(`red${n}-ssid`).value.trim();
-  const pass = document.getElementById(`red${n}-pass`).value;
+function agregarRed(){
+  const ssid = document.getElementById('red-ssid').value.trim();
+  const pass = document.getElementById('red-pass').value;
   if(!ssid) return showToast('Escribe el nombre de la red.', 'error');
 
   if(DEMO_MODE){
-    demoDB[`red${n}`] = { ssid };
-    document.getElementById(`estado-red${n}`).textContent = `Configurada: ${ssid}`;
+    demoDB.redes[ssid] = { ssid };
+    renderRedes(demoDB.redes);
   } else {
-    db.ref(`configuracion/wifi_red${n}`).set({ ssid, pass });
+    db.ref('configuracion/redes_wifi').push({ ssid, pass });
   }
-  document.getElementById(`red${n}-ssid`).value = '';
-  document.getElementById(`red${n}-pass`).value = '';
-  showToast(`Red ${n} guardada — el portón se reiniciará para aplicarla.`, 'success');
+  document.getElementById('red-ssid').value = '';
+  document.getElementById('red-pass').value = '';
+  showToast('Red agregada — el portón se reiniciará para aplicarla.', 'success');
+}
+function eliminarRed(key){
+  if(DEMO_MODE){ delete demoDB.redes[key]; renderRedes(demoDB.redes); }
+  else db.ref(`configuracion/redes_wifi/${key}`).remove();
+}
+function renderRedes(obj){
+  const el = document.getElementById('lista-redes');
+  const keys = Object.keys(obj || {});
+  if(!keys.length){ el.innerHTML = '<p class="empty-note">Sin redes guardadas todavía.</p>'; return; }
+  el.innerHTML = keys.map(key => {
+    const red = obj[key];
+    return `
+    <div class="list-row">
+      <span class="name">${red.ssid}</span>
+      <button class="icon-action ia-no" onclick="eliminarRed('${key}')" title="Quitar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function activarEmparejamiento(){
+  if(DEMO_MODE){ showToast('Modo de emparejamiento activado (demo) por 60s.', 'success'); return; }
+  db.ref('estado_porton').update({
+    comando: 'emparejar',
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  });
+  showToast('Modo de emparejamiento activado — enciende el control nuevo ahora (60s).', 'success');
+}
+function renderControles(obj){
+  const el = document.getElementById('lista-controles');
+  const keys = Object.keys(obj || {});
+  if(!keys.length){ el.innerHTML = '<p class="empty-note">Sin controles ESP-NOW emparejados todavía.</p>'; return; }
+  el.innerHTML = keys.map(key => `
+    <div class="list-row">
+      <span class="name">${obj[key].nombre || 'Control'} <span style="color:var(--muted);font-weight:400">(${obj[key].mac || ''})</span></span>
+    </div>`).join('');
 }
 
 function aprobarUsuario(uid, correo, nombre){
@@ -1002,20 +1042,14 @@ function renderAutorizados(obj){
   }).join('');
 }
 
-// Muestra el SSID actualmente configurado para la Red 1 o la Red 2 (no mostramos la contraseña)
-function mostrarEstadoRed(n, ssid){
-  const el = document.getElementById(`estado-red${n}`);
-  el.textContent = ssid ? `Configurada: ${ssid}` : 'Todavía no configurada';
-}
-
 function cargarDatosAdmin(){
   if(DEMO_MODE){
     renderHistorial(demoDB.historial);
     renderTelegram(demoDB.telegram);
     renderSolicitudes(demoDB.solicitudes);
     renderAutorizados(demoDB.lista_blanca);
-    mostrarEstadoRed(1, demoDB.red1.ssid);
-    mostrarEstadoRed(2, demoDB.red2.ssid);
+    renderRedes(demoDB.redes);
+    renderControles(demoDB.controles_espnow);
     return;
   }
 
@@ -1027,8 +1061,8 @@ function cargarDatosAdmin(){
   db.ref('telegram_usuarios').on('value', (snap) => renderTelegram(snap.val()));
   db.ref('solicitudes').on('value', (snap) => renderSolicitudes(snap.val()));
   db.ref('lista_blanca').on('value', (snap) => renderAutorizados(snap.val()));
-  db.ref('configuracion/wifi_red1/ssid').on('value', (snap) => mostrarEstadoRed(1, snap.val()));
-  db.ref('configuracion/wifi_red2/ssid').on('value', (snap) => mostrarEstadoRed(2, snap.val()));
+  db.ref('configuracion/redes_wifi').on('value', (snap) => renderRedes(snap.val()));
+  db.ref('config_espnow').on('value', (snap) => renderControles(snap.val()));
 }
 </script>
 </body>
