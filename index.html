@@ -304,7 +304,7 @@
     box-shadow:
       inset 0 8px 18px rgba(0,0,0,.28),
       inset 0 -6px 14px rgba(255,255,255,.12);
-    transition:transform .12s ease, box-shadow .12s ease;
+    transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
   }
   .gate-btn.has-photo{ background-color:#000; }
   .gate-btn.has-photo .gate-btn-icon{ display:none; }
@@ -313,10 +313,14 @@
     position:absolute; inset:0;
     background:linear-gradient(to top, rgba(0,0,0,.45), rgba(0,0,0,0) 45%);
   }
+  
+  /* ESTA ES LA ANIMACIÓN MEJORADA QUE PEDISTE */
   .gate-btn:active{
-    transform:scale(.96);
+    transform:scale(.92);
+    filter: brightness(0.85);
     box-shadow:inset 0 12px 22px rgba(0,0,0,.4);
   }
+  
   .gate-btn-icon{ width:52px; height:52px; color:#EAF3EC; opacity:.92; }
   .gate-btn-caption{
     position:absolute; bottom:16px; left:0; right:0;
@@ -577,6 +581,11 @@
 
 <script>
 /* ==========================================================
+   MARCADOR DE INICIO PARA RETRASO DE OFFLINE (AÑADIDO)
+   ========================================================== */
+const APP_START_TIME = performance.now();
+
+/* ==========================================================
    1. CONFIGURACIÓN FIREBASE
    ========================================================== */
 const firebaseConfig = {
@@ -620,6 +629,11 @@ function setEstadoConexion(estado){
   const texto = document.getElementById('conexion-status-text');
   const gateBtn = document.getElementById('gate-btn');
   const offlineMsg = document.getElementById('offline-msg');
+
+  // AÑADIDO: Ignorar estado offline durante los primeros 5 segundos de carga
+  if(estado === 'offline' && performance.now() - APP_START_TIME < 5000) {
+      return; 
+  }
 
   badge.className = 'status-bar status-' + estado;
   texto.textContent = estado === 'online' ? 'En línea' : estado === 'offline' ? 'Fuera de línea' : 'Conectando…';
@@ -822,6 +836,12 @@ function abrirPorton(){
   const gateBtn = document.getElementById('gate-btn');
   if(gateBtn.disabled) return; 
 
+  // AÑADIDO: Reproducir sonido de clic
+  try {
+     const audio = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3');
+     audio.play();
+  } catch(e) { console.log("Audio no pudo ser reproducido") }
+
   const label = document.getElementById('gate-status-label');
   label.textContent = 'Enviando orden…';
 
@@ -923,15 +943,18 @@ function eliminarRed(key){
   if(DEMO_MODE){ delete demoDB.redes[key]; renderRedes(demoDB.redes); }
   else db.ref(`configuracion/redes_wifi/${key}`).remove();
 }
+
+// AÑADIDO: Función renderRedes robustecida para asegurar que no falle y muestre el listado
 function renderRedes(obj){
   const el = document.getElementById('lista-redes');
-  const keys = Object.keys(obj || {});
+  if(!obj) { el.innerHTML = '<p class="empty-note">Sin redes guardadas todavía.</p>'; return; }
+  const keys = Object.keys(obj);
   if(!keys.length){ el.innerHTML = '<p class="empty-note">Sin redes guardadas todavía.</p>'; return; }
   el.innerHTML = keys.map(key => {
     const red = obj[key];
     return `
     <div class="list-row">
-      <span class="name">${red.ssid}</span>
+      <span class="name">${red.ssid || 'Sin nombre'}</span>
       <button class="icon-action ia-no" onclick="eliminarRed('${key}')" title="Quitar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
