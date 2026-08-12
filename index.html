@@ -451,9 +451,15 @@
 
   <div class="topbar">
     <div class="brand-mini"><span class="dot-live"></span> Portón Pirque</div>
-    <button id="btn-panel-shortcut" class="icon-btn hidden" onclick="mostrarVista('admin')" title="Panel de control" style="display:none">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-    </button>
+    <div style="display: flex; gap: 8px;">
+      <!-- BOTON COMPARTIR AGREGADO AQUÍ -->
+      <button id="btn-share" class="icon-btn" onclick="compartirApp()" title="Compartir app">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+      </button>
+      <button id="btn-panel-shortcut" class="icon-btn hidden" onclick="mostrarVista('admin')" title="Panel de control" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </button>
+    </div>
   </div>
 
   <div id="conexion-status" class="status-bar status-connecting">
@@ -1086,6 +1092,24 @@ function cargarDatosAdmin(){
   db.ref('lista_blanca').on('value', (snap) => renderAutorizados(snap.val()));
   db.ref('configuracion/redes_wifi').on('value', (snap) => renderRedes(snap.val()));
   db.ref('config_espnow').on('value', (snap) => renderControles(snap.val()));
+}
+
+/* ==========================================================
+   10. FUNCIÓN PARA COMPARTIR PWA (AÑADIDA)
+   ========================================================== */
+function compartirApp() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'Portón Pirque',
+      text: 'Accede al portón desde aquí:',
+      url: window.location.href
+    }).catch((err) => console.log('Error al compartir', err));
+  } else {
+    // Si están en un PC o navegador no compatible, simplemente copiamos el link
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      showToast('Enlace copiado al portapapeles', 'success');
+    });
+  }
 }
 </script>
 </body>
