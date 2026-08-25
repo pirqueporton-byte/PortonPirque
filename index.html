@@ -2,472 +2,378 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <title>Portón Pirque</title>
-<meta name="theme-color" content="#1F4A32">
+<meta name="theme-color" content="#F8F9FA">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Portón Pirque">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="manifest" href="manifest.json">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-  /* ==========================================================
-     VARIABLES Y MODO OSCURO
-     ========================================================== */
   :root {
-    --bg: #EFF3EE; --bg-alt: #E6ECE3; --card: #FFFFFF; --ink: #1E2A22; --muted: #657367;
-    --line: #DEE5DB; --accent: #2F6B4F; --accent-dark: #1F4A32; --accent-soft: #E4EEE7;
-    --brass: #B8863F; --brass-soft: #F3E6CE; --danger: #B23B2E; --danger-soft: #F7E4E1;
-    --warn: #C98A2A; --warn-soft: #FBEEDB; 
-    --radius-lg: 26px; --radius-md: 16px; --radius-sm: 10px;
-    --shadow: 0 20px 50px -18px rgba(31,74,50,0.28);
-    --font-display: 'Fraunces', Georgia, serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono: 'JetBrains Mono', 'SFMono-Regular', monospace;
-    
-    /* Colores específicos del Dashboard */
     --dash-bg: #F8F9FA;
     --dash-sidebar: #FFFFFF;
     --dash-active-bg: #E8F0FE;
     --dash-active-text: #1967D2;
     --dash-border: #E8EAED;
+    --text-main: #202124;
+    --text-muted: #5F6368;
+    --card-bg: #FFFFFF;
+    --primary: #1967D2;
+    --danger: #D93025;
+    --success: #1E8E3E;
+    --warning: #F9AB00;
   }
 
   [data-theme="dark"] {
-    --bg: #0F172A; --bg-alt: #1E293B; --card: #1E293B; --ink: #F8FAFC; --muted: #94A3B8;
-    --line: #334155; --accent: #3B82F6; --accent-dark: #60A5FA; --accent-soft: #1E3A8A;
-    --dash-bg: #0B1120; --dash-sidebar: #0F172A; --dash-active-bg: #1E3A8A;
-    --dash-active-text: #93C5FD; --dash-border: #1E293B;
-    --shadow: 0 20px 50px -18px rgba(0,0,0,0.5);
+    --dash-bg: #121212; --dash-sidebar: #1E1E1E; --dash-active-bg: #2C3E50;
+    --dash-active-text: #6CB4EE; --dash-border: #333333; --text-main: #E8EAED;
+    --text-muted: #9AA0A6; --card-bg: #1E1E1E;
   }
 
-  *{ box-sizing:border-box; }
-
-  body {
-    margin:0; min-height:100vh; font-family:var(--font-body); color:var(--ink); 
-    background: repeating-linear-gradient(90deg, rgba(31,74,50,0.035) 0 2px, transparent 2px 46px), radial-gradient(circle at 15% 10%, var(--bg-alt), transparent 55%), var(--bg); 
-    display:flex; align-items:center; justify-content:center;
-    transition: background 0.3s, color 0.3s;
-  }
+  * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; padding: 0; min-height: 100vh; background: var(--dash-bg); color: var(--text-main); }
 
   /* ==========================================================
-     VISTA MÓVIL NORMAL (EL TELÉFONO)
+     VISTA NORMAL (USUARIOS)
      ========================================================== */
-  .phone-wrap { width: 100%; display: flex; justify-content: center; padding: 28px 16px 60px; align-items: flex-start; min-height: 100vh; }
-  .phone { width:100%; max-width:440px; background:var(--card); border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; position:relative; border:1px solid rgba(150,150,150,0.1); }
-  @media (min-width:760px){ .phone-wrap { padding:64px 24px; } .phone{ max-width:460px; } }
-
-  .topbar { display:flex; align-items:center; justify-content:space-between; padding:18px 20px 0; min-height:44px; }
-  .brand-mini { display:flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
-  .dot-live { width:7px;height:7px;border-radius:50%; background:var(--accent); animation:pulse 2.4s infinite; }
-  @keyframes pulse{ 0%{ box-shadow:0 0 0 0 rgba(47,107,79,.45); } 70%{ box-shadow:0 0 0 8px rgba(47,107,79,0); } 100%{ box-shadow:0 0 0 0 rgba(47,107,79,0); } }
+  #vista-normal { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: #EFF3EE; }
+  .user-card { background: #fff; width: 100%; max-width: 400px; border-radius: 24px; padding: 30px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; }
+  .btn-google { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; border: 1px solid #DADCE0; color: #3C4043; font-weight: 600; padding: 14px; border-radius: 999px; cursor: pointer; margin-top: 20px; }
+  .btn-google svg { width: 20px; height: 20px; }
   
-  .status-bar { display:inline-flex; align-items:center; gap:7px; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; font-weight:500; padding:6px 13px; border-radius:999px; margin:2px 20px 0; transition:.25s; }
-  .status-bar .status-dot { width:7px;height:7px;border-radius:50%; flex-shrink:0; }
-  .status-connecting { background:var(--bg); color:var(--muted); }
-  .status-connecting .status-dot { background:var(--muted); }
-  .status-online { background:var(--accent-soft); color:var(--accent-dark); }
-  .status-online .status-dot { background:var(--accent); animation:pulse 2.4s infinite; }
-  .status-offline { background:var(--danger-soft); color:var(--danger); }
-  .status-offline .status-dot { background:var(--danger); opacity:0.8; }
-
-  .offline-msg { display:none; text-align:center; font-size:12.5px; font-weight:600; color:var(--danger); background:var(--danger-soft); border-radius:var(--radius-sm); padding:10px 14px; margin-top:16px; line-height:1.4; }
-  .screen { padding:8px 28px 34px; display:none; animation:rise .38s ease; }
-  .screen.active { display:block; }
-  @keyframes rise{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
-
-  .eyebrow { font-family:var(--font-mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--brass); margin:18px 0 6px; }
-  h1.title { font-family:var(--font-display); font-weight:600; font-size:34px; line-height:1.05; margin:0 0 8px; color:var(--accent-dark); }
-  p.sub { color:var(--muted); font-size:14.5px; line-height:1.5; margin:0 0 28px; }
+  .gate-btn-wrap { position: relative; width: 200px; height: 200px; margin: 30px auto; }
+  .gate-btn { width: 100%; height: 100%; border-radius: 50%; border: none; background: radial-gradient(circle at 30% 30%, #3E8863, #1F4A32); color: white; cursor: pointer; box-shadow: inset 0 8px 18px rgba(0,0,0,.3), 0 10px 20px rgba(0,0,0,.2); transition: 0.1s; display: flex; align-items: center; justify-content: center; }
+  .gate-btn:active { transform: scale(0.95); }
+  .gate-btn:disabled { filter: grayscale(1); cursor: not-allowed; }
+  .gate-btn svg { width: 50px; height: 50px; opacity: 0.9; }
   
-  .gate-mark { width:64px; height:64px; margin-bottom:6px; }
-  .btn-google { width:100%; display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; border:1px solid #DADCE0; color:#3C4043; font-family:var(--font-body); font-weight:600; font-size:15px; padding:13px 18px; border-radius:999px; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,0.06); transition:.2s; }
-  .btn-google:active { transform:translateY(1px); }
-  .btn-google svg { width:20px;height:20px; flex-shrink:0; }
-  .divider-note { text-align:center; font-size:12px; color:var(--muted); margin-top:16px; }
-
-  .btn { width:100%; border:none; border-radius:999px; padding:13px 18px; font-family:var(--font-body); font-weight:600; font-size:14.5px; cursor:pointer; transition:.2s; }
-  .btn-primary { background:var(--accent); color:#fff; }
-  .btn-ghost { background:transparent; color:var(--muted); border:1px solid var(--line); }
-  .btn-warn { background:var(--warn-soft); color:var(--warn); }
-  .btn-small { width:auto; padding:9px 16px; font-size:13px; }
-  .link-quiet { background:none;border:none;color:var(--muted); font-size:13px; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
-
-  .user-chip { display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--bg); border-radius:999px; margin-bottom:26px; }
-  .user-chip img { width:32px;height:32px;border-radius:50%; object-fit:cover; }
-  .user-chip .who { font-size:13px; line-height:1.25; }
-  .user-chip .who b { display:block; font-size:13.5px; }
-  .user-chip .who span { color:var(--muted); font-size:11.5px; }
-
-  .gate-stage { display:flex; flex-direction:column; align-items:center; padding:14px 0 8px; }
-  .gate-status-label { font-family:var(--font-mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin-bottom:22px; }
-  .gate-btn-wrap { position:relative; width:220px; height:220px; }
-  .gate-bezel { width:220px; height:220px; border-radius:50%; background: radial-gradient(circle at 32% 28%, #d9b878, transparent 55%), conic-gradient(from 210deg, #D9B166, #8F6423, #D9B166, #8F6423, #D9B166); padding:10px; box-shadow: 0 22px 40px -14px rgba(0,0,0,.45), inset 0 2px 4px rgba(255,255,255,.5); }
-  .gate-btn { width:100%; height:100%; border-radius:50%; border:none; cursor:pointer; background:radial-gradient(circle at 34% 30%, #3E8863, #1F4A32 78%); background-size:cover; background-position:center; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; box-shadow: inset 0 8px 18px rgba(0,0,0,.28), inset 0 -6px 14px rgba(255,255,255,.12); transition:transform .12s ease, filter .12s ease; }
-  .gate-btn:active { transform:scale(.92); filter: brightness(0.85); box-shadow:inset 0 12px 22px rgba(0,0,0,.4); }
-  .gate-btn:disabled { cursor:not-allowed; filter:grayscale(.55) brightness(.82); transform:none; }
-  .gate-btn.has-photo { background-color:#000; }
-  .gate-btn.has-photo svg { display:none; }
-  .gate-btn.has-photo::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.45), rgba(0,0,0,0) 45%); }
-  .gate-btn svg { width:52px; height:52px; color:#EAF3EC; opacity:.92; }
-  
-  .gate-edit-badge, .gate-reset-badge { position:absolute; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:3; }
-  .gate-edit-badge { right:2px; bottom:2px; width:42px; height:42px; background:var(--card); border:2px solid var(--bg); box-shadow:0 6px 14px rgba(0,0,0,.18); color:var(--accent-dark); }
-  .gate-reset-badge { left:2px; top:2px; width:32px; height:32px; background:rgba(30,42,34,.55); backdrop-filter:blur(2px); color:#fff; border:none; }
-  .gate-hint { font-size:12px; color:var(--muted); margin-top:18px; text-align:center; max-width:260px; }
+  .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 20px; }
+  .status-online { background: #E6F4EA; color: #1E8E3E; }
+  .status-offline { background: #FCE8E6; color: #D93025; }
+  .status-connecting { background: #F1F3F4; color: #5F6368; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
 
   /* ==========================================================
-     NUEVO DASHBOARD ADMINISTRADOR (SMART HUB)
+     VISTA ADMINISTRADOR (SMART HUB)
      ========================================================== */
-  .dashboard-app { display: none; width: 100vw; height: 100vh; background: var(--dash-bg); overflow: hidden; flex-direction: row; font-family: var(--font-body); }
-  .dash-sidebar { width: 260px; background: var(--dash-sidebar); border-right: 1px solid var(--dash-border); display: flex; flex-direction: column; padding: 20px 0; transition: 0.3s; }
+  #vista-dashboard { display: none; width: 100vw; height: 100vh; overflow: hidden; flex-direction: row; }
   
-  .dash-logo { padding: 0 24px 30px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--dash-border); margin-bottom: 16px; }
-  .dash-logo-icon { width: 40px; height: 40px; background: #2563EB; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; }
-  .dash-logo-icon svg { width: 22px; height: 22px; }
-  .dash-logo-text { line-height: 1.2; }
-  .dash-logo-text b { font-size: 16px; color: var(--ink); }
-  .dash-logo-text span { font-size: 12px; color: var(--muted); }
+  .dash-sidebar { width: 250px; background: var(--dash-sidebar); border-right: 1px solid var(--dash-border); display: flex; flex-direction: column; z-index: 10; }
+  .dash-logo { padding: 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--dash-border); margin-bottom: 12px; }
+  .dash-logo-icon { width: 36px; height: 36px; background: #1967D2; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; }
+  
+  .dash-nav { flex: 1; padding: 0 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+  .dash-nav-item { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border: none; background: transparent; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; text-align: left; transition: 0.2s; }
+  .dash-nav-item svg { width: 20px; height: 20px; }
+  .dash-nav-item.active { background: var(--dash-active-bg); color: var(--dash-active-text); }
+  
+  .dash-footer { padding: 12px; border-top: 1px solid var(--dash-border); }
 
-  .dash-nav { flex: 1; padding: 0 16px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
-  .dash-nav-item { width: 100%; display: flex; align-items: center; gap: 14px; padding: 12px 16px; border: none; background: transparent; border-radius: 8px; font-size: 14.5px; font-weight: 500; color: var(--ink); cursor: pointer; text-align: left; transition: 0.2s; }
-  .dash-nav-item svg { width: 20px; height: 20px; color: var(--muted); transition: 0.2s; }
-  .dash-nav-item:hover { background: rgba(150,150,150,0.05); }
-  .dash-nav-item.active { background: var(--dash-active-bg); color: var(--dash-active-text); font-weight: 600; }
-  .dash-nav-item.active svg { color: var(--dash-active-text); }
-
-  .dash-footer { padding: 16px; border-top: 1px solid var(--dash-border); display: flex; flex-direction: column; gap: 4px; }
-
-  .dash-content { flex: 1; overflow-y: auto; padding: 40px; }
-  .dash-tab-content { display: none; max-width: 1100px; margin: 0 auto; animation: rise 0.3s ease; }
+  .dash-content { flex: 1; overflow-y: auto; padding: 40px; background: var(--dash-bg); }
+  .dash-tab-content { display: none; max-width: 1000px; margin: 0 auto; animation: fadeIn 0.3s ease; }
   .dash-tab-content.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-  .dash-title { font-size: 28px; font-weight: 700; color: var(--ink); margin: 0 0 6px; }
-  .dash-subtitle { font-size: 15px; color: var(--muted); margin: 0 0 32px; }
+  .dash-title { font-size: 26px; font-weight: 700; margin: 0 0 6px; color: var(--text-main); }
+  .dash-subtitle { font-size: 14px; color: var(--text-muted); margin: 0 0 32px; }
 
-  /* Tarjetas Mockup */
-  .dash-cards-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 40px; }
-  .dash-widget { background: var(--card); border: 1px solid var(--dash-border); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; min-height: 140px; }
-  .dw-header { display: flex; justify-content: space-between; align-items: flex-start; font-size: 15px; font-weight: 600; color: var(--ink); }
-  .dw-header svg { width: 22px; height: 22px; color: var(--muted); }
-  .dw-value { font-size: 26px; font-weight: 700; color: var(--muted); margin-top: 16px; }
-  .dw-sub { font-size: 13px; color: var(--muted); font-weight: 400; }
-  .dw-bar { width: 100%; height: 6px; background: var(--line); border-radius: 3px; margin-top: 12px; overflow: hidden; }
-  .dw-bar-fill { height: 100%; background: #06B6D4; width: 76%; }
+  /* Tarjetas del Administrador (Estilo Smart Hub) */
+  .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .dash-card { background: var(--card-bg); border: 1px solid var(--dash-border); border-radius: 16px; padding: 24px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
   
-  .dw-blue { background: #EFF6FF; border-color: #BFDBFE; text-align: center; justify-content: center; align-items: center; gap: 8px; }
-  .dw-blue .dw-header { color: #1D4ED8; font-size: 18px; margin-top: 10px; }
-  .dw-blue svg { color: #2563EB; width: 28px; height: 28px; }
-
-  /* Adaptación de tarjetas de admin (Listas) */
-  .dash-admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-  .card { background: var(--card); border-radius: var(--radius-md); padding: 22px; border: 1px solid var(--dash-border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
-  .card h3 { margin: 0 0 6px; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--ink); }
-  .card p.card-note { margin: 0 0 16px; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
-
-  .row-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--line); border-radius: 8px; font-family: var(--font-body); font-size: 14px; background: transparent; color: var(--ink); }
-  .row-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-
-  .list-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; gap: 10px; }
-  .list-row:last-child { border-bottom: none; }
-  .list-row .meta { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
-  .list-row .name { font-weight: 600; color: var(--ink); }
-  .list-row small { color: var(--muted); font-weight: 400; }
-
-  .pill { display: inline-flex; align-items: center; background: var(--warn-soft); color: var(--warn); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; text-transform: uppercase; margin-bottom:8px; }
-  .icon-action { width: 32px; height: 32px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: 0.2s; }
-  .icon-action svg { width: 16px; height: 16px; }
-  .ia-ok { background: var(--accent-soft); color: var(--accent-dark); }
-  .ia-ok:hover { background: var(--accent); color: #fff; }
-  .ia-no { background: var(--danger-soft); color: var(--danger); }
-  .ia-no:hover { background: var(--danger); color: #fff; }
-  .empty-note { font-size: 13px; color: var(--muted); font-style: italic; padding: 10px 0; }
-
-  /* Toast global */
-  .toast { position:fixed; left:50%; bottom:28px; transform:translate(-50%, 18px); background:#1E293B; color:#fff; padding:14px 22px; border-radius:999px; font-size:14px; font-weight:500; box-shadow:0 12px 30px rgba(0,0,0,.25); opacity:0; pointer-events:none; transition:.28s ease; display:flex; align-items:center; gap:8px; z-index:999; max-width:88vw; }
-  .toast.show { opacity:1; transform:translate(-50%, 0); }
-  .toast.success { background:#047857; }
-  .toast.error { background:#B91C1C; }
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-weight: 600; font-size: 15px; color: var(--text-main); }
+  .card-header svg { width: 20px; height: 20px; color: var(--text-muted); }
   
-  @media (max-width: 800px) {
-    .dash-sidebar { display: none; } /* En móvil se podría implementar un botón hamburguesa luego */
-    .dash-content { padding: 20px; }
+  .dash-value { font-size: 24px; font-weight: 700; color: var(--text-muted); margin-top: 8px; display: flex; align-items: center; gap: 8px;}
+  .dash-sub-value { font-size: 13px; font-weight: 400; color: var(--text-muted); }
+
+  /* Listas limpias para administrador */
+  .admin-list { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .admin-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--dash-border); font-size: 13px; }
+  .admin-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .admin-row strong { color: var(--text-main); display: block; font-size: 14px; }
+  
+  .btn-outline { background: transparent; border: 1px solid var(--dash-border); padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-main); display: inline-flex; align-items: center; gap: 6px;}
+  .btn-action { width: 28px; height: 28px; border-radius: 6px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .btn-action.red { background: #FCE8E6; color: #D93025; }
+  .btn-action.green { background: #E6F4EA; color: #1E8E3E; }
+  
+  .admin-input { width: 100%; padding: 10px 12px; border: 1px solid var(--dash-border); border-radius: 6px; margin-bottom: 10px; font-size: 13px; background: transparent; color: var(--text-main); }
+
+  /* MÓVIL PARA ADMINISTRADOR: El sidebar se vuelve menú inferior */
+  @media (max-width: 768px) {
+    #vista-dashboard { flex-direction: column; }
+    .dash-sidebar { width: 100%; height: 70px; flex-direction: row; order: 2; border-right: none; border-top: 1px solid var(--dash-border); padding: 0; justify-content: space-around; align-items: center; }
+    .dash-logo, .dash-footer { display: none; }
+    .dash-nav { flex-direction: row; padding: 0; overflow: visible; width: 100%; justify-content: space-around; }
+    .dash-nav-item { flex-direction: column; gap: 4px; padding: 8px; font-size: 11px; }
+    .dash-nav-item svg { width: 22px; height: 22px; }
+    .dash-content { padding: 20px; order: 1; padding-bottom: 80px; }
   }
+
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px); background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; opacity: 0; transition: 0.3s; z-index: 9999; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
 </style>
 </head>
 <body>
 
-<!-- ==========================================================
-     VISTA TELÉFONO (USUARIOS NORMALES)
-     ========================================================== -->
-<div class="phone-wrap" id="vista-normal">
-  <div class="phone">
-    <div class="topbar">
-      <div class="brand-mini"><span class="dot-live"></span> Portón Pirque</div>
-    </div>
+<!-- VISTA NORMAL (Teléfono para usuarios comunes) -->
+<div id="vista-normal">
+  <div class="user-card" id="vista-login">
+    <h1 style="margin:0 0 10px; color:var(--primary);">Portón Pirque</h1>
+    <p style="color:var(--text-muted); font-size:14px; margin-bottom: 24px;">Inicia sesión para acceder.</p>
+    <button class="btn-google" onclick="iniciarSesion()">
+      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 6 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 6 29.5 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.6 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.6 39.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.6l6.2 5.2C39.9 37 44 31 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+      Continuar con Google
+    </button>
+  </div>
 
-    <div class="status-bar status-connecting">
-      <span class="status-dot"></span><span class="conexion-status-text">Conectando…</span>
-    </div>
-
-    <section id="vista-login" class="screen active">
-      <div class="eyebrow">Acceso privado</div>
-      <svg class="gate-mark" viewBox="0 0 100 100" fill="none">
-        <rect width="100" height="100" rx="22" fill="#1F4A32"/>
-        <path d="M28 74 V34 Q28 26 36 26 H64 Q72 26 72 34 V74" stroke="#F4EFE3" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        <line x1="50" y1="34" x2="50" y2="74" stroke="#F4EFE3" stroke-width="6" stroke-linecap="round"/>
-        <circle cx="50" cy="58" r="5" fill="#C99A3B"/>
-      </svg>
-      <h1 class="title">Portón Pirque</h1>
-      <p class="sub">Inicia sesión con tu cuenta de Google para ver si tienes acceso al portón.</p>
-
-      <button class="btn-google" onclick="iniciarSesion()">
-        <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 6 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 6 29.5 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.6 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.6 39.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.6l6.2 5.2C39.9 37 44 31 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
-        <span>Continuar con Google</span>
+  <div class="user-card" id="vista-autorizado" style="display:none;">
+    <div class="status-badge status-connecting"><span class="status-dot"></span><span class="conexion-text">Conectando...</span></div>
+    <div class="gate-btn-wrap">
+      <button class="gate-btn gate-action-btn" onclick="abrirPorton()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 15v2"></path><path d="M6 10V7a6 6 0 0 1 11.3-2.8"></path><rect x="5" y="10" width="14" height="11" rx="2"></rect></svg>
       </button>
-      <p class="divider-note">Solo personas autorizadas pueden abrir el portón.</p>
-    </section>
+    </div>
+    <div id="user-info-normal" style="font-weight:600; margin-bottom:20px;"></div>
+    <button class="btn-outline" onclick="cerrarSesion()">Cerrar sesión</button>
+  </div>
 
-    <section id="vista-no-autorizado" class="screen">
-      <div class="eyebrow" style="color:var(--danger)">Sin acceso</div>
-      <h1 class="title" style="font-size:26px;">Aún no estás en la lista</h1>
-      <p class="sub">Tu cuenta no figura entre los usuarios autorizados. Puedes solicitar acceso y Darío lo revisará.</p>
-      <button class="btn btn-primary" onclick="solicitarAcceso()">Solicitar acceso</button>
-      <div style="height:10px"></div>
-      <button class="btn btn-ghost" onclick="cerrarSesion()">Cerrar sesión</button>
-    </section>
-
-    <section id="vista-autorizado" class="screen">
-      <div class="user-chip user-chip-render"></div>
-
-      <div class="gate-stage">
-        <div class="gate-status-label">Portón listo</div>
-        <div class="gate-btn-wrap">
-          <div class="gate-bezel">
-            <button class="gate-btn" onclick="abrirPorton()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v2"></path><path d="M6 10V7a6 6 0 0 1 11.3-2.8"></path><rect x="5" y="10" width="14" height="11" rx="2"></rect></svg>
-            </button>
-          </div>
-          <button class="gate-reset-badge" onclick="quitarFotoBoton(event)" style="display:none" title="Quitar foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button>
-          <button class="gate-edit-badge" onclick="document.getElementById('foto-input').click()" title="Personalizar botón"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></button>
-        </div>
-        <p class="gate-hint">Toca el ícono de cámara para poner una foto tuya en el botón.</p>
-        <p class="offline-msg">⚠️ El portón está desconectado.</p>
-      </div>
-      <button class="link-quiet" onclick="cerrarSesion()" style="display:block; margin:22px auto 0;">Cerrar sesión</button>
-    </section>
+  <div class="user-card" id="vista-no-autorizado" style="display:none;">
+    <h2 style="color:var(--danger)">Sin acceso</h2>
+    <p style="color:var(--text-muted); font-size:14px; margin-bottom: 24px;">Tu cuenta no está en la lista blanca.</p>
+    <button class="btn-outline" onclick="cerrarSesion()">Cerrar sesión y probar otra cuenta</button>
   </div>
 </div>
 
-<!-- ==========================================================
-     VISTA DASHBOARD (SOLO ADMINISTRADOR)
-     ========================================================== -->
-<div class="dashboard-app" id="vista-dashboard">
-  
+<!-- VISTA ADMINISTRADOR (Smart Hub - Exactamente como la imagen) -->
+<div id="vista-dashboard">
   <aside class="dash-sidebar">
     <div class="dash-logo">
       <div class="dash-logo-icon">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
       </div>
-      <div class="dash-logo-text"><b>Smart Hub</b><br><span>Admin</span></div>
+      <div><div style="font-weight:700; color:var(--text-main);">Smart Hub</div><div style="font-size:12px; color:var(--text-muted);">Admin</div></div>
     </div>
     
     <nav class="dash-nav">
-      <button class="dash-nav-item" id="nav-inicio" onclick="verTab('inicio')">
+      <button class="dash-nav-item active" id="nav-inicio" onclick="verTab('inicio')">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg> Inicio
       </button>
-      <button class="dash-nav-item active" id="nav-porton" onclick="verTab('porton')">
+      <button class="dash-nav-item" id="nav-porton" onclick="verTab('porton')">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg> Portón
       </button>
       <button class="dash-nav-item" onclick="verTab('cortinas')">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line></svg> Cortinas
       </button>
-      <button class="dash-nav-item" onclick="verTab('musica')">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg> Música
-      </button>
-      <button class="dash-nav-item" onclick="verTab('estanque')">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg> Estanque
-      </button>
-      <button class="dash-nav-item" onclick="verTab('riego')">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg> Riego
-      </button>
-      <button class="dash-nav-item" onclick="verTab('luces')">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg> Luces
+      <!-- Botón de salir visible en móvil también -->
+      <button class="dash-nav-item" onclick="cerrarSesion()" style="color:var(--danger);">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Salir
       </button>
     </nav>
     
     <div class="dash-footer">
-      <button class="dash-nav-item" onclick="toggleDarkMode()">
+      <button class="dash-nav-item" onclick="toggleDarkMode()" style="width:100%;">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Modo Oscuro
-      </button>
-      <button class="dash-nav-item" onclick="cerrarSesion()">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Salir
       </button>
     </div>
   </aside>
 
   <main class="dash-content">
     
-    <!-- PESTAÑA INICIO (MOCKUP) -->
-    <div id="tab-inicio" class="dash-tab-content">
+    <!-- PESTAÑA INICIO (Idéntica a la foto) -->
+    <div id="tab-inicio" class="dash-tab-content active">
       <h1 class="dash-title">Bienvenido, Administrador</h1>
       <p class="dash-subtitle">Resumen del estado de tu hogar inteligente.</p>
       
-      <div class="dash-cards-row">
-        <div class="dash-widget" style="cursor:pointer;" onclick="verTab('porton')">
-          <div class="dw-header">Portón <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16h12V4a2 2 0 0 0-2-2z"></path><path d="M14 10h-2"></path></svg></div>
-          <div class="dw-value status-bar status-connecting" style="font-size:20px; font-weight:700; margin-left:-5px;">
-            <span class="status-dot"></span><span class="conexion-status-text" style="color:var(--muted); font-size:22px; text-transform:capitalize;">Conectando...</span>
-          </div>
+      <div class="dash-grid">
+        <div class="dash-card" style="cursor:pointer;" onclick="verTab('porton')">
+          <div class="card-header">Portón <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16h12V4a2 2 0 0 0-2-2z"></path><path d="M14 10h-2"></path></svg></div>
+          <div class="dash-value conexion-text">Conectando...</div>
         </div>
         
-        <div class="dash-widget">
-          <div class="dw-header">Luces Activas <svg fill="none" stroke="#EAB308" viewBox="0 0 24 24"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-7 7c0 2 1.5 4 3 5s1.5 4 1.5 4h5s0-3 1.5-4 3-3 3-5a7 7 0 0 0-7-7z"></path></svg></div>
-          <div class="dw-value">1 <span class="dw-sub">/ 3 encendidas</span></div>
+        <div class="dash-card">
+          <div class="card-header">Luces Activas <svg fill="none" stroke="#F9AB00" viewBox="0 0 24 24"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-7 7c0 2 1.5 4 3 5s1.5 4 1.5 4h5s0-3 1.5-4 3-3 3-5a7 7 0 0 0-7-7z"></path></svg></div>
+          <div class="dash-value">1 <span class="dash-sub-value">/ 3 encendidas</span></div>
         </div>
 
-        <div class="dash-widget">
-          <div class="dw-header">Estanque <svg fill="none" stroke="#06B6D4" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg></div>
-          <div class="dw-value">76%</div>
-          <div class="dw-bar"><div class="dw-bar-fill"></div></div>
-        </div>
-
-        <div class="dash-widget dw-blue">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-          <div class="dw-header">Control por Voz</div>
-          <div class="dw-sub" style="color:#3B82F6;">Intenta decir "Abrir portón" o "Encender luces"</div>
+        <div class="dash-card">
+          <div class="card-header">Estanque <svg fill="none" stroke="#06B6D4" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg></div>
+          <div class="dash-value">76%</div>
+          <div style="width:100%; height:6px; background:var(--dash-border); border-radius:3px; margin-top:12px; overflow:hidden;"><div style="width:76%; height:100%; background:#06B6D4;"></div></div>
         </div>
       </div>
     </div>
 
-    <!-- PESTAÑA PORTÓN (FUNCIONES REALES) -->
-    <div id="tab-porton" class="dash-tab-content active">
-      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 30px;">
-        <div>
-          <h1 class="dash-title">Control de Portón</h1>
-          <p class="dash-subtitle" style="margin:0;">Administra los accesos, la lista blanca y las configuraciones de red.</p>
-        </div>
-      </div>
+    <!-- PESTAÑA PORTÓN (Listas adaptadas al diseño limpio) -->
+    <div id="tab-porton" class="dash-tab-content">
+      <h1 class="dash-title">Gestión del Portón</h1>
+      <p class="dash-subtitle">Administra los permisos de acceso y el funcionamiento del motor.</p>
 
-      <!-- Integración del Botón Grande en el Dashboard -->
-      <div class="card" style="display:flex; flex-direction:column; align-items:center; padding: 30px; margin-bottom: 24px; background:var(--dash-sidebar);">
-        <div class="gate-status-label" style="font-size:14px;">Portón listo</div>
-        <div class="gate-btn-wrap" style="transform: scale(0.9);">
-          <div class="gate-bezel">
-            <button class="gate-btn" onclick="abrirPorton()">
+      <div class="dash-grid">
+        
+        <!-- Tarjeta del Botón Maestro -->
+        <div class="dash-card" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+          <div class="card-header" style="width:100%;">Apertura Manual <div class="status-dot conexion-dot" style="color:var(--text-muted)"></div></div>
+          <div class="gate-btn-wrap" style="width: 150px; height: 150px; margin: 10px 0;">
+            <button class="gate-btn gate-action-btn" onclick="abrirPorton()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 15v2"></path><path d="M6 10V7a6 6 0 0 1 11.3-2.8"></path><rect x="5" y="10" width="14" height="11" rx="2"></rect></svg>
             </button>
           </div>
-        </div>
-        <p class="offline-msg" style="max-width: 300px;">⚠️ El portón está desconectado.</p>
-      </div>
-
-      <!-- Las listas del administrador idénticas al original -->
-      <div class="dash-admin-grid">
-        <div class="card">
-          <h3>📜 Últimas aperturas</h3>
-          <p class="card-note">Registro de quién abrió el portón y cuándo.</p>
-          <div id="lista-historial"></div>
+          <span class="dash-sub-value conexion-text">Conectando...</span>
         </div>
 
-        <div class="card">
-          <h3>✅ Usuarios Web App</h3>
-          <p class="card-note">Solicitudes pendientes y cuentas ya autorizadas.</p>
-          <div id="lista-solicitudes"></div>
-          <div id="lista-autorizados" style="margin-top:6px"></div>
+        <!-- Historial -->
+        <div class="dash-card">
+          <div class="card-header">Últimas aperturas</div>
+          <div class="admin-list" id="lista-historial"></div>
         </div>
 
-        <div class="card">
-          <h3>🤖 Usuarios de Telegram</h3>
-          <p class="card-note">Autoriza cuentas para abrir el portón por bot.</p>
-          <input type="text" id="tg-id" class="row-input" placeholder="ID de Telegram (ej. 123456789)">
-          <input type="text" id="tg-nombre" class="row-input" placeholder="Nombre (ej. Bruno)">
-          <button class="btn btn-primary btn-small" onclick="agregarTelegram()">Autorizar en Telegram</button>
-          <div id="lista-telegram" style="margin-top:10px"></div>
+        <!-- Web App -->
+        <div class="dash-card">
+          <div class="card-header">Cuentas Google (Web App)</div>
+          <div class="admin-list" id="lista-solicitudes"></div>
+          <div class="admin-list" id="lista-autorizados" style="margin-top:10px;"></div>
         </div>
 
-        <div class="card">
-          <h3>📶 Redes WiFi fijas</h3>
-          <p class="card-note">El portón se conectará a estas redes. Al cambiar, el portón se reinicia.</p>
-          <input type="text" id="red-ssid" class="row-input" placeholder="Nombre de red (SSID)">
-          <input type="password" id="red-pass" class="row-input" placeholder="Contraseña">
-          <button class="btn btn-warn btn-small" onclick="agregarRed()">Añadir red</button>
-          <div id="lista-redes" style="margin-top:10px"></div>
+        <!-- Telegram -->
+        <div class="dash-card">
+          <div class="card-header">IDs de Telegram</div>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="tg-id" class="admin-input" placeholder="ID (ej. 123456)">
+            <input type="text" id="tg-nombre" class="admin-input" placeholder="Nombre">
+          </div>
+          <button class="btn-outline" onclick="agregarTelegram()">Añadir Bot</button>
+          <div class="admin-list" id="lista-telegram"></div>
         </div>
 
-        <div class="card">
-          <h3>📡 Controles remotos (ESP-NOW)</h3>
-          <p class="card-note">Apertura por control físico directo, sin WiFi. Activa y enciende el control dentro de 60s.</p>
-          <button class="btn btn-warn btn-small" onclick="activarEmparejamiento()">Activar emparejamiento (60s)</button>
-          <div id="lista-controles" style="margin-top:10px"></div>
+        <!-- WiFi -->
+        <div class="dash-card">
+          <div class="card-header">Redes WiFi del Motor</div>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="red-ssid" class="admin-input" placeholder="Nombre (SSID)">
+            <input type="password" id="red-pass" class="admin-input" placeholder="Clave">
+          </div>
+          <button class="btn-outline" onclick="agregarRed()">Añadir WiFi (Reinicia placa)</button>
+          <div class="admin-list" id="lista-redes"></div>
         </div>
+
+        <!-- ESP-NOW -->
+        <div class="dash-card">
+          <div class="card-header">Controles Físicos (Sin WiFi)</div>
+          <button class="btn-outline" onclick="activarEmparejamiento()" style="width:100%; justify-content:center; border-color:var(--primary); color:var(--primary);">Activar emparejamiento (60s)</button>
+          <div class="admin-list" id="lista-controles" style="margin-top:16px;"></div>
+        </div>
+
       </div>
     </div>
 
-    <!-- PESTAÑAS EN CONSTRUCCIÓN -->
-    <div id="tab-cortinas" class="dash-tab-content"><h1 class="dash-title">Cortinas</h1><p class="dash-subtitle">En construcción...</p></div>
-    <div id="tab-musica" class="dash-tab-content"><h1 class="dash-title">Música</h1><p class="dash-subtitle">En construcción...</p></div>
-    <div id="tab-estanque" class="dash-tab-content"><h1 class="dash-title">Estanque</h1><p class="dash-subtitle">En construcción...</p></div>
-    <div id="tab-riego" class="dash-tab-content"><h1 class="dash-title">Riego</h1><p class="dash-subtitle">En construcción...</p></div>
-    <div id="tab-luces" class="dash-tab-content"><h1 class="dash-title">Luces</h1><p class="dash-subtitle">En construcción...</p></div>
-
+    <!-- Pestañas dummy -->
+    <div id="tab-cortinas" class="dash-tab-content"><h1 class="dash-title">Cortinas</h1><p class="dash-subtitle">Módulo no instalado.</p></div>
   </main>
 </div>
 
-<!-- Input global de foto -->
-<input type="file" id="foto-input" accept="image/*" style="display:none" onchange="cambiarFotoBoton(event)">
-<div id="toast" class="toast"><span id="toast-msg"></span></div>
+<div id="toast" class="toast">Mensaje</div>
 
-<!-- LIBRERÍAS AL FINAL PARA ACELERAR LA CARGA VISUAL -->
+<!-- FIREBASE AL FINAL PARA MAXIMA VELOCIDAD -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-/* ==========================================================
-   CONFIGURACIÓN FIREBASE Y TIEMPOS DE GRACIA
-   ========================================================== */
-const APP_START_TIME = performance.now();
-let tiempoDespertar = 0;
-
 const firebaseConfig = {
     apiKey: "AIzaSyCABy9Rpn1wc1gYBzDEm8Mf05x0gu9lpyQ",
     authDomain: "portonpirque.firebaseapp.com",
     databaseURL: "https://portonpique-default-rtdb.firebaseio.com/",
-    projectId: "portonpirque",
-    storageBucket: "portonpique.firebasestorage.app",
-    messagingSenderId: "556068512549",
-    appId: "1:556068512549:web:7e71d2d9b199ec610c30cc"
+    projectId: "portonpirque"
 };
 
-const DEMO_MODE = firebaseConfig.apiKey === "TU_API_KEY";
+const DEMO_MODE = false; // Cambiar a true para probar sin Firebase
 let db, auth, provider;
 
-try {
+if(!DEMO_MODE) {
   firebase.initializeApp(firebaseConfig);
   db = firebase.database();
   auth = firebase.auth();
   provider = new firebase.auth.GoogleAuthProvider();
-} catch(e) {}
+}
 
 const ADMIN_EMAIL = "pirqueporton@gmail.com";
 let currentUser = null;
+let ultimoLatido = 0;
+let serverTimeOffset = 0;
 
-/* ==========================================================
-   MODO OSCURO Y NAVEGACIÓN DASHBOARD
-   ========================================================== */
-function toggleDarkMode() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  if(isDark) document.documentElement.removeAttribute('data-theme');
-  else document.documentElement.setAttribute('data-theme', 'dark');
+// SISTEMA DE RUTEO PRINCIPAL (Aísla las vistas)
+function verificarAcceso(user) {
+  document.getElementById('vista-login').style.display = 'none';
+
+  if (user.email === ADMIN_EMAIL) {
+    document.getElementById('vista-normal').style.display = 'none';
+    document.getElementById('vista-dashboard').style.display = 'flex';
+    cargarDatosAdmin();
+    verTab('inicio');
+  } else {
+    document.getElementById('vista-dashboard').style.display = 'none';
+    document.getElementById('vista-normal').style.display = 'flex';
+    
+    if (DEMO_MODE) {
+      document.getElementById('vista-autorizado').style.display = 'block';
+      document.getElementById('user-info-normal').textContent = 'Hola, ' + user.displayName;
+      return;
+    }
+
+    db.ref(`lista_blanca/${user.uid}`).once('value').then((snap) => {
+      if(snap.exists()) {
+        document.getElementById('vista-autorizado').style.display = 'block';
+        document.getElementById('user-info-normal').textContent = 'Hola, ' + snap.val().nombre;
+      } else {
+        document.getElementById('vista-no-autorizado').style.display = 'block';
+      }
+    });
+  }
 }
 
+// GESTIÓN DE SESIÓN
+function iniciarSesion() {
+  if(DEMO_MODE) {
+    currentUser = { uid: 'demo1', displayName: 'Darío', email: ADMIN_EMAIL };
+    verificarAcceso(currentUser);
+    return;
+  }
+  auth.signInWithPopup(provider).catch(e => mostrarToast('Error: ' + e.message));
+}
+
+function cerrarSesion() {
+  if(DEMO_MODE) { window.location.reload(); return; }
+  auth.signOut().then(() => {
+    // Al cerrar sesión, ocultamos los paneles y mostramos solo el login normal
+    document.getElementById('vista-dashboard').style.display = 'none';
+    document.getElementById('vista-autorizado').style.display = 'none';
+    document.getElementById('vista-no-autorizado').style.display = 'none';
+    
+    document.getElementById('vista-normal').style.display = 'flex';
+    document.getElementById('vista-login').style.display = 'block';
+  });
+}
+
+// PERSISTENCIA AUTOMÁTICA (Firebase mantiene iniciada la sesión)
+if(!DEMO_MODE) {
+  auth.onAuthStateChanged((user) => {
+    if(user) {
+      currentUser = user;
+      verificarAcceso(user);
+    } else {
+      cerrarSesion();
+    }
+  });
+}
+
+// NAVEGACIÓN DASHBOARD
 function verTab(tabId) {
   document.querySelectorAll('.dash-tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.dash-nav-item').forEach(b => b.classList.remove('active'));
@@ -475,265 +381,115 @@ function verTab(tabId) {
   document.getElementById('nav-' + tabId).classList.add('active');
 }
 
-/* ==========================================================
-   MONITOR DE CONEXIÓN (MÚLTIPLES PANTALLAS)
-   ========================================================== */
-let ultimoLatido = 0;
-let serverTimeOffset = 0;
+function toggleDarkMode() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if(isDark) document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', 'dark');
+}
 
+// MONITOR DE CONEXIÓN (Aplica a todas las vistas)
 function setEstadoConexion(estado) {
-  if (estado === 'offline' && performance.now() - APP_START_TIME < 5000) return;
-  if (estado === 'offline' && performance.now() - tiempoDespertar < 6000) return;
-
-  // Actualizamos todos los textos y botones al mismo tiempo (tanto vista normal como dashboard)
-  document.querySelectorAll('.status-bar').forEach(el => el.className = 'status-bar status-' + estado);
-  document.querySelectorAll('.conexion-status-text').forEach(el => {
-    el.textContent = estado === 'online' ? 'En línea' : estado === 'offline' ? 'Fuera de línea' : 'Conectando…';
-  });
-  document.querySelectorAll('.gate-btn').forEach(el => el.disabled = (estado === 'offline'));
-  document.querySelectorAll('.offline-msg').forEach(el => el.style.display = (estado === 'offline') ? 'block' : 'none');
+  const isOnline = (estado === 'online');
+  const txt = isOnline ? 'En línea' : 'Fuera de línea';
+  const dotColor = isOnline ? 'var(--success)' : 'var(--danger)';
+  
+  document.querySelectorAll('.conexion-text').forEach(el => el.textContent = txt);
+  document.querySelectorAll('.conexion-dot').forEach(el => el.style.color = dotColor);
+  document.querySelectorAll('.gate-action-btn').forEach(btn => btn.disabled = !isOnline);
+  
+  // Normal view status badge
+  const normBadge = document.querySelector('.status-badge');
+  if(normBadge) {
+    normBadge.className = 'status-badge ' + (isOnline ? 'status-online' : 'status-offline');
+  }
 }
 
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === 'visible') {
-    tiempoDespertar = performance.now();
-    setEstadoConexion('connecting');
-  }
-});
-
-if(DEMO_MODE) {
-  setEstadoConexion('online');
-} else {
-  db.ref('.info/serverTimeOffset').on('value', (snap) => serverTimeOffset = snap.val() || 0);
-  db.ref('estado_porton/ultima_conexion').on('value', (snap) => { if(snap.exists()) ultimoLatido = snap.val(); });
-
+if(!DEMO_MODE) {
+  db.ref('.info/serverTimeOffset').on('value', snap => serverTimeOffset = snap.val() || 0);
+  db.ref('estado_porton/ultima_conexion').on('value', snap => { if(snap.exists()) ultimoLatido = snap.val(); });
   setInterval(() => {
-    const ahoraFirebase = Date.now() + serverTimeOffset;
-    const diferenciaSegundos = (ahoraFirebase - ultimoLatido) / 1000;
-    setEstadoConexion(diferenciaSegundos > 30 ? 'offline' : 'online');
+    const dif = ((Date.now() + serverTimeOffset) - ultimoLatido) / 1000;
+    setEstadoConexion(dif > 30 ? 'offline' : 'online');
   }, 1000);
+} else {
+  setEstadoConexion('online');
 }
 
-/* ==========================================================
-   AUTENTICACIÓN Y ENRUTAMIENTO (NORMAL VS ADMIN)
-   ========================================================== */
-function mostrarVistaNormal(vista) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(`vista-${vista}`).classList.add('active');
-}
-
-function verificarAcceso(user) {
-  // EL RUTEO MÁGICO: Si es admin, borra el teléfono y muestra el dashboard completo
-  if (user.email === ADMIN_EMAIL) {
-    document.getElementById('vista-normal').style.display = 'none';
-    document.getElementById('vista-dashboard').style.display = 'flex';
-    cargarDatosAdmin();
-    return;
-  }
-  
-  // Si no es admin, asegura que el teléfono esté visible y el dashboard oculto
-  document.getElementById('vista-normal').style.display = 'flex';
-  document.getElementById('vista-dashboard').style.display = 'none';
-
-  if (DEMO_MODE) { mostrarVistaNormal('autorizado'); return; }
-  
-  db.ref(`lista_blanca/${user.uid}`).once('value').then((snap) => {
-    mostrarVistaNormal(snap.exists() ? 'autorizado' : 'no-autorizado');
-  });
-}
-
-function iniciarSesion() {
-  if(DEMO_MODE) {
-    currentUser = { uid: 'demo-uid', displayName: 'Demo', email: 'demo@demo.cl', photoURL: null };
-    onLoginSuccess(currentUser);
-    verificarAcceso(currentUser);
-    return;
-  }
-  auth.signInWithPopup(provider).catch(e => showToast('Error: ' + e.message, 'error'));
-}
-
-function cerrarSesion() {
-  // Restaura la vista por defecto (teléfono)
-  document.getElementById('vista-normal').style.display = 'flex';
-  document.getElementById('vista-dashboard').style.display = 'none';
-  if(DEMO_MODE) { currentUser = null; mostrarVistaNormal('login'); return; }
-  auth.signOut();
-}
-
-if(!DEMO_MODE && auth) {
-  auth.onAuthStateChanged((user) => {
-    if(user) {
-      currentUser = user;
-      onLoginSuccess(user);
-      verificarAcceso(user);
-    } else {
-      currentUser = null;
-      document.getElementById('vista-normal').style.display = 'flex';
-      document.getElementById('vista-dashboard').style.display = 'none';
-      mostrarVistaNormal('login');
-    }
-  });
-}
-
-function onLoginSuccess(user) {
-  renderUserChip(user);
-  cargarFotoBoton(user.uid);
-}
-
-function renderUserChip(user) {
-  const avatar = user.photoURL ? `<img src="${user.photoURL}">` : `<div class="avatar-fallback">U</div>`;
-  document.querySelectorAll('.user-chip-render').forEach(el => {
-    el.innerHTML = `${avatar}<div class="who"><b>${user.displayName || 'Usuario'}</b><span>${user.email}</span></div>`;
-  });
-}
-
-function solicitarAcceso() {
-  if(DEMO_MODE) return showToast('Solicitud enviada (demo).', 'success');
-  db.ref(`solicitudes/${currentUser.uid}`).set({ nombre: currentUser.displayName, correo: currentUser.email })
-    .then(() => showToast('Solicitud enviada a Darío.', 'success'));
-}
-
-/* ==========================================================
-   FUNCIONES DEL BOTÓN (PORTÓN)
-   ========================================================== */
-function fotoKey(uid) { return `porton_foto_${uid}`; }
-
-function cargarFotoBoton(uid) {
-  const data = localStorage.getItem(fotoKey(uid));
-  document.querySelectorAll('.gate-btn').forEach(btn => {
-    if(data) { btn.style.backgroundImage = `url('${data}')`; btn.classList.add('has-photo'); }
-    else { btn.style.backgroundImage = 'none'; btn.classList.remove('has-photo'); }
-  });
-  document.querySelectorAll('.gate-reset-badge').forEach(rst => rst.style.display = data ? 'flex' : 'none');
-}
-
-function cambiarFotoBoton(event) {
-  const file = event.target.files[0];
-  if(!file || !currentUser) return;
-  const r = new FileReader();
-  r.onload = (e) => {
-    const img = new Image();
-    img.onload = () => {
-      const cvs = document.createElement('canvas'); cvs.width=400; cvs.height=400;
-      const ctx = cvs.getContext('2d');
-      const s = Math.max(400/img.width, 400/img.height);
-      ctx.drawImage(img, (400-img.width*s)/2, (400-img.height*s)/2, img.width*s, img.height*s);
-      localStorage.setItem(fotoKey(currentUser.uid), cvs.toDataURL('image/jpeg', 0.85));
-      cargarFotoBoton(currentUser.uid);
-    };
-    img.src = e.target.result;
-  };
-  r.readAsDataURL(file);
-}
-
-function quitarFotoBoton(event) {
-  event.stopPropagation();
-  localStorage.removeItem(fotoKey(currentUser.uid));
-  cargarFotoBoton(currentUser.uid);
-}
-
+// ABRIR PORTÓN
 function abrirPorton() {
-  const btns = document.querySelectorAll('.gate-btn');
-  if(btns[0] && btns[0].disabled) return; 
-
-  try { new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3').play(); } catch(e) {}
-
-  document.querySelectorAll('.gate-status-label').forEach(el => el.textContent = 'Enviando orden…');
-
-  const registrar = () => {
-    const d = { fecha: new Date().toLocaleString('es-CL'), usuario: (currentUser.displayName||currentUser.email) };
-    if(!DEMO_MODE) db.ref('historial').push(d);
-  };
-
+  document.querySelectorAll('.conexion-text').forEach(el => el.textContent = 'Enviando orden...');
   if(DEMO_MODE) {
-    setTimeout(() => {
-      document.querySelectorAll('.gate-status-label').forEach(el => el.textContent = '¡Portón abierto!');
-      showToast('Orden enviada', 'success');
-      registrar();
-      setTimeout(() => document.querySelectorAll('.gate-status-label').forEach(el => el.textContent = 'Portón listo'), 2200);
-    }, 450);
+    setTimeout(() => { mostrarToast('¡Portón abierto!'); setEstadoConexion('online'); }, 1000);
     return;
   }
-
+  
   db.ref('estado_porton').update({ comando: 'abrir_' + Date.now(), timestamp: firebase.database.ServerValue.TIMESTAMP })
     .then(() => {
-      document.querySelectorAll('.gate-status-label').forEach(el => el.textContent = '¡Portón abierto!');
-      showToast('Orden enviada', 'success');
-      registrar();
-      setTimeout(() => document.querySelectorAll('.gate-status-label').forEach(el => el.textContent = 'Portón listo'), 2200);
-    }).catch(e => {
-      document.querySelectorAll('.gate-status-label').forEach(el => el.textContent = 'Portón listo');
-      showToast('Error', 'error');
+      mostrarToast('Apertura solicitada con éxito');
+      db.ref('historial').push({ fecha: new Date().toLocaleString('es-CL'), usuario: (currentUser.displayName || currentUser.email) });
+      setTimeout(() => setEstadoConexion('online'), 2000);
     });
 }
 
-function showToast(msg, type) {
+// FUNCIONES DE ADMIN
+function mostrarToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'toast show ' + (type||'');
-  setTimeout(() => t.classList.remove('show'), 2600);
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-/* ==========================================================
-   FUNCIONES DE ADMIN (Render intacto, solo usamos IDs)
-   ========================================================== */
 function agregarTelegram() {
-  const id = document.getElementById('tg-id').value.trim(), nombre = document.getElementById('tg-nombre').value.trim();
-  if(!id || !nombre) return;
-  db.ref(`telegram_usuarios/${id}`).set({ nombre });
-  document.getElementById('tg-id').value = ''; document.getElementById('tg-nombre').value = '';
+  const id = document.getElementById('tg-id').value.trim();
+  const nombre = document.getElementById('tg-nombre').value.trim();
+  if(id && nombre) db.ref(`telegram_usuarios/${id}`).set({ nombre });
 }
-function eliminarTelegram(id) { db.ref(`telegram_usuarios/${id}`).remove(); }
 
 function agregarRed() {
-  const ssid = document.getElementById('red-ssid').value.trim(), pass = document.getElementById('red-pass').value;
+  const ssid = document.getElementById('red-ssid').value.trim();
+  const pass = document.getElementById('red-pass').value;
   if(ssid) {
     db.ref('configuracion/redes_wifi').push({ ssid, pass });
-    document.getElementById('red-ssid').value = ''; document.getElementById('red-pass').value = '';
-    showToast('Red guardada, portón reiniciando.', 'success');
+    mostrarToast('Red guardada, portón reiniciando...');
   }
 }
-function eliminarRed(key) { db.ref(`configuracion/redes_wifi/${key}`).remove(); }
 
 function activarEmparejamiento() {
   db.ref('estado_porton').update({ comando: 'emparejar', timestamp: firebase.database.ServerValue.TIMESTAMP });
-  showToast('Modo emparejar ON (60s)', 'success');
-}
-
-function aprobarUsuario(uid, correo, nombre) {
-  db.ref(`lista_blanca/${uid}`).set({ correo, nombre }); db.ref(`solicitudes/${uid}`).remove();
-}
-function rechazarUsuario(uid) { db.ref(`solicitudes/${uid}`).remove(); }
-function revocarAcceso(uid) { db.ref(`lista_blanca/${uid}`).remove(); }
-
-function renderRedes(obj) {
-  const el = document.getElementById('lista-redes');
-  if(!obj) { el.innerHTML = '<p class="empty-note">Sin redes.</p>'; return; }
-  el.innerHTML = Object.keys(obj).map(k => `<div class="list-row"><span>${obj[k].ssid}</span><button class="icon-action ia-no" onclick="eliminarRed('${k}')"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>`).join('');
-}
-function renderHistorial(rec) {
-  document.getElementById('lista-historial').innerHTML = rec ? rec.map(d => `<div class="list-row"><span class="name">${d.usuario}</span><span class="meta">${d.fecha}</span></div>`).join('') : '';
-}
-function renderTelegram(obj) {
-  document.getElementById('lista-telegram').innerHTML = obj ? Object.keys(obj).map(id => `<div class="list-row"><span><span class="name">${obj[id].nombre}</span> <span class="meta">${id}</span></span><button class="icon-action ia-no" onclick="eliminarTelegram('${id}')"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>`).join('') : '';
-}
-function renderSolicitudes(obj) {
-  document.getElementById('lista-solicitudes').innerHTML = obj ? `<span class="pill">Nuevas solicitudes</span>` + Object.keys(obj).map(uid => `<div class="list-row"><span><span class="name">${obj[uid].nombre}</span><br><small>${obj[uid].correo}</small></span><span style="display:flex; gap:6px;"><button class="icon-action ia-ok" onclick="aprobarUsuario('${uid}','${obj[uid].correo}','${obj[uid].nombre}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg></button><button class="icon-action ia-no" onclick="rechazarUsuario('${uid}')"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></span></div>`).join('') : '';
-}
-function renderAutorizados(obj) {
-  document.getElementById('lista-autorizados').innerHTML = obj ? Object.keys(obj).map(uid => `<div class="list-row"><span><span class="name">${obj[uid].nombre}</span><br><small>${obj[uid].correo}</small></span><button class="icon-action ia-no" onclick="revocarAcceso('${uid}')"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>`).join('') : '';
-}
-function renderControles(obj) {
-  document.getElementById('lista-controles').innerHTML = obj ? Object.keys(obj).map(key => `<div class="list-row"><span class="name">${obj[key].nombre} <span style="color:var(--muted);font-weight:400">(${obj[key].mac})</span></span></div>`).join('') : '';
+  mostrarToast('Modo emparejamiento activado (60s)');
 }
 
 function cargarDatosAdmin() {
   if(DEMO_MODE) return;
-  db.ref('historial').limitToLast(10).on('value', snap => { let r=[]; snap.forEach(c => r.push(c.val())); renderHistorial(r.reverse()); });
-  db.ref('telegram_usuarios').on('value', snap => renderTelegram(snap.val()));
-  db.ref('solicitudes').on('value', snap => renderSolicitudes(snap.val()));
-  db.ref('lista_blanca').on('value', snap => renderAutorizados(snap.val()));
-  db.ref('configuracion/redes_wifi').on('value', snap => renderRedes(snap.val()));
-  db.ref('config_espnow').on('value', snap => renderControles(snap.val()));
+  // Historial
+  db.ref('historial').limitToLast(8).on('value', snap => {
+    let html = '';
+    snap.forEach(c => { html = `<div class="admin-row"><strong>${c.val().usuario}</strong> <span>${c.val().fecha}</span></div>` + html; });
+    document.getElementById('lista-historial').innerHTML = html || '<div class="admin-row">Sin registros</div>';
+  });
+  
+  // Telegram
+  db.ref('telegram_usuarios').on('value', snap => {
+    const d = snap.val();
+    document.getElementById('lista-telegram').innerHTML = d ? Object.keys(d).map(k => `<div class="admin-row"><div><strong>${d[k].nombre}</strong><span style="color:var(--text-muted)">${k}</span></div> <button class="btn-action red" onclick="db.ref('telegram_usuarios/${k}').remove()">X</button></div>`).join('') : '';
+  });
+
+  // Redes
+  db.ref('configuracion/redes_wifi').on('value', snap => {
+    const d = snap.val();
+    document.getElementById('lista-redes').innerHTML = d ? Object.keys(d).map(k => `<div class="admin-row"><strong>${d[k].ssid}</strong> <button class="btn-action red" onclick="db.ref('configuracion/redes_wifi/${k}').remove()">X</button></div>`).join('') : '';
+  });
+  
+  // ESP NOW
+  db.ref('config_espnow').on('value', snap => {
+    const d = snap.val();
+    document.getElementById('lista-controles').innerHTML = d ? Object.keys(d).map(k => `<div class="admin-row"><strong>${d[k].nombre}</strong> <span>${d[k].mac}</span></div>`).join('') : '<div class="admin-row">Sin controles físicos vinculados</div>';
+  });
+
+  // Web App Users (Simplificado para ejemplo, puedes expandir las solicitudes después)
+  db.ref('lista_blanca').on('value', snap => {
+    const d = snap.val();
+    document.getElementById('lista-autorizados').innerHTML = d ? Object.keys(d).map(k => `<div class="admin-row"><div><strong>${d[k].nombre}</strong><span style="color:var(--text-muted)">${d[k].correo}</span></div> <button class="btn-action red" onclick="db.ref('lista_blanca/${k}').remove()">X</button></div>`).join('') : '';
+  });
 }
 </script>
 </body>
