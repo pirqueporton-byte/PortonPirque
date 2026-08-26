@@ -5,14 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <title>Portón Pirque</title>
 <meta name="theme-color" content="#F8F9FA">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Portón Pirque">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
   :root {
-    --dash-bg: #F8F9FA; --dash-sidebar: #FFFFFF; --dash-active-bg: #E8F0FE;
-    --dash-active-text: #1967D2; --dash-border: #E8EAED; --text-main: #202124;
-    --text-muted: #5F6368; --card-bg: #FFFFFF; --primary: #1967D2;
-    --danger: #D93025; --success: #1E8E3E; --cyan-riego: #00FFFF;
+    --dash-bg: #F8F9FA;
+    --dash-sidebar: #FFFFFF;
+    --dash-active-bg: #E8F0FE;
+    --dash-active-text: #1967D2;
+    --dash-border: #E8EAED;
+    --text-main: #202124;
+    --text-muted: #5F6368;
+    --card-bg: #FFFFFF;
+    --primary: #1967D2;
+    --danger: #D93025;
+    --success: #1E8E3E;
+    --warning: #F9AB00;
   }
 
   [data-theme="dark"] {
@@ -21,425 +35,461 @@
     --text-muted: #9AA0A6; --card-bg: #1E1E1E;
   }
 
-  * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-  body { margin: 0; padding: 0; min-height: 100vh; background: var(--dash-bg); color: var(--text-main); overflow: hidden; }
+  * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; padding: 0; min-height: 100vh; background: var(--dash-bg); color: var(--text-main); }
 
   /* ==========================================================
-     VISTA ADMINISTRADOR (ESTRUCTURA BASE)
+     VISTA NORMAL (USUARIOS)
      ========================================================== */
-  #vista-dashboard { display: flex; width: 100vw; height: 100vh; overflow: hidden; }
-  .dash-sidebar { width: 250px; background: var(--dash-sidebar); border-right: 1px solid var(--dash-border); display: flex; flex-direction: column; z-index: 10; flex-shrink: 0; }
+  #vista-normal { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: #EFF3EE; }
+  .user-card { background: #fff; width: 100%; max-width: 400px; border-radius: 24px; padding: 30px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; }
+  .btn-google { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; border: 1px solid #DADCE0; color: #3C4043; font-weight: 600; padding: 14px; border-radius: 999px; cursor: pointer; margin-top: 20px; }
+  .btn-google svg { width: 20px; height: 20px; }
+  
+  .gate-btn-wrap { position: relative; width: 200px; height: 200px; margin: 30px auto; }
+  .gate-btn { width: 100%; height: 100%; border-radius: 50%; border: none; background: radial-gradient(circle at 30% 30%, #3E8863, #1F4A32); color: white; cursor: pointer; box-shadow: inset 0 8px 18px rgba(0,0,0,.3), 0 10px 20px rgba(0,0,0,.2); transition: 0.1s; display: flex; align-items: center; justify-content: center; }
+  .gate-btn:active { transform: scale(0.95); }
+  .gate-btn:disabled { filter: grayscale(1); cursor: not-allowed; }
+  .gate-btn svg { width: 50px; height: 50px; opacity: 0.9; }
+  
+  .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 20px; }
+  .status-online { background: #E6F4EA; color: #1E8E3E; }
+  .status-offline { background: #FCE8E6; color: #D93025; }
+  .status-connecting { background: #F1F3F4; color: #5F6368; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+  /* ==========================================================
+     VISTA ADMINISTRADOR (SMART HUB)
+     ========================================================== */
+  #vista-dashboard { display: none; width: 100vw; height: 100vh; overflow: hidden; flex-direction: row; }
+  
+  .dash-sidebar { width: 250px; background: var(--dash-sidebar); border-right: 1px solid var(--dash-border); display: flex; flex-direction: column; z-index: 10; }
   .dash-logo { padding: 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--dash-border); margin-bottom: 12px; }
-  .dash-logo-icon { width: 36px; height: 36px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; }
+  .dash-logo-icon { width: 36px; height: 36px; background: #1967D2; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; }
   
   .dash-nav { flex: 1; padding: 0 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
   .dash-nav-item { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border: none; background: transparent; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; text-align: left; transition: 0.2s; }
   .dash-nav-item svg { width: 20px; height: 20px; }
   .dash-nav-item.active { background: var(--dash-active-bg); color: var(--dash-active-text); }
-  .dash-footer { padding: 12px; border-top: 1px solid var(--dash-border); }
   
-  .dash-content { flex: 1; overflow-y: auto; padding: 30px; background: var(--dash-bg); display: flex; flex-direction: column; }
-  .dash-tab-content { display: none; width: 100%; height: 100%; animation: fadeIn 0.3s ease; flex-direction: column; }
-  .dash-tab-content.active { display: flex; }
+  .dash-footer { padding: 12px; border-top: 1px solid var(--dash-border); }
+
+  .dash-content { flex: 1; overflow-y: auto; padding: 40px; background: var(--dash-bg); }
+  .dash-tab-content { display: none; max-width: 1000px; margin: 0 auto; animation: fadeIn 0.3s ease; }
+  .dash-tab-content.active { display: block; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
   .dash-title { font-size: 26px; font-weight: 700; margin: 0 0 6px; color: var(--text-main); }
-  .dash-subtitle { font-size: 14px; color: var(--text-muted); margin: 0; }
+  .dash-subtitle { font-size: 14px; color: var(--text-muted); margin: 0 0 32px; }
 
-  /* ==========================================================
-     MÓDULO DE RIEGO (MAPA Y SETTINGS)
-     ========================================================== */
-  .riego-header-bar { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-shrink: 0; }
-  .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; }
-  .btn-outline { background: transparent; border: 1px solid var(--dash-border); padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-main); }
+  /* Tarjetas del Administrador (Estilo Smart Hub) */
+  .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .dash-card { background: var(--card-bg); border: 1px solid var(--dash-border); border-radius: 16px; padding: 24px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
   
-  .riego-layout { display: flex; gap: 24px; flex: 1; min-height: 0; }
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-weight: 600; font-size: 15px; color: var(--text-main); }
+  .card-header svg { width: 20px; height: 20px; color: var(--text-muted); }
   
-  /* Contenedor del Mapa */
-  .riego-map-wrapper { flex: 2; background: #000; border-radius: 16px; position: relative; overflow: hidden; border: 1px solid var(--dash-border); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
-  
-  .map-toolbar { position: absolute; bottom: 20px; left: 20px; z-index: 20; display: flex; gap: 10px; background: rgba(30,30,30,0.8); padding: 8px; border-radius: 10px; backdrop-filter: blur(4px); }
-  .map-tool-btn { background: transparent; border: none; color: white; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 13px; display: flex; align-items: center; gap: 6px; }
-  .map-tool-btn.active { background: rgba(255,255,255,0.2); }
-  
-  .zoom-controls { position: absolute; right: 20px; bottom: 20px; z-index: 20; display: flex; flex-direction: column; gap: 5px; }
-  .zoom-btn { width: 36px; height: 36px; background: rgba(30,30,30,0.8); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  .dash-value { font-size: 24px; font-weight: 700; color: var(--text-muted); margin-top: 8px; display: flex; align-items: center; gap: 8px;}
+  .dash-sub-value { font-size: 13px; font-weight: 400; color: var(--text-muted); }
 
-  /* El Transformador del mapa (Paneo y Zoom) */
-  #map-transform { position: absolute; transform-origin: 0 0; transition: transform 0.1s linear; cursor: grab; }
-  #map-transform.drawing { cursor: crosshair; }
-  #map-image { display: block; opacity: 0.8; pointer-events: none; }
+  /* Listas limpias para administrador */
+  .admin-list { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .admin-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--dash-border); font-size: 13px; }
+  .admin-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .admin-row strong { color: var(--text-main); display: block; font-size: 14px; }
   
-  /* Capa SVG para dibujos */
-  #map-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-  .svg-interactive { pointer-events: auto; }
-  .zone-poly { fill: rgba(0, 255, 255, 0.25); stroke: var(--cyan-riego); stroke-width: 2px; cursor: pointer; transition: 0.2s; }
-  .zone-poly:hover { fill: rgba(0, 255, 255, 0.4); }
-  .zone-poly.selected { stroke-width: 4px; stroke: #fff; filter: drop-shadow(0 0 8px var(--cyan-riego)); }
-  .draw-line { stroke: var(--cyan-riego); stroke-width: 2px; stroke-dasharray: 4; }
-  .draw-point { fill: #fff; stroke: var(--cyan-riego); stroke-width: 2px; cursor: pointer; }
-  .snap-point { fill: #FFEB3B; r: 6; }
+  .btn-outline { background: transparent; border: 1px solid var(--dash-border); padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-main); display: inline-flex; align-items: center; gap: 6px;}
+  .btn-action { width: 28px; height: 28px; border-radius: 6px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .btn-action.red { background: #FCE8E6; color: #D93025; }
+  .btn-action.green { background: #E6F4EA; color: #1E8E3E; }
+  
+  .admin-input { width: 100%; padding: 10px 12px; border: 1px solid var(--dash-border); border-radius: 6px; margin-bottom: 10px; font-size: 13px; background: transparent; color: var(--text-main); }
 
-  /* Panel Derecho de Ajustes */
-  .riego-settings { flex: 1; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--dash-border); padding: 24px; display: flex; flex-direction: column; overflow-y: auto; max-width: 380px; }
-  .settings-empty { text-align: center; color: var(--text-muted); margin: auto 0; font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
-  .settings-empty svg { width: 48px; height: 48px; opacity: 0.3; }
-  
-  .settings-form { display: none; flex-direction: column; gap: 20px; }
-  .form-group { display: flex; flex-direction: column; gap: 8px; }
-  .form-group label { font-size: 13px; font-weight: 600; color: var(--text-main); }
-  .form-input { padding: 10px 12px; border: 1px solid var(--dash-border); border-radius: 8px; background: transparent; color: var(--text-main); font-size: 14px; }
-  .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-  .day-btn { padding: 8px 0; text-align: center; border: 1px solid var(--dash-border); background: transparent; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); }
-  .day-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-  
-  .btn-run { background: #1A73E8; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
-  .btn-run:hover { background: #1557B0; }
-  .btn-run svg { width: 20px; height: 20px; }
+  /* MÓVIL PARA ADMINISTRADOR: El sidebar se vuelve menú inferior */
+  @media (max-width: 768px) {
+    #vista-dashboard { flex-direction: column; }
+    .dash-sidebar { width: 100%; height: 70px; flex-direction: row; order: 2; border-right: none; border-top: 1px solid var(--dash-border); padding: 0; justify-content: space-around; align-items: center; }
+    .dash-logo, .dash-footer { display: none; }
+    .dash-nav { flex-direction: row; padding: 0; overflow: visible; width: 100%; justify-content: space-around; }
+    .dash-nav-item { flex-direction: column; gap: 4px; padding: 8px; font-size: 11px; }
+    .dash-nav-item svg { width: 22px; height: 22px; }
+    .dash-content { padding: 20px; order: 1; padding-bottom: 80px; }
+  }
+
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px); background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; opacity: 0; transition: 0.3s; z-index: 9999; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
 </style>
 </head>
-<body data-theme="dark">
+<body>
 
+<!-- VISTA NORMAL (Teléfono para usuarios comunes) -->
+<div id="vista-normal">
+  <div class="user-card" id="vista-login">
+    <h1 style="margin:0 0 10px; color:var(--primary);">Portón Pirque</h1>
+    <p style="color:var(--text-muted); font-size:14px; margin-bottom: 24px;">Inicia sesión para acceder.</p>
+    <button class="btn-google" onclick="iniciarSesion()">
+      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 6 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 6 29.5 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.6 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.6 39.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.6l6.2 5.2C39.9 37 44 31 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+      Continuar con Google
+    </button>
+  </div>
+
+  <div class="user-card" id="vista-autorizado" style="display:none;">
+    <div class="status-badge status-connecting"><span class="status-dot"></span><span class="conexion-text">Conectando...</span></div>
+    <div class="gate-btn-wrap">
+      <button class="gate-btn gate-action-btn" onclick="abrirPorton()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 15v2"></path><path d="M6 10V7a6 6 0 0 1 11.3-2.8"></path><rect x="5" y="10" width="14" height="11" rx="2"></rect></svg>
+      </button>
+    </div>
+    <div id="user-info-normal" style="font-weight:600; margin-bottom:20px;"></div>
+    <button class="btn-outline" onclick="cerrarSesion()">Cerrar sesión</button>
+  </div>
+
+  <div class="user-card" id="vista-no-autorizado" style="display:none;">
+    <h2 style="color:var(--danger)">Sin acceso</h2>
+    <p style="color:var(--text-muted); font-size:14px; margin-bottom: 24px;">Tu cuenta no está en la lista blanca.</p>
+    <button class="btn-outline" onclick="cerrarSesion()">Cerrar sesión y probar otra cuenta</button>
+  </div>
+</div>
+
+<!-- VISTA ADMINISTRADOR (Smart Hub - Exactamente como la imagen) -->
 <div id="vista-dashboard">
-  <!-- SIDEBAR -->
   <aside class="dash-sidebar">
     <div class="dash-logo">
-      <div class="dash-logo-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div>
+      <div class="dash-logo-icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+      </div>
       <div><div style="font-weight:700; color:var(--text-main);">Smart Hub</div><div style="font-size:12px; color:var(--text-muted);">Admin</div></div>
     </div>
+    
     <nav class="dash-nav">
-      <button class="dash-nav-item" onclick="alert('Módulo en construcción')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg> Inicio</button>
-      <button class="dash-nav-item active" id="nav-riego"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg> Riego</button>
+      <button class="dash-nav-item active" id="nav-inicio" onclick="verTab('inicio')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg> Inicio
+      </button>
+      <button class="dash-nav-item" id="nav-porton" onclick="verTab('porton')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg> Portón
+      </button>
+      <button class="dash-nav-item" onclick="verTab('cortinas')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line></svg> Cortinas
+      </button>
+      <!-- Botón de salir visible en móvil también -->
+      <button class="dash-nav-item" onclick="cerrarSesion()" style="color:var(--danger);">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Salir
+      </button>
     </nav>
+    
+    <div class="dash-footer">
+      <button class="dash-nav-item" onclick="toggleDarkMode()" style="width:100%;">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Modo Oscuro
+      </button>
+    </div>
   </aside>
 
-  <!-- CONTENIDO PRINCIPAL -->
   <main class="dash-content">
     
-    <!-- PESTAÑA RIEGO -->
-    <div id="tab-riego" class="dash-tab-content active">
+    <!-- PESTAÑA INICIO (Idéntica a la foto) -->
+    <div id="tab-inicio" class="dash-tab-content active">
+      <h1 class="dash-title">Bienvenido, Administrador</h1>
+      <p class="dash-subtitle">Resumen del estado de tu hogar inteligente.</p>
       
-      <div class="riego-header-bar">
-        <div>
-          <h1 class="dash-title">Control de Riego</h1>
-          <p class="dash-subtitle">Haz clic en una zona para configurarla o crea nuevos sectores.</p>
+      <div class="dash-grid">
+        <div class="dash-card" style="cursor:pointer;" onclick="verTab('porton')">
+          <div class="card-header">Portón <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16h12V4a2 2 0 0 0-2-2z"></path><path d="M14 10h-2"></path></svg></div>
+          <div class="dash-value conexion-text">Conectando...</div>
         </div>
-        <button class="btn-primary" onclick="document.getElementById('map-upload').click()">Subir Nuevo Mapa</button>
-        <input type="file" id="map-upload" hidden accept="image/*" onchange="cargarMapa(event)">
-      </div>
-
-      <div class="riego-layout">
         
-        <!-- VISOR DEL MAPA -->
-        <div class="riego-map-wrapper" id="map-wrapper">
-          
-          <div class="map-toolbar">
-            <button class="map-tool-btn active" id="btn-mode-pan" onclick="setMode('pan')">🖐 Ajustar</button>
-            <button class="map-tool-btn" id="btn-mode-perimeter" onclick="setMode('perimeter')">📐 Perímetro</button>
-            <button class="map-tool-btn" id="btn-mode-zone" onclick="setMode('zone')">+ Nueva Zona</button>
-          </div>
-
-          <div class="zoom-controls">
-            <button class="zoom-btn" onclick="zoomMap(0.2)">+</button>
-            <button class="zoom-btn" onclick="zoomMap(-0.2)">-</button>
-          </div>
-
-          <div id="map-transform">
-            <img id="map-image" src="" style="display:none;" onload="iniciarMapa(this)">
-            <svg id="map-svg" class="svg-interactive"></svg>
-          </div>
-
+        <div class="dash-card">
+          <div class="card-header">Luces Activas <svg fill="none" stroke="#F9AB00" viewBox="0 0 24 24"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-7 7c0 2 1.5 4 3 5s1.5 4 1.5 4h5s0-3 1.5-4 3-3 3-5a7 7 0 0 0-7-7z"></path></svg></div>
+          <div class="dash-value">1 <span class="dash-sub-value">/ 3 encendidas</span></div>
         </div>
 
-        <!-- PANEL DE AJUSTES (DERECHA) -->
-        <div class="riego-settings">
-          
-          <div class="settings-empty" id="settings-empty">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.71C9.72 4.53 10.81 3 12.5 3c1.95 0 3.09 1.81 3.44 3.75a4.5 4.5 0 011.56 8.9v.1"></path><path stroke-linecap="round" stroke-linejoin="round" d="M12 11v8m0 0l-3-3m3 3l3-3"></path></svg>
-            Selecciona una zona en el mapa para ver su configuración o crear una nueva.
+        <div class="dash-card">
+          <div class="card-header">Estanque <svg fill="none" stroke="#06B6D4" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg></div>
+          <div class="dash-value">76%</div>
+          <div style="width:100%; height:6px; background:var(--dash-border); border-radius:3px; margin-top:12px; overflow:hidden;"><div style="width:76%; height:100%; background:#06B6D4;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA PORTÓN (Listas adaptadas al diseño limpio) -->
+    <div id="tab-porton" class="dash-tab-content">
+      <h1 class="dash-title">Gestión del Portón</h1>
+      <p class="dash-subtitle">Administra los permisos de acceso y el funcionamiento del motor.</p>
+
+      <div class="dash-grid">
+        
+        <!-- Tarjeta del Botón Maestro -->
+        <div class="dash-card" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+          <div class="card-header" style="width:100%;">Apertura Manual <div class="status-dot conexion-dot" style="color:var(--text-muted)"></div></div>
+          <div class="gate-btn-wrap" style="width: 150px; height: 150px; margin: 10px 0;">
+            <button class="gate-btn gate-action-btn" onclick="abrirPorton()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 15v2"></path><path d="M6 10V7a6 6 0 0 1 11.3-2.8"></path><rect x="5" y="10" width="14" height="11" rx="2"></rect></svg>
+            </button>
           </div>
+          <span class="dash-sub-value conexion-text">Conectando...</span>
+        </div>
 
-          <div class="settings-form" id="settings-form">
-            <h2 id="zone-title" style="margin:0 0 20px; font-size:20px;">Nombre de Zona</h2>
-            
-            <div class="form-group">
-              <label>Días de riego</label>
-              <div class="days-grid">
-                <button class="day-btn">L</button><button class="day-btn">M</button><button class="day-btn">M</button>
-                <button class="day-btn">J</button><button class="day-btn">V</button><button class="day-btn">S</button><button class="day-btn">D</button>
-              </div>
-            </div>
+        <!-- Historial -->
+        <div class="dash-card">
+          <div class="card-header">Últimas aperturas</div>
+          <div class="admin-list" id="lista-historial"></div>
+        </div>
 
-            <div class="form-group">
-              <label>Hora de inicio</label>
-              <input type="time" class="form-input" value="06:00">
-            </div>
+        <!-- Web App -->
+        <div class="dash-card">
+          <div class="card-header">Cuentas Google (Web App)</div>
+          <div class="admin-list" id="lista-solicitudes"></div>
+          <div class="admin-list" id="lista-autorizados" style="margin-top:10px;"></div>
+        </div>
 
-            <div class="form-group">
-              <label>Duración (minutos)</label>
-              <input type="number" class="form-input" value="15">
-            </div>
-
-            <button class="btn-outline" style="margin-top:10px" onclick="guardarConfig()">Guardar Programación</button>
-            <hr style="border:0; border-top:1px solid var(--dash-border); width:100%; margin:10px 0;">
-            
-            <div class="form-group">
-              <label>Riego Directo Temporal</label>
-              <div style="display:flex; gap:10px;">
-                <input type="number" id="manual-time" class="form-input" value="5" style="width:80px">
-                <span style="align-self:center; color:var(--text-muted); font-size:13px;">minutos</span>
-              </div>
-            </div>
-            <button class="btn-run" onclick="ejecutarRiego()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Regar Ahora</button>
-            
-            <button class="btn-outline" style="color:var(--danger); border-color:var(--danger); margin-top:20px;" onclick="eliminarZonaActual()">Eliminar Zona</button>
+        <!-- Telegram -->
+        <div class="dash-card">
+          <div class="card-header">IDs de Telegram</div>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="tg-id" class="admin-input" placeholder="ID (ej. 123456)">
+            <input type="text" id="tg-nombre" class="admin-input" placeholder="Nombre">
           </div>
+          <button class="btn-outline" onclick="agregarTelegram()">Añadir Bot</button>
+          <div class="admin-list" id="lista-telegram"></div>
+        </div>
 
+        <!-- WiFi -->
+        <div class="dash-card">
+          <div class="card-header">Redes WiFi del Motor</div>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="red-ssid" class="admin-input" placeholder="Nombre (SSID)">
+            <input type="password" id="red-pass" class="admin-input" placeholder="Clave">
+          </div>
+          <button class="btn-outline" onclick="agregarRed()">Añadir WiFi (Reinicia placa)</button>
+          <div class="admin-list" id="lista-redes"></div>
+        </div>
+
+        <!-- ESP-NOW -->
+        <div class="dash-card">
+          <div class="card-header">Controles Físicos (Sin WiFi)</div>
+          <button class="btn-outline" onclick="activarEmparejamiento()" style="width:100%; justify-content:center; border-color:var(--primary); color:var(--primary);">Activar emparejamiento (60s)</button>
+          <div class="admin-list" id="lista-controles" style="margin-top:16px;"></div>
         </div>
 
       </div>
     </div>
+
+    <!-- Pestañas dummy -->
+    <div id="tab-cortinas" class="dash-tab-content"><h1 class="dash-title">Cortinas</h1><p class="dash-subtitle">Módulo no instalado.</p></div>
   </main>
 </div>
 
-<script>
-/* ==========================================================
-   MOTOR GRÁFICO DE RIEGO (PAN, ZOOM, CLIP, DRAW)
-   ========================================================== */
-const wrapper = document.getElementById('map-wrapper');
-const transformEl = document.getElementById('map-transform');
-const imgEl = document.getElementById('map-image');
-const svgEl = document.getElementById('map-svg');
+<div id="toast" class="toast">Mensaje</div>
 
-// Estado del mapa
-let mapState = {
-  mode: 'pan', // pan, perimeter, zone
-  scale: 1, tx: 0, ty: 0,
-  isDragging: false, startX: 0, startY: 0,
-  imgWidth: 0, imgHeight: 0
+<!-- FIREBASE AL FINAL PARA MAXIMA VELOCIDAD -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyCABy9Rpn1wc1gYBzDEm8Mf05x0gu9lpyQ",
+    authDomain: "portonpirque.firebaseapp.com",
+    databaseURL: "https://portonpique-default-rtdb.firebaseio.com/",
+    projectId: "portonpirque"
 };
 
-// Datos de geometría
-let perimeter = []; // [{x,y}, ...]
-let zones = [];     // [{id, name, points:[{x,y}], ...}]
-let currentDraw = [];
-let selectedZoneId = null;
+const DEMO_MODE = false; // Cambiar a true para probar sin Firebase
+let db, auth, provider;
 
-// Cargar imagen local
-function cargarMapa(event) {
-  const file = event.target.files[0];
-  if(file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      imgEl.src = e.target.result;
-      imgEl.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-  }
+if(!DEMO_MODE) {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.database();
+  auth = firebase.auth();
+  provider = new firebase.auth.GoogleAuthProvider();
 }
 
-// Inicializar dimensiones
-function iniciarMapa(img) {
-  mapState.imgWidth = img.naturalWidth;
-  mapState.imgHeight = img.naturalHeight;
-  transformEl.style.width = mapState.imgWidth + 'px';
-  transformEl.style.height = mapState.imgHeight + 'px';
-  svgEl.setAttribute('viewBox', `0 0 ${mapState.imgWidth} ${mapState.imgHeight}`);
-  
-  // Auto-centrar y escalar
-  const scaleX = wrapper.clientWidth / mapState.imgWidth;
-  const scaleY = wrapper.clientHeight / mapState.imgHeight;
-  mapState.scale = Math.min(scaleX, scaleY) * 0.9;
-  mapState.tx = (wrapper.clientWidth - (mapState.imgWidth * mapState.scale)) / 2;
-  mapState.ty = (wrapper.clientHeight - (mapState.imgHeight * mapState.scale)) / 2;
-  
-  perimeter = []; zones = []; currentDraw = [];
-  actualizarTransform();
-  renderSVG();
-}
+const ADMIN_EMAIL = "pirqueporton@gmail.com";
+let currentUser = null;
+let ultimoLatido = 0;
+let serverTimeOffset = 0;
 
-// Interfaz Botones
-function setMode(mode) {
-  mapState.mode = mode;
-  document.querySelectorAll('.map-tool-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('btn-mode-' + mode).classList.add('active');
-  transformEl.className = (mode !== 'pan') ? 'drawing' : '';
-  currentDraw = [];
-  renderSVG();
-}
+// SISTEMA DE RUTEO PRINCIPAL (Aísla las vistas)
+function verificarAcceso(user) {
+  document.getElementById('vista-login').style.display = 'none';
 
-// --- CONTROLES DE PANEO Y ZOOM ---
-function actualizarTransform() {
-  transformEl.style.transform = `translate(${mapState.tx}px, ${mapState.ty}px) scale(${mapState.scale})`;
-}
-
-function zoomMap(delta) {
-  const oldScale = mapState.scale;
-  mapState.scale = Math.max(0.1, Math.min(mapState.scale + delta, 5));
-  // Ajustar tx/ty para hacer zoom al centro del contenedor
-  const cx = wrapper.clientWidth / 2; const cy = wrapper.clientHeight / 2;
-  mapState.tx = cx - (cx - mapState.tx) * (mapState.scale / oldScale);
-  mapState.ty = cy - (cy - mapState.ty) * (mapState.scale / oldScale);
-  actualizarTransform();
-}
-
-wrapper.addEventListener('wheel', (e) => {
-  e.preventDefault();
-  zoomMap(e.deltaY < 0 ? 0.1 : -0.1);
-});
-
-wrapper.addEventListener('mousedown', (e) => {
-  if(e.button !== 0) return;
-  if(mapState.mode === 'pan') {
-    mapState.isDragging = true;
-    mapState.startX = e.clientX - mapState.tx;
-    mapState.startY = e.clientY - mapState.ty;
-  }
-});
-
-window.addEventListener('mousemove', (e) => {
-  if(mapState.isDragging && mapState.mode === 'pan') {
-    mapState.tx = e.clientX - mapState.startX;
-    mapState.ty = e.clientY - mapState.startY;
-    actualizarTransform();
-  }
-});
-
-window.addEventListener('mouseup', () => mapState.isDragging = false);
-
-// --- DIBUJO Y LÓGICA DE SNAPPING (IMANTACIÓN) ---
-function getSVGCoords(e) {
-  const rect = transformEl.getBoundingClientRect();
-  const x = (e.clientX - rect.left) / mapState.scale;
-  const y = (e.clientY - rect.top) / mapState.scale;
-  return {x, y};
-}
-
-// Encuentra el vértice más cercano de CUALQUIER polígono para evitar superposiciones
-function buscarSnap(x, y) {
-  const SNAP_DIST = 20 / mapState.scale; // 20px visuales de magnetismo
-  let mejor = null; let minD = Infinity;
-
-  const revisarPuntos = (pts) => {
-    pts.forEach(p => {
-      const d = Math.hypot(p.x - x, p.y - y);
-      if(d < SNAP_DIST && d < minD) { minD = d; mejor = {...p}; }
-    });
-  };
-
-  revisarPuntos(perimeter);
-  zones.forEach(z => revisarPuntos(z.points));
-  if(currentDraw.length > 0) revisarPuntos([currentDraw[0]]); // Snap al punto inicial para cerrar
-
-  return mejor;
-}
-
-// MouseMove sobre el mapa para mostrar el punto imantado si estamos dibujando
-wrapper.addEventListener('mousemove', (e) => {
-  if(mapState.mode === 'pan' || currentDraw.length === 0) return;
-  const c = getSVGCoords(e);
-  const snap = buscarSnap(c.x, c.y);
-  renderSVG(snap ? snap : c); // Dibuja la línea en tiempo real
-});
-
-wrapper.addEventListener('mousedown', (e) => {
-  if(mapState.mode === 'pan' || e.button !== 0) return;
-  
-  const c = getSVGCoords(e);
-  const snap = buscarSnap(c.x, c.y);
-  const puntoFinal = snap ? snap : c;
-
-  // Si tocamos el primer punto del dibujo actual, cerramos la figura
-  if(currentDraw.length > 2 && snap && snap.x === currentDraw[0].x && snap.y === currentDraw[0].y) {
-    if(mapState.mode === 'perimeter') {
-      perimeter = [...currentDraw];
-      setMode('pan');
-    } else if (mapState.mode === 'zone') {
-      const nombre = prompt("Nombre de la nueva zona:", "Zona " + (zones.length + 1));
-      if(nombre) {
-        zones.push({ id: Date.now().toString(), name: nombre, points: [...currentDraw] });
-        seleccionarZona(zones[zones.length-1].id);
-      }
-      setMode('pan');
-    }
+  if (user.email === ADMIN_EMAIL) {
+    document.getElementById('vista-normal').style.display = 'none';
+    document.getElementById('vista-dashboard').style.display = 'flex';
+    cargarDatosAdmin();
+    verTab('inicio');
   } else {
-    currentDraw.push(puntoFinal);
-    renderSVG();
-  }
-});
-
-// --- RENDERIZADO SVG ---
-function renderSVG(cursorCoord = null) {
-  let html = '';
-
-  // 1. Oscurecer el exterior del perímetro (Masking invertido con fill-rule="evenodd")
-  if(perimeter.length > 2) {
-    let d = `M 0 0 L ${mapState.imgWidth} 0 L ${mapState.imgWidth} ${mapState.imgHeight} L 0 ${mapState.imgHeight} Z `;
-    d += `M ${perimeter[0].x} ${perimeter[0].y} `;
-    for(let i=1; i<perimeter.length; i++) d += `L ${perimeter[i].x} ${perimeter[i].y} `;
-    d += 'Z';
-    html += `<path d="${d}" fill="rgba(0,0,0,0.65)" fill-rule="evenodd" />`;
+    document.getElementById('vista-dashboard').style.display = 'none';
+    document.getElementById('vista-normal').style.display = 'flex';
     
-    // Borde iluminado del perímetro
-    const pts = perimeter.map(p => `${p.x},${p.y}`).join(' ');
-    html += `<polygon points="${pts}" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-dasharray="8" />`;
-  }
+    if (DEMO_MODE) {
+      document.getElementById('vista-autorizado').style.display = 'block';
+      document.getElementById('user-info-normal').textContent = 'Hola, ' + user.displayName;
+      return;
+    }
 
-  // 2. Dibujar Zonas creadas
-  zones.forEach(z => {
-    const pts = z.points.map(p => `${p.x},${p.y}`).join(' ');
-    const isSelected = z.id === selectedZoneId;
-    html += `<polygon class="zone-poly ${isSelected?'selected':''}" points="${pts}" onclick="seleccionarZona('${z.id}')" />`;
+    db.ref(`lista_blanca/${user.uid}`).once('value').then((snap) => {
+      if(snap.exists()) {
+        document.getElementById('vista-autorizado').style.display = 'block';
+        document.getElementById('user-info-normal').textContent = 'Hola, ' + snap.val().nombre;
+      } else {
+        document.getElementById('vista-no-autorizado').style.display = 'block';
+      }
+    });
+  }
+}
+
+// GESTIÓN DE SESIÓN
+function iniciarSesion() {
+  if(DEMO_MODE) {
+    currentUser = { uid: 'demo1', displayName: 'Darío', email: ADMIN_EMAIL };
+    verificarAcceso(currentUser);
+    return;
+  }
+  auth.signInWithPopup(provider).catch(e => mostrarToast('Error: ' + e.message));
+}
+
+function cerrarSesion() {
+  if(DEMO_MODE) { window.location.reload(); return; }
+  auth.signOut().then(() => {
+    // Al cerrar sesión, ocultamos los paneles y mostramos solo el login normal
+    document.getElementById('vista-dashboard').style.display = 'none';
+    document.getElementById('vista-autorizado').style.display = 'none';
+    document.getElementById('vista-no-autorizado').style.display = 'none';
     
-    // Icono gota de agua en el centroide
-    let cx=0, cy=0;
-    z.points.forEach(p=>{ cx+=p.x; cy+=p.y; });
-    cx/=z.points.length; cy/=z.points.length;
-    html += `<svg x="${cx-12}" y="${cy-12}" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${isSelected?'#fff':'var(--cyan-riego)'}" stroke-width="2" pointer-events="none"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>`;
+    document.getElementById('vista-normal').style.display = 'flex';
+    document.getElementById('vista-login').style.display = 'block';
+  });
+}
+
+// PERSISTENCIA AUTOMÁTICA (Firebase mantiene iniciada la sesión)
+if(!DEMO_MODE) {
+  auth.onAuthStateChanged((user) => {
+    if(user) {
+      currentUser = user;
+      verificarAcceso(user);
+    } else {
+      cerrarSesion();
+    }
+  });
+}
+
+// NAVEGACIÓN DASHBOARD
+function verTab(tabId) {
+  document.querySelectorAll('.dash-tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.dash-nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  document.getElementById('nav-' + tabId).classList.add('active');
+}
+
+function toggleDarkMode() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if(isDark) document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', 'dark');
+}
+
+// MONITOR DE CONEXIÓN (Aplica a todas las vistas)
+function setEstadoConexion(estado) {
+  const isOnline = (estado === 'online');
+  const txt = isOnline ? 'En línea' : 'Fuera de línea';
+  const dotColor = isOnline ? 'var(--success)' : 'var(--danger)';
+  
+  document.querySelectorAll('.conexion-text').forEach(el => el.textContent = txt);
+  document.querySelectorAll('.conexion-dot').forEach(el => el.style.color = dotColor);
+  document.querySelectorAll('.gate-action-btn').forEach(btn => btn.disabled = !isOnline);
+  
+  // Normal view status badge
+  const normBadge = document.querySelector('.status-badge');
+  if(normBadge) {
+    normBadge.className = 'status-badge ' + (isOnline ? 'status-online' : 'status-offline');
+  }
+}
+
+if(!DEMO_MODE) {
+  db.ref('.info/serverTimeOffset').on('value', snap => serverTimeOffset = snap.val() || 0);
+  db.ref('estado_porton/ultima_conexion').on('value', snap => { if(snap.exists()) ultimoLatido = snap.val(); });
+  setInterval(() => {
+    const dif = ((Date.now() + serverTimeOffset) - ultimoLatido) / 1000;
+    setEstadoConexion(dif > 30 ? 'offline' : 'online');
+  }, 1000);
+} else {
+  setEstadoConexion('online');
+}
+
+// ABRIR PORTÓN
+function abrirPorton() {
+  document.querySelectorAll('.conexion-text').forEach(el => el.textContent = 'Enviando orden...');
+  if(DEMO_MODE) {
+    setTimeout(() => { mostrarToast('¡Portón abierto!'); setEstadoConexion('online'); }, 1000);
+    return;
+  }
+  
+  db.ref('estado_porton').update({ comando: 'abrir_' + Date.now(), timestamp: firebase.database.ServerValue.TIMESTAMP })
+    .then(() => {
+      mostrarToast('Apertura solicitada con éxito');
+      db.ref('historial').push({ fecha: new Date().toLocaleString('es-CL'), usuario: (currentUser.displayName || currentUser.email) });
+      setTimeout(() => setEstadoConexion('online'), 2000);
+    });
+}
+
+// FUNCIONES DE ADMIN
+function mostrarToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function agregarTelegram() {
+  const id = document.getElementById('tg-id').value.trim();
+  const nombre = document.getElementById('tg-nombre').value.trim();
+  if(id && nombre) db.ref(`telegram_usuarios/${id}`).set({ nombre });
+}
+
+function agregarRed() {
+  const ssid = document.getElementById('red-ssid').value.trim();
+  const pass = document.getElementById('red-pass').value;
+  if(ssid) {
+    db.ref('configuracion/redes_wifi').push({ ssid, pass });
+    mostrarToast('Red guardada, portón reiniciando...');
+  }
+}
+
+function activarEmparejamiento() {
+  db.ref('estado_porton').update({ comando: 'emparejar', timestamp: firebase.database.ServerValue.TIMESTAMP });
+  mostrarToast('Modo emparejamiento activado (60s)');
+}
+
+function cargarDatosAdmin() {
+  if(DEMO_MODE) return;
+  // Historial
+  db.ref('historial').limitToLast(8).on('value', snap => {
+    let html = '';
+    snap.forEach(c => { html = `<div class="admin-row"><strong>${c.val().usuario}</strong> <span>${c.val().fecha}</span></div>` + html; });
+    document.getElementById('lista-historial').innerHTML = html || '<div class="admin-row">Sin registros</div>';
+  });
+  
+  // Telegram
+  db.ref('telegram_usuarios').on('value', snap => {
+    const d = snap.val();
+    document.getElementById('lista-telegram').innerHTML = d ? Object.keys(d).map(k => `<div class="admin-row"><div><strong>${d[k].nombre}</strong><span style="color:var(--text-muted)">${k}</span></div> <button class="btn-action red" onclick="db.ref('telegram_usuarios/${k}').remove()">X</button></div>`).join('') : '';
   });
 
-  // 3. Dibujo en progreso
-  if(currentDraw.length > 0) {
-    let d = `M ${currentDraw[0].x} ${currentDraw[0].y} `;
-    for(let i=1; i<currentDraw.length; i++) d += `L ${currentDraw[i].x} ${currentDraw[i].y} `;
-    if(cursorCoord) d += `L ${cursorCoord.x} ${cursorCoord.y}`;
-    html += `<path d="${d}" class="draw-line" fill="none" />`;
-    
-    currentDraw.forEach(p => { html += `<circle cx="${p.x}" cy="${p.y}" r="${4/mapState.scale}" class="draw-point" />`; });
-    if(cursorCoord) html += `<circle cx="${cursorCoord.x}" cy="${cursorCoord.y}" r="${6/mapState.scale}" class="snap-point" />`;
-  }
-
-  svgEl.innerHTML = html;
-}
-
-// --- LÓGICA DEL PANEL DE SETTINGS ---
-function seleccionarZona(id) {
-  if(mapState.mode !== 'pan') return; // Bloquear selección si está dibujando
-  selectedZoneId = id;
-  renderSVG();
+  // Redes
+  db.ref('configuracion/redes_wifi').on('value', snap => {
+    const d = snap.val();
+    document.getElementById('lista-redes').innerHTML = d ? Object.keys(d).map(k => `<div class="admin-row"><strong>${d[k].ssid}</strong> <button class="btn-action red" onclick="db.ref('configuracion/redes_wifi/${k}').remove()">X</button></div>`).join('') : '';
+  });
   
-  const zona = zones.find(z => z.id === id);
-  if(zona) {
-    document.getElementById('settings-empty').style.display = 'none';
-    document.getElementById('settings-form').style.display = 'flex';
-    document.getElementById('zone-title').textContent = zona.name;
-  }
-}
+  // ESP NOW
+  db.ref('config_espnow').on('value', snap => {
+    const d = snap.val();
+    document.getElementById('lista-controles').innerHTML = d ? Object.keys(d).map(k => `<div class="admin-row"><strong>${d[k].nombre}</strong> <span>${d[k].mac}</span></div>`).join('') : '<div class="admin-row">Sin controles físicos vinculados</div>';
+  });
 
-function eliminarZonaActual() {
-  if(confirm("¿Seguro que deseas eliminar esta zona?")) {
-    zones = zones.filter(z => z.id !== selectedZoneId);
-    selectedZoneId = null;
-    document.getElementById('settings-empty').style.display = 'flex';
-    document.getElementById('settings-form').style.display = 'none';
-    renderSVG();
-  }
-}
-
-function guardarConfig() { alert("Configuración guardada en la memoria."); }
-function ejecutarRiego() {
-  const min = document.getElementById('manual-time').value;
-  alert(`Iniciando riego en válvula de ${document.getElementById('zone-title').textContent} por ${min} minutos...`);
+  // Web App Users (Simplificado para ejemplo, puedes expandir las solicitudes después)
+  db.ref('lista_blanca').on('value', snap => {
+    const d = snap.val();
+    document.getElementById('lista-autorizados').innerHTML = d ? Object.keys(d).map(k => `<div class="admin-row"><div><strong>${d[k].nombre}</strong><span style="color:var(--text-muted)">${d[k].correo}</span></div> <button class="btn-action red" onclick="db.ref('lista_blanca/${k}').remove()">X</button></div>`).join('') : '';
+  });
 }
 </script>
 </body>
