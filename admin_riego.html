@@ -16,17 +16,24 @@
     --text-muted: #9CA3AF; --primary: #F8FAFC; --primary-text: #0F172A;
     --cyan-glow: #A0E0FF; --shadow: 0 10px 30px -10px rgba(0,0,0,0.6); --map-bg: #0A0C10; 
   }
+  [data-theme="grey"] { 
+    --bg: #202124; --surface: #292A2D; --border: #3C4043; --text-main: #E8EAED; 
+    --text-muted: #9AA0A6; --primary: #8AB4F8; --primary-text: #202124;
+    --cyan-glow: #78D9EC; --shadow: 0 10px 30px -10px rgba(0,0,0,0.5); --map-bg: #17181A; --danger: #F28B82;
+  }
 
   * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
   body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text-main); overflow: hidden; display: flex; transition: 0.3s; }
 
   /* SIDEBAR MINIMALISTA */
-  .dash-sidebar { width: 80px; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding-top: 24px; z-index: 50; border-right: 1px solid var(--border); }
-  .dash-logo-icon { width: 44px; height: 44px; background: var(--surface); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--text-main); margin-bottom: 30px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .dash-sidebar { width: 80px; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding-top: 24px; z-index: 50; border-right: 1px solid var(--border); transition: 0.3s;}
+  .dash-logo-icon { width: 44px; height: 44px; background: var(--surface); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--text-main); margin-bottom: 30px; box-shadow: var(--shadow); border: 1px solid var(--border); transition: 0.3s;}
   .dash-nav-item { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: none; background: transparent; border-radius: 12px; color: var(--text-muted); cursor: pointer; margin-bottom: 12px; transition: 0.2s; text-decoration: none; }
   .dash-nav-item.active { background: var(--surface); color: var(--text-main); box-shadow: var(--shadow); border: 1px solid var(--border); }
   .dash-nav-item:hover:not(.active) { color: var(--text-main); }
   .dash-nav-item svg { width: 20px; height: 20px; }
+
+  .dash-footer { padding: 12px; border-top: 1px solid var(--border); width: 100%; margin-top: auto; display: flex; justify-content: center; transition: 0.3s;}
 
   /* CONTENIDO PRINCIPAL */
   .dash-content { flex: 1; padding: 24px 32px; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -38,6 +45,9 @@
   .btn-icon { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--text-main); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
   .btn-icon:hover { background: var(--border); }
   
+  .btn-theme { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 0 16px; height: 40px; border-radius: 99px; font-weight: 600; cursor: pointer; font-size: 13px; transition: 0.2s; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow); }
+  .btn-theme:active { transform: scale(0.95); }
+
   .btn-primary { background: var(--primary); color: var(--primary-text); border: none; padding: 0 20px; height: 40px; border-radius: 99px; font-weight: 700; cursor: pointer; font-size: 13px; transition: 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
   .btn-primary:active { transform: scale(0.95); }
 
@@ -59,7 +69,6 @@
   #map-transform { position: absolute; top: 0; left: 0; transform-origin: 0 0; transition: transform 0.1s linear; cursor: grab; z-index: 1; }
   #map-transform.drawing { cursor: crosshair; }
   
-  /* Efecto Viñeta/Fade en los bordes de la foto */
   #map-image { 
     display: block; width: 100%; height: 100%; opacity: 1; pointer-events: none; transition: 0.4s;
     -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%);
@@ -79,7 +88,7 @@
   .marker-group.selected circle.icon-bg { stroke: #FFF; stroke-width: 3px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
 
   /* PANEL DERECHO */
-  .riego-settings { flex: 1; background: var(--surface); border-radius: 16px; border: 1px solid var(--border); padding: 28px; display: flex; flex-direction: column; overflow-y: auto; max-width: 360px; box-shadow: var(--shadow); z-index: 2; }
+  .riego-settings { flex: 1; background: var(--surface); border-radius: 16px; border: 1px solid var(--border); padding: 28px; display: flex; flex-direction: column; overflow-y: auto; max-width: 360px; box-shadow: var(--shadow); z-index: 2; transition: 0.3s;}
   .settings-empty { text-align: center; color: var(--text-muted); margin: auto 0; font-size: 13.5px; display: flex; flex-direction: column; align-items: center; gap: 16px; line-height: 1.5; }
   .settings-empty svg { width: 50px; height: 50px; opacity: 0.5; }
   
@@ -97,11 +106,11 @@
   
   .btn-outline { background: transparent; border: 1px solid var(--border); padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-main); transition: 0.2s; }
   .btn-outline:hover { background: rgba(100,100,100,0.1); }
-  .btn-danger { color: #FCA5A5; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); }
+  .btn-danger { color: var(--danger); border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); }
   
   input[type=range] { width: 100%; -webkit-appearance: none; background: transparent; margin: 10px 0; }
   input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; background: var(--border); border-radius: 3px; cursor: pointer; }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #FFF; cursor: pointer; margin-top: -6px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--text-main); cursor: pointer; margin-top: -6px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 
   /* MODAL DE AJUSTES VISUALES */
   .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
@@ -115,6 +124,7 @@
     .dash-sidebar { width: 100%; height: 70px; flex-direction: row; order: 2; border-right: none; border-top: 1px solid var(--border); justify-content: space-around; padding: 0; z-index: 100; }
     .dash-logo-icon { display: none; }
     .dash-nav-item { margin: 0; width: 44px; height: 44px; }
+    .dash-footer { padding: 0 12px; border-top: none; border-left: 1px solid var(--border); width: auto; margin-top: 0; align-items: center; }
     .dash-content { padding: 20px; order: 1; padding-bottom: 20px; }
     .riego-map-wrapper { height: 45vh; min-height: 320px; width: 100%; }
     .riego-settings { max-width: 100%; padding: 20px; }
@@ -123,7 +133,7 @@
     .tool-btn { flex: 1; justify-content: center; padding: 10px; }
   }
   
-  .toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px); background: #FFF; color: #000; padding: 12px 24px; border-radius: 99px; font-size: 13px; font-weight: 600; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px); background: var(--text-main); color: var(--bg); padding: 12px 24px; border-radius: 99px; font-size: 13px; font-weight: 600; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
 </style>
 </head>
@@ -135,16 +145,30 @@
   <a href="admin_porton.html" class="dash-nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></a>
   <a href="admin_riego.html" class="dash-nav-item active"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></a>
   <a href="#" onclick="cerrarSesion()" class="dash-nav-item" style="color:var(--danger);"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></a>
+  
+  <div class="dash-footer">
+    <button class="dash-nav-item theme-btn-icon" id="theme-btn-sidebar" onclick="ciclarTema()" style="width:100%; margin:0;" title="Cambiar Tema">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
+  </div>
 </aside>
 
 <main class="dash-content">
   <div class="riego-header-bar">
     <div><h1 class="dash-title">Riego Inteligente</h1><p class="dash-subtitle">Gemelo Digital del Terreno.</p></div>
     <div class="header-actions">
+      
+      <!-- BOTÓN DE TEMA SUPERIOR -->
+      <button class="btn-theme theme-btn-icon" onclick="ciclarTema()" id="theme-btn">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="width:16px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> 
+        <span>Oscuro</span>
+      </button>
+
       <!-- BOTÓN DE AJUSTES VISUALES -->
       <button class="btn-icon" onclick="document.getElementById('visual-modal').classList.add('active')" title="Ajustes Visuales">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="width:18px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </button>
+
       <button class="btn-primary" onclick="document.getElementById('map-upload').click()">Actualizar Plano</button>
       <input type="file" id="map-upload" hidden accept="image/*" onchange="procesarYComprimirImagen(event)">
     </div>
@@ -261,11 +285,41 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-if (localStorage.getItem('riegoTheme') === 'light') document.body.removeAttribute('data-theme');
-const firebaseConfig = { apiKey: "AIzaSyCABy9Rpn1wc1gYBzDEm8Mf05x0gu9lpyQ", authDomain: "portonpirque.firebaseapp.com", databaseURL: "https://portonpique-default-rtdb.firebaseio.com/", projectId: "portonpirque" };
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth(); const db = firebase.database(); const ADMIN_EMAIL = "pirqueporton@gmail.com";
+// =========================================================================
+// MOTOR DE TEMAS MULTI-ESTADO
+// =========================================================================
+function aplicarTema(tema) {
+  if (tema === 'light') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', tema);
+  localStorage.setItem('riegoTheme', tema);
+  
+  const svgLight = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+  const svgGrey = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 0 0 20z" fill="currentColor"></path></svg>';
+  const svgDark = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+  
+  let svgStr = svgDark; let txt = 'Oscuro';
+  if(tema === 'light') { svgStr = svgLight; txt = 'Claro'; }
+  else if(tema === 'grey') { svgStr = svgGrey; txt = 'Gris'; }
 
+  document.querySelectorAll('.theme-btn-icon').forEach(btn => {
+    if(btn.querySelector('span')) btn.innerHTML = `${svgStr} <span>${txt}</span>`;
+    else btn.innerHTML = svgStr;
+  });
+}
+
+function ciclarTema() {
+  const actual = localStorage.getItem('riegoTheme') || 'dark';
+  let nuevo = 'dark';
+  if(actual === 'dark') nuevo = 'grey';
+  else if(actual === 'grey') nuevo = 'light';
+  aplicarTema(nuevo);
+}
+
+aplicarTema(localStorage.getItem('riegoTheme') || 'dark');
+
+// =========================================================================
+// RESTO DEL CÓDIGO (Intacto)
+// =========================================================================
 let vis = { extDark: 0.5, zoneAlpha: 0.25, borderW: 2.5 };
 function loadVisuals() {
   const v = JSON.parse(localStorage.getItem('riegoVis') || 'null'); if(v) vis = {...vis, ...v};
@@ -280,7 +334,6 @@ function mostrarToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 function toggleDia(btn) { btn.classList.toggle('active'); }
-function cerrarSesion() { auth.signOut().then(() => window.location.href = 'index.html'); }
 
 const DICT_ICONS = {
   gota: '<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>', piscina: '<path d="M22 12H2M4 12v6a2 2 0 002 2h12a2 2 0 002-2v-6M9 8v4M15 8v4M9 10h6"/>',
@@ -301,7 +354,10 @@ const imgEl = document.getElementById('map-image'); const svgEl = document.getEl
 let mapState = { mode: 'pan', view: 'map', scale: 1, tx: 0, ty: 0, isDragging: false, startX: 0, startY: 0, clickX: 0, clickY: 0, imgWidth: 0, imgHeight: 0 };
 let perimeter = []; let zones = []; let markers = []; let currentDraw = []; let selectedItem = { type: null, id: null }; let draggingMarkerId = null;
 
-// AUTENTICACIÓN FIREBASE Y CARGA INICIAL
+const firebaseConfig = { apiKey: "AIzaSyCABy9Rpn1wc1gYBzDEm8Mf05x0gu9lpyQ", authDomain: "portonpirque.firebaseapp.com", databaseURL: "https://portonpique-default-rtdb.firebaseio.com/", projectId: "portonpirque" };
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth(); const db = firebase.database(); const ADMIN_EMAIL = "pirqueporton@gmail.com";
+
 auth.onAuthStateChanged((user) => {
   if(!user || user.email !== ADMIN_EMAIL) window.location.href = 'index.html';
   else {
@@ -312,6 +368,8 @@ auth.onAuthStateChanged((user) => {
     });
   }
 });
+
+function cerrarSesion() { auth.signOut().then(() => window.location.href = 'index.html'); }
 
 function procesarYComprimirImagen(event) {
   const file = event.target.files[0]; if(!file) return;

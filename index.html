@@ -8,9 +8,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root { --bg: #F5F7FA; --surface: #FFFFFF; --border: #E4E7EB; --text-main: #111827; --text-muted: #6B7280; --primary: #0F172A; }
+  [data-theme="dark"] { --bg: #121418; --surface: #1E2128; --border: #2C303A; --text-main: #F3F4F6; --text-muted: #9CA3AF; --primary: #F8FAFC; }
+  [data-theme="grey"] { --bg: #202124; --surface: #292A2D; --border: #3C4043; --text-main: #E8EAED; --text-muted: #9AA0A6; --primary: #8AB4F8; }
+  
   * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-  body { margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); color: var(--text-main); padding: 20px; }
-  .user-card { background: var(--surface); width: 100%; max-width: 400px; border-radius: 24px; padding: 40px 24px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border); }
+  body { margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); color: var(--text-main); padding: 20px; transition: 0.3s; }
+  .user-card { background: var(--surface); width: 100%; max-width: 400px; border-radius: 24px; padding: 40px 24px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border); transition: 0.3s; }
   .btn-google { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); color: var(--text-main); font-weight: 600; padding: 14px; border-radius: 999px; cursor: pointer; margin-top: 20px; transition: 0.2s; }
   .btn-google:hover { background: var(--bg); }
   .btn-google svg { width: 20px; height: 20px; }
@@ -18,7 +21,7 @@
   @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
 </head>
-<body>
+<body data-theme="dark">
 
 <div class="user-card" id="vista-login">
   <h1 style="margin:0 0 10px; font-size: 24px; letter-spacing: -0.5px;">Portón Pirque</h1>
@@ -39,57 +42,40 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-const firebaseConfig = {
-    apiKey: "AIzaSyCABy9Rpn1wc1gYBzDEm8Mf05x0gu9lpyQ",
-    authDomain: "portonpirque.firebaseapp.com",
-    databaseURL: "https://portonpique-default-rtdb.firebaseio.com/",
-    projectId: "portonpirque"
-};
+// Motor de Temas
+function aplicarTema(tema) {
+  if (tema === 'light') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', tema);
+  localStorage.setItem('riegoTheme', tema);
+}
+aplicarTema(localStorage.getItem('riegoTheme') || 'dark');
 
+const firebaseConfig = { apiKey: "AIzaSyCABy9Rpn1wc1gYBzDEm8Mf05x0gu9lpyQ", authDomain: "portonpirque.firebaseapp.com", databaseURL: "https://portonpique-default-rtdb.firebaseio.com/", projectId: "portonpirque" };
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const auth = firebase.auth();
-const provider = new firebase.auth.GoogleAuthProvider();
+const db = firebase.database(); const auth = firebase.auth(); const provider = new firebase.auth.GoogleAuthProvider();
 const ADMIN_EMAIL = "pirqueporton@gmail.com";
 
 function mostrarCarga(mostrar) {
     document.getElementById('loading').style.display = mostrar ? 'block' : 'none';
     document.getElementById('btn-login').style.display = mostrar ? 'none' : 'flex';
 }
-
 function showError(msg) {
     const err = document.getElementById('msg-error');
     err.textContent = msg; err.style.display = 'block';
     mostrarCarga(false);
 }
-
-// El Ruteador: Decide a qué archivo HTML enviarte
 function redireccionar(user) {
-    if (user.email === ADMIN_EMAIL) {
-        window.location.href = 'admin_inicio.html';
-    } else {
+    if (user.email === ADMIN_EMAIL) { window.location.href = 'admin_inicio.html'; } 
+    else {
         db.ref(`lista_blanca/${user.uid}`).once('value').then((snap) => {
-            if(snap.exists()) {
-                window.location.href = 'usuario.html';
-            } else {
-                showError('Tu cuenta no está autorizada.');
-                auth.signOut();
-            }
+            if(snap.exists()) { window.location.href = 'usuario.html'; } 
+            else { showError('Tu cuenta no está autorizada.'); auth.signOut(); }
         }).catch(e => showError('Error al verificar permisos.'));
     }
 }
-
-// Verifica si ya había sesión iniciada al cargar la página
-auth.onAuthStateChanged((user) => {
-    if(user) {
-        mostrarCarga(true);
-        redireccionar(user);
-    }
-});
-
+auth.onAuthStateChanged((user) => { if(user) { mostrarCarga(true); redireccionar(user); } });
 function iniciarSesion() {
-    mostrarCarga(true);
-    document.getElementById('msg-error').style.display = 'none';
+    mostrarCarga(true); document.getElementById('msg-error').style.display = 'none';
     auth.signInWithPopup(provider).catch(e => showError('Error: ' + e.message));
 }
 </script>

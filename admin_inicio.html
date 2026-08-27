@@ -8,18 +8,20 @@
 <style>
   :root { --bg: #F5F7FA; --surface: #FFFFFF; --border: #E4E7EB; --text-main: #111827; --text-muted: #6B7280; --primary: #0F172A; --shadow: 0 10px 30px -10px rgba(0,0,0,0.1); --cyan-glow: #00D4FF; }
   [data-theme="dark"] { --bg: #121418; --surface: #1E2128; --border: #2C303A; --text-main: #F3F4F6; --text-muted: #9CA3AF; --primary: #F8FAFC; --shadow: 0 10px 30px -10px rgba(0,0,0,0.6); --cyan-glow: #A0E0FF; }
+  [data-theme="grey"] { --bg: #202124; --surface: #292A2D; --border: #3C4043; --text-main: #E8EAED; --text-muted: #9AA0A6; --primary: #8AB4F8; --shadow: 0 10px 30px -10px rgba(0,0,0,0.5); --cyan-glow: #78D9EC; }
+  
   * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; text-decoration: none; }
   body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text-main); display: flex; transition: 0.3s; overflow: hidden; }
 
-  /* SIDEBAR MINIMALISTA */
-  .dash-sidebar { width: 80px; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding-top: 24px; z-index: 50; border-right: 1px solid var(--border); }
-  .dash-logo-icon { width: 44px; height: 44px; background: var(--surface); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--text-main); margin-bottom: 30px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .dash-sidebar { width: 80px; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding-top: 24px; z-index: 50; border-right: 1px solid var(--border); transition: 0.3s;}
+  .dash-logo-icon { width: 44px; height: 44px; background: var(--surface); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--text-main); margin-bottom: 30px; box-shadow: var(--shadow); border: 1px solid var(--border); transition: 0.3s;}
   .dash-nav-item { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border-radius: 12px; color: var(--text-muted); cursor: pointer; margin-bottom: 12px; transition: 0.2s; border: 1px solid transparent; }
   .dash-nav-item.active { background: var(--surface); color: var(--text-main); box-shadow: var(--shadow); border: 1px solid var(--border); }
   .dash-nav-item:hover:not(.active) { color: var(--text-main); }
   .dash-nav-item svg { width: 20px; height: 20px; }
+  
+  .dash-footer { padding: 12px; border-top: 1px solid var(--border); width: 100%; margin-top: auto; display: flex; justify-content: center; transition: 0.3s;}
 
-  /* CONTENIDO */
   .dash-content { flex: 1; padding: 32px 40px; overflow-y: auto; }
   .dash-title { font-size: 28px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.5px; }
   .dash-subtitle { font-size: 14px; color: var(--text-muted); margin: 0 0 32px; }
@@ -36,6 +38,7 @@
     .dash-sidebar { width: 100%; height: 70px; flex-direction: row; order: 2; border-right: none; border-top: 1px solid var(--border); justify-content: space-around; padding: 0; }
     .dash-logo-icon { display: none; }
     .dash-nav-item { margin: 0; width: 44px; height: 44px; }
+    .dash-footer { padding: 0 12px; border-top: none; border-left: 1px solid var(--border); width: auto; margin-top: 0; align-items: center; }
     .dash-content { padding: 20px; order: 1; }
   }
 </style>
@@ -48,6 +51,12 @@
   <a href="admin_porton.html" class="dash-nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></a>
   <a href="admin_riego.html" class="dash-nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></a>
   <a href="#" onclick="cerrarSesion()" class="dash-nav-item" style="color:#D93025;"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></a>
+  
+  <div class="dash-footer">
+    <button class="dash-nav-item theme-btn-icon" id="theme-btn-sidebar" onclick="ciclarTema()" style="width:100%; margin:0;" title="Cambiar Tema">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
+  </div>
 </aside>
 
 <main class="dash-content">
@@ -77,7 +86,36 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-if (localStorage.getItem('riegoTheme') === 'light') document.body.removeAttribute('data-theme');
+// Motor de Temas
+function aplicarTema(tema) {
+  if (tema === 'light') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', tema);
+  localStorage.setItem('riegoTheme', tema);
+  
+  const svgLight = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+  const svgGrey = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 0 0 20z" fill="currentColor"></path></svg>';
+  const svgDark = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+  
+  let svgStr = svgDark; let txt = 'Oscuro';
+  if(tema === 'light') { svgStr = svgLight; txt = 'Claro'; }
+  else if(tema === 'grey') { svgStr = svgGrey; txt = 'Gris'; }
+
+  document.querySelectorAll('.theme-btn-icon').forEach(btn => {
+    // Si el botón tiene span adentro (como el header de riego)
+    if(btn.querySelector('span')) btn.innerHTML = `${svgStr} <span>${txt}</span>`;
+    else btn.innerHTML = svgStr;
+  });
+}
+
+function ciclarTema() {
+  const actual = localStorage.getItem('riegoTheme') || 'dark';
+  let nuevo = 'dark';
+  if(actual === 'dark') nuevo = 'grey';
+  else if(actual === 'grey') nuevo = 'light';
+  aplicarTema(nuevo);
+}
+
+aplicarTema(localStorage.getItem('riegoTheme') || 'dark');
 
 const firebaseConfig = { apiKey: "AIzaSyCABy9Rpn1wc1gYBzDEm8Mf05x0gu9lpyQ", authDomain: "portonpirque.firebaseapp.com", databaseURL: "https://portonpique-default-rtdb.firebaseio.com/", projectId: "portonpirque" };
 firebase.initializeApp(firebaseConfig);
