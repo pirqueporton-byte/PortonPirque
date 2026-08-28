@@ -44,8 +44,8 @@
 <script>
 // Motor de Temas
 function aplicarTema(tema) {
-  if (tema === 'light') document.documentElement.removeAttribute('data-theme');
-  else document.documentElement.setAttribute('data-theme', tema);
+  if (tema === 'light') document.body.removeAttribute('data-theme');
+  else document.body.setAttribute('data-theme', tema);
   localStorage.setItem('riegoTheme', tema);
 }
 aplicarTema(localStorage.getItem('riegoTheme') || 'dark');
