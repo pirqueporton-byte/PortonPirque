@@ -32,7 +32,6 @@
   .dash-nav-item.active { background: var(--surface); color: var(--text-main); box-shadow: var(--shadow); border: 1px solid var(--border); }
   .dash-nav-item:hover:not(.active) { color: var(--text-main); }
   .dash-nav-item svg { width: 20px; height: 20px; }
-
   .dash-footer { padding: 12px; border-top: 1px solid var(--border); width: 100%; margin-top: auto; display: flex; justify-content: center; transition: 0.3s;}
 
   /* CONTENIDO PRINCIPAL */
@@ -44,38 +43,20 @@
   .header-actions { display: flex; gap: 12px; align-items: center; }
   .btn-icon { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--text-main); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
   .btn-icon:hover { background: var(--border); }
-  
   .btn-theme { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 0 16px; height: 40px; border-radius: 99px; font-weight: 600; cursor: pointer; font-size: 13px; transition: 0.2s; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow); }
   .btn-theme:active { transform: scale(0.95); }
-
   .btn-primary { background: var(--primary); color: var(--primary-text); border: none; padding: 0 20px; height: 40px; border-radius: 99px; font-weight: 700; cursor: pointer; font-size: 13px; transition: 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
   .btn-primary:active { transform: scale(0.95); }
 
-  /* CONTROLES PÍLDORA */
-  .top-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 16px; flex-shrink: 0; }
-  .segmented-control { display: inline-flex; background: var(--surface); padding: 4px; border-radius: 99px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-  .tool-btn { background: transparent; border: none; padding: 8px 16px; border-radius: 99px; font-weight: 600; font-size: 12.5px; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
-  .tool-btn.active { background: var(--text-main); color: var(--bg); }
-  .zoom-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--text-main); display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: 0.2s; }
-
-  /* MAPA Y AJUSTES */
-  .riego-layout { display: flex; gap: 24px; flex: 1; min-height: 0; }
-  
-  .riego-map-wrapper { flex: 2; background: var(--map-bg); border-radius: 16px; position: relative; overflow: hidden; border: 1px solid var(--border); box-shadow: inset 0 0 40px rgba(0,0,0,0.5); touch-action: none; transition: background 0.4s; }
+  /* MAPA CUADRADO EN EL CENTRO */
+  .riego-layout { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; min-height: 0; }
+  .riego-map-wrapper { width: 100%; max-width: 80vh; max-height: 80vh; aspect-ratio: 1/1; background: var(--map-bg); border-radius: 20px; position: relative; overflow: hidden; border: 1px solid var(--border); box-shadow: inset 0 0 50px rgba(0,0,0,0.6), var(--shadow); touch-action: none; transition: background 0.4s; margin: 0 auto; }
   .riego-map-wrapper.view-minimal { background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px); background-size: 24px 24px; }
   
   .ambient-bg { position: absolute; top: -10%; left: -10%; width: 120%; height: 120%; background-size: cover; background-position: center; filter: blur(40px); opacity: 0; transition: opacity 0.6s ease; pointer-events: none; z-index: 0; }
-
   #map-transform { position: absolute; top: 0; left: 0; transform-origin: 0 0; transition: transform 0.1s linear; cursor: grab; z-index: 1; }
   #map-transform.drawing { cursor: crosshair; }
-  
-  #map-image { 
-    display: block; width: 100%; height: 100%; opacity: 1; pointer-events: none; transition: 0.4s;
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%);
-    -webkit-mask-composite: source-in;
-    mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%);
-    mask-composite: intersect;
-  }
+  #map-image { display: block; width: 100%; height: 100%; opacity: 1; pointer-events: none; transition: 0.4s; -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%); -webkit-mask-composite: source-in; }
   
   #map-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
   .zone-poly { transition: 0.2s; pointer-events: all; } 
@@ -83,21 +64,31 @@
   .draw-line { stroke: var(--cyan-glow); stroke-width: 2px; stroke-dasharray: 6 4; pointer-events: none; }
   .draw-point { fill: #fff; stroke: var(--cyan-glow); stroke-width: 2px; pointer-events: none; }
   .snap-point { fill: #FFD700; r: 6; filter: drop-shadow(0 0 4px #FFD700); pointer-events: none; }
-
   .marker-group { transition: transform 0.1s linear; pointer-events: all; }
   .marker-group.selected circle.icon-bg { stroke: #FFF; stroke-width: 3px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
 
-  /* PANEL DERECHO */
-  .riego-settings { flex: 1; background: var(--surface); border-radius: 16px; border: 1px solid var(--border); padding: 28px; display: flex; flex-direction: column; overflow-y: auto; max-width: 360px; box-shadow: var(--shadow); z-index: 2; transition: 0.3s;}
-  .settings-empty { text-align: center; color: var(--text-muted); margin: auto 0; font-size: 13.5px; display: flex; flex-direction: column; align-items: center; gap: 16px; line-height: 1.5; }
-  .settings-empty svg { width: 50px; height: 50px; opacity: 0.5; }
+  /* HERRAMIENTAS OCULTAS */
+  .floating-tools-btn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 24px; border-radius: 99px; font-weight: 700; font-size: 14px; box-shadow: var(--shadow); z-index: 10; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+  .floating-tools-btn:hover { background: var(--border); }
   
-  .settings-form { display: none; flex-direction: column; gap: 20px; }
-  .panel-title { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
+  .top-controls { position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface); padding: 12px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 12px; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 9; }
+  .top-controls.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: all; }
   
-  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .segmented-control { display: inline-flex; background: var(--bg); padding: 4px; border-radius: 12px; border: 1px solid var(--border); }
+  .tool-btn { background: transparent; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 12.5px; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+  .tool-btn.active { background: var(--text-main); color: var(--bg); box-shadow: var(--shadow); }
+  .zoom-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text-main); display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: 0.2s; }
+
+  /* MODALES Y FORMULARIOS */
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
+  .modal-backdrop.active { opacity: 1; pointer-events: all; }
+  .modal-card { background: var(--surface); padding: 32px; border-radius: 24px; width: 90%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); transform: translateY(20px); transition: 0.3s; border: 1px solid var(--border); }
+  .modal-backdrop.active .modal-card { transform: translateY(0); }
+  
+  .panel-title { margin: 0 0 20px; font-size: 20px; font-weight: 700; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
   .form-group label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-  .form-input { padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text-main); font-size: 14px; outline: none; font-weight: 500; transition: 0.2s; }
+  .form-input { padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text-main); font-size: 14px; outline: none; font-weight: 500; transition: 0.2s; width: 100%; }
   .form-input:focus { border-color: var(--text-muted); }
   
   .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
@@ -112,13 +103,6 @@
   input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; background: var(--border); border-radius: 3px; cursor: pointer; }
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--text-main); cursor: pointer; margin-top: -6px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 
-  /* MODAL DE AJUSTES VISUALES */
-  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
-  .modal-backdrop.active { opacity: 1; pointer-events: all; }
-  .modal-card { background: var(--surface); padding: 32px; border-radius: 24px; width: 90%; max-width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); transform: translateY(20px); transition: 0.3s; border: 1px solid var(--border); }
-  .modal-backdrop.active .modal-card { transform: translateY(0); }
-  .modal-card h3 { margin: 0 0 24px; font-size: 20px; font-weight: 700; }
-
   @media (max-width: 850px) {
     body { flex-direction: column; }
     .dash-sidebar { width: 100%; height: 70px; flex-direction: row; order: 2; border-right: none; border-top: 1px solid var(--border); justify-content: space-around; padding: 0; z-index: 100; }
@@ -126,11 +110,7 @@
     .dash-nav-item { margin: 0; width: 44px; height: 44px; }
     .dash-footer { padding: 0 12px; border-top: none; border-left: 1px solid var(--border); width: auto; margin-top: 0; align-items: center; }
     .dash-content { padding: 20px; order: 1; padding-bottom: 20px; }
-    .riego-map-wrapper { height: 45vh; min-height: 320px; width: 100%; }
-    .riego-settings { max-width: 100%; padding: 20px; }
-    .top-controls { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .segmented-control { width: 100%; display: flex; }
-    .tool-btn { flex: 1; justify-content: center; padding: 10px; }
+    .riego-map-wrapper { max-height: 100%; max-width: 100%; border-radius: 12px; }
   }
   
   .toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px); background: var(--text-main); color: var(--bg); padding: 12px 24px; border-radius: 99px; font-size: 13px; font-weight: 600; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
@@ -145,7 +125,6 @@
   <a href="admin_porton.html" class="dash-nav-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></a>
   <a href="admin_riego.html" class="dash-nav-item active"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></a>
   <a href="#" onclick="cerrarSesion()" class="dash-nav-item" style="color:#D93025;"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></a>
-  
   <div class="dash-footer">
     <button class="dash-nav-item theme-btn-icon" id="theme-btn-sidebar" onclick="ciclarTema()" style="width:100%; margin:0;" title="Cambiar Tema">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -157,40 +136,42 @@
   <div class="riego-header-bar">
     <div><h1 class="dash-title">Riego Inteligente</h1><p class="dash-subtitle">Gemelo Digital del Terreno.</p></div>
     <div class="header-actions">
-      
-      <!-- BOTÓN DE TEMA SUPERIOR -->
       <button class="btn-theme theme-btn-icon" onclick="ciclarTema()" id="theme-btn">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="width:16px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> 
         <span>Oscuro</span>
       </button>
-
-      <!-- BOTÓN DE AJUSTES VISUALES -->
       <button class="btn-icon" onclick="document.getElementById('visual-modal').classList.add('active')" title="Ajustes Visuales">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="width:18px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </button>
-
       <button class="btn-primary" onclick="document.getElementById('map-upload').click()">Actualizar Plano</button>
       <input type="file" id="map-upload" hidden accept="image/*" onchange="procesarYComprimirImagen(event)">
     </div>
   </div>
 
-  <div class="top-controls">
-    <div style="display:flex; gap:16px; flex-wrap: wrap;">
+  <div class="riego-layout">
+    <!-- BOTÓN Y MENÚ FLOTANTE DE HERRAMIENTAS -->
+    <div class="top-controls" id="floating-tools">
       <div class="segmented-control" id="tools-seg">
         <button class="tool-btn active" id="btn-mode-pan" onclick="setMode('pan')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="width:16px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Mover</button>
         <button class="tool-btn" id="btn-mode-perimeter" onclick="setMode('perimeter')">📐 Perímetro</button>
-        <button class="tool-btn" id="btn-mode-zone" onclick="setMode('zone')">+ Nueva Zona</button>
-        <button class="tool-btn" id="btn-mode-marker" onclick="setMode('marker')">📍 Añadir Icono</button>
+        <button class="tool-btn" id="btn-mode-zone" onclick="setMode('zone')">⬟ Zona</button>
+        <button class="tool-btn" id="btn-mode-circle" onclick="setMode('circle')">⭕ Circular</button>
+        <button class="tool-btn" id="btn-mode-marker" onclick="setMode('marker')">📍 Icono</button>
       </div>
-      <div class="segmented-control">
-        <button class="tool-btn active" id="btn-view-map" onclick="setView('map')">Mapa</button>
-        <button class="tool-btn" id="btn-view-minimal" onclick="setView('minimal')">Minimalista</button>
+      <div style="display:flex; justify-content:space-between;">
+        <div class="segmented-control">
+          <button class="tool-btn active" id="btn-view-map" onclick="setView('map')">Mapa</button>
+          <button class="tool-btn" id="btn-view-minimal" onclick="setView('minimal')">Minimalista</button>
+        </div>
+        <div style="display:flex; gap:6px;"><button class="zoom-btn" onclick="zoomMap(0.2)">+</button><button class="zoom-btn" onclick="zoomMap(-0.2)">-</button></div>
       </div>
     </div>
-    <div style="display:flex; gap:6px;"><button class="zoom-btn" onclick="zoomMap(0.2)">+</button><button class="zoom-btn" onclick="zoomMap(-0.2)">-</button></div>
-  </div>
+    
+    <button class="floating-tools-btn" onclick="document.getElementById('floating-tools').classList.toggle('show')">
+      ✏️ Editar Mapa
+    </button>
 
-  <div class="riego-layout">
+    <!-- EL MAPA CUADRADO -->
     <div class="riego-map-wrapper" id="map-wrapper">
       <div id="map-ambient-bg" class="ambient-bg"></div>
       <div id="map-transform">
@@ -198,143 +179,110 @@
         <svg id="map-svg"></svg>
       </div>
     </div>
-
-    <div class="riego-settings">
-      <div class="settings-empty" id="settings-empty">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.71C9.72 4.53 10.81 3 12.5 3c1.95 0 3.09 1.81 3.44 3.75a4.5 4.5 0 011.56 8.9v.1"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11v8m0 0l-3-3m3 3l3-3"></path></svg>
-        Selecciona un sector o un icono en el mapa para configurar sus parámetros.
-      </div>
-
-      <div class="settings-form" id="form-zone">
-        <h2 class="panel-title" id="zone-title">Configuración de Zona</h2>
-        <div class="form-group"><label>Días Activos</label>
-          <div class="days-grid">
-            <button class="day-btn" data-day="1" onclick="toggleDia(this)">L</button><button class="day-btn" data-day="2" onclick="toggleDia(this)">M</button>
-            <button class="day-btn" data-day="3" onclick="toggleDia(this)">M</button><button class="day-btn" data-day="4" onclick="toggleDia(this)">J</button>
-            <button class="day-btn" data-day="5" onclick="toggleDia(this)">V</button><button class="day-btn" data-day="6" onclick="toggleDia(this)">S</button>
-            <button class="day-btn" data-day="0" onclick="toggleDia(this)">D</button>
-          </div>
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
-          <div class="form-group"><label>Hora Inicio</label><input type="time" id="z-hora" class="form-input"></div>
-          <div class="form-group"><label>Duración (Min)</label><input type="number" id="z-dur" class="form-input"></div>
-        </div>
-        <div class="form-group"><label>Color del Sector</label><input type="color" id="z-color" class="form-input" style="padding:2px; height:40px; cursor:pointer;"></div>
-        <button class="btn-outline" style="margin-top:8px; background:var(--text-main); color:var(--bg);" onclick="guardarZona()">Guardar Cambios</button>
-        <hr style="border:0; border-top:1px solid var(--border); width:100%; margin:8px 0;">
-        <button class="btn-outline btn-danger" onclick="eliminarItem('zone')">Eliminar Sector</button>
-      </div>
-
-      <div class="settings-form" id="form-marker">
-        <h2 class="panel-title">Ajustes de Icono</h2>
-        <div class="form-group"><label>Etiqueta / Nombre</label><input type="text" id="m-name" class="form-input"></div>
-        <div class="form-group"><label>Tipo de Símbolo</label>
-          <select id="m-icon" class="form-input">
-            <optgroup label="Agua y Riego">
-              <option value="gota">Gota de Agua</option><option value="piscina">Piscina</option>
-              <option value="pozo">Pozo de Agua</option><option value="canal">Canal / Río</option>
-              <option value="aspersor">Aspersor</option><option value="valvula">Válvula / Llave</option>
-            </optgroup>
-            <optgroup label="Terreno y Vegetación">
-              <option value="planta">Planta / Hoja</option><option value="arbol">Árbol Frutal</option><option value="invernadero">Invernadero</option>
-            </optgroup>
-            <optgroup label="Infraestructura">
-              <option value="casa">Casa Principal</option><option value="bodega">Bodega / Galpón</option>
-              <option value="porton">Portón / Reja</option><option value="estacionamiento">Estacionamiento</option>
-              <option value="pin">Pin de Ubicación</option>
-            </optgroup>
-            <optgroup label="Tecnología y Red">
-              <option value="camara">Cámara de Seguridad</option><option value="wifi">Internet / WiFi</option>
-              <option value="iot">Sensor IoT</option><option value="energia">Electricidad / Tablero</option>
-            </optgroup>
-          </select>
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
-          <div class="form-group"><label>Color</label><input type="color" id="m-color" class="form-input" style="padding:2px; height:40px; cursor:pointer;"></div>
-          <div class="form-group"><label>Tamaño</label><input type="range" id="m-scale" min="0.6" max="2.5" step="0.1" value="1" oninput="previewMarkerScale()"></div>
-        </div>
-        <button class="btn-outline" style="margin-top:8px; background:var(--text-main); color:var(--bg);" onclick="guardarMarcador()">Guardar Cambios</button>
-        <hr style="border:0; border-top:1px solid var(--border); width:100%; margin:8px 0;">
-        <button class="btn-outline btn-danger" onclick="eliminarItem('marker')">Eliminar Icono</button>
-      </div>
-    </div>
   </div>
 </main>
+
+<!-- MODAL CONFIGURACIÓN ZONA/MARCADOR -->
+<div id="config-modal" class="modal-backdrop">
+  <div class="modal-card">
+    <div id="form-zone" style="display:none;">
+      <h2 class="panel-title">Configuración de Zona</h2>
+      <div class="form-group"><label>Días Activos</label>
+        <div class="days-grid">
+          <button class="day-btn" data-day="1" onclick="toggleDia(this)">L</button><button class="day-btn" data-day="2" onclick="toggleDia(this)">M</button>
+          <button class="day-btn" data-day="3" onclick="toggleDia(this)">M</button><button class="day-btn" data-day="4" onclick="toggleDia(this)">J</button>
+          <button class="day-btn" data-day="5" onclick="toggleDia(this)">V</button><button class="day-btn" data-day="6" onclick="toggleDia(this)">S</button>
+          <button class="day-btn" data-day="0" onclick="toggleDia(this)">D</button>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+        <div class="form-group"><label>Hora Inicio</label><input type="time" id="z-hora" class="form-input"></div>
+        <div class="form-group"><label>Duración (Min)</label><input type="number" id="z-dur" class="form-input"></div>
+      </div>
+      <div class="form-group"><label>Color del Sector</label>
+        <div style="display:flex; gap:8px;">
+          <input type="color" id="z-color" class="form-input" style="padding:2px; height:44px; cursor:pointer;">
+          <button class="btn-outline" style="width:auto; padding:0 14px; font-size:16px;" onclick="usarCuentagotas('z-color')" title="Clonar Color de Pantalla">💧</button>
+        </div>
+      </div>
+      <button class="btn-outline" style="margin-top:8px; background:var(--text-main); color:var(--bg);" onclick="guardarZona()">Guardar y Cerrar</button>
+      <hr style="border:0; border-top:1px solid var(--border); width:100%; margin:12px 0;">
+      <button class="btn-outline btn-danger" onclick="eliminarItem('zone')">Eliminar Sector</button>
+    </div>
+
+    <div id="form-marker" style="display:none;">
+      <h2 class="panel-title">Ajustes de Icono</h2>
+      <div class="form-group"><label>Etiqueta / Nombre</label><input type="text" id="m-name" class="form-input"></div>
+      <div class="form-group"><label>Tipo de Símbolo</label>
+        <select id="m-icon" class="form-input">
+          <optgroup label="Agua y Riego">
+            <option value="gota">Gota de Agua</option><option value="piscina">Piscina</option>
+            <option value="pozo">Pozo de Agua</option><option value="canal">Canal / Río</option>
+            <option value="aspersor">Aspersor</option><option value="valvula">Válvula / Llave</option>
+          </optgroup>
+          <optgroup label="Terreno y Vegetación">
+            <option value="planta">Planta / Hoja</option><option value="arbol">Árbol Frutal</option><option value="invernadero">Invernadero</option>
+          </optgroup>
+          <optgroup label="Infraestructura">
+            <option value="casa">Casa Principal</option><option value="bodega">Bodega / Galpón</option>
+            <option value="porton">Portón / Reja</option><option value="estacionamiento">Estacionamiento</option>
+            <option value="pin">Pin de Ubicación</option>
+          </optgroup>
+        </select>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+        <div class="form-group"><label>Color</label>
+          <div style="display:flex; gap:8px;">
+            <input type="color" id="m-color" class="form-input" style="padding:2px; height:44px; cursor:pointer;">
+            <button class="btn-outline" style="width:auto; padding:0 12px; font-size:16px;" onclick="usarCuentagotas('m-color')" title="Clonar Color">💧</button>
+          </div>
+        </div>
+        <div class="form-group"><label>Tamaño</label><input type="range" id="m-scale" min="0.6" max="2.5" step="0.1" value="1" oninput="previewMarkerScale()"></div>
+      </div>
+      <button class="btn-outline" style="margin-top:8px; background:var(--text-main); color:var(--bg);" onclick="guardarMarcador()">Guardar y Cerrar</button>
+      <hr style="border:0; border-top:1px solid var(--border); width:100%; margin:12px 0;">
+      <button class="btn-outline btn-danger" onclick="eliminarItem('marker')">Eliminar Icono</button>
+    </div>
+    
+    <button class="btn-outline" style="margin-top:10px; width:100%; border:none; color:var(--text-muted);" onclick="cerrarPanelConfig()">Cancelar</button>
+  </div>
+</div>
 
 <div id="visual-modal" class="modal-backdrop">
   <div class="modal-card">
     <h3 style="margin: 0 0 20px; font-size:20px;">Ajustes Visuales</h3>
-    <div class="form-group"><label>Oscuridad Exterior (Sombra)</label>
-      <input type="range" id="sl-dark" min="0" max="0.9" step="0.05" value="0.5" oninput="updateVisuals()">
-    </div>
-    <div class="form-group"><label>Transparencia de Zonas</label>
-      <input type="range" id="sl-alpha" min="0.1" max="0.8" step="0.05" value="0.25" oninput="updateVisuals()">
-    </div>
-    <div class="form-group"><label>Grosor de Perímetro</label>
-      <input type="range" id="sl-border" min="1" max="5" step="0.5" value="2.5" oninput="updateVisuals()">
-    </div>
+    <div class="form-group"><label>Oscuridad Exterior (Sombra)</label><input type="range" id="sl-dark" min="0" max="0.9" step="0.05" value="0.5" oninput="updateVisuals()"></div>
+    <div class="form-group"><label>Transparencia de Zonas</label><input type="range" id="sl-alpha" min="0.1" max="0.8" step="0.05" value="0.25" oninput="updateVisuals()"></div>
+    <div class="form-group"><label>Grosor de Perímetro</label><input type="range" id="sl-border" min="1" max="5" step="0.5" value="2.5" oninput="updateVisuals()"></div>
     <button class="btn-outline" style="width:100%; justify-content:center; margin-top:10px;" onclick="document.getElementById('visual-modal').classList.remove('active')">Cerrar</button>
   </div>
 </div>
 
 <div id="toast" class="toast"></div>
 
-<!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="voz.js"></script>
 
 <script>
-// =========================================================================
-// MOTOR DE TEMAS MULTI-ESTADO
-// =========================================================================
 function aplicarTema(tema) {
-  // AQUÍ ESTÁ LA CORRECCIÓN: Usamos document.body en lugar de document.documentElement
-  if (tema === 'light') document.body.removeAttribute('data-theme');
-  else document.body.setAttribute('data-theme', tema);
-  
+  if (tema === 'light') document.body.removeAttribute('data-theme'); else document.body.setAttribute('data-theme', tema);
   localStorage.setItem('riegoTheme', tema);
-  
   const svgLight = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
   const svgGrey = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 0 0 20z" fill="currentColor"></path></svg>';
   const svgDark = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
-  
   let svgStr = svgDark; let txt = 'Oscuro';
-  if(tema === 'light') { svgStr = svgLight; txt = 'Claro'; }
-  else if(tema === 'grey') { svgStr = svgGrey; txt = 'Gris'; }
-
-  document.querySelectorAll('.theme-btn-icon').forEach(btn => {
-    if(btn.querySelector('span')) btn.innerHTML = `${svgStr} <span>${txt}</span>`;
-    else btn.innerHTML = svgStr;
-  });
+  if(tema === 'light') { svgStr = svgLight; txt = 'Claro'; } else if(tema === 'grey') { svgStr = svgGrey; txt = 'Gris'; }
+  document.querySelectorAll('.theme-btn-icon').forEach(btn => { if(btn.querySelector('span')) btn.innerHTML = `${svgStr} <span>${txt}</span>`; else btn.innerHTML = svgStr; });
 }
-function ciclarTema() {
-  const actual = localStorage.getItem('riegoTheme') || 'dark';
-  let nuevo = 'dark';
-  if(actual === 'dark') nuevo = 'grey';
-  else if(actual === 'grey') nuevo = 'light';
-  aplicarTema(nuevo);
-}
-
+function ciclarTema() { let act = localStorage.getItem('riegoTheme') || 'dark'; aplicarTema(act === 'dark' ? 'grey' : (act === 'grey' ? 'light' : 'dark')); }
 aplicarTema(localStorage.getItem('riegoTheme') || 'dark');
 
-// =========================================================================
-// RESTO DEL CÓDIGO (Intacto)
-// =========================================================================
 let vis = { extDark: 0.5, zoneAlpha: 0.25, borderW: 2.5 };
-function loadVisuals() {
-  const v = JSON.parse(localStorage.getItem('riegoVis') || 'null'); if(v) vis = {...vis, ...v};
-  document.getElementById('sl-dark').value = vis.extDark; document.getElementById('sl-alpha').value = vis.zoneAlpha; document.getElementById('sl-border').value = vis.borderW;
-}
-function updateVisuals() {
-  vis.extDark = document.getElementById('sl-dark').value; vis.zoneAlpha = document.getElementById('sl-alpha').value; vis.borderW = document.getElementById('sl-border').value;
-  localStorage.setItem('riegoVis', JSON.stringify(vis)); renderSVG(); 
-}
-function mostrarToast(msg) {
-  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
+function loadVisuals() { const v = JSON.parse(localStorage.getItem('riegoVis') || 'null'); if(v) vis = {...vis, ...v}; document.getElementById('sl-dark').value = vis.extDark; document.getElementById('sl-alpha').value = vis.zoneAlpha; document.getElementById('sl-border').value = vis.borderW; }
+function updateVisuals() { vis.extDark = document.getElementById('sl-dark').value; vis.zoneAlpha = document.getElementById('sl-alpha').value; vis.borderW = document.getElementById('sl-border').value; localStorage.setItem('riegoVis', JSON.stringify(vis)); renderSVG(); }
+function mostrarToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
 function toggleDia(btn) { btn.classList.toggle('active'); }
 
 const DICT_ICONS = {
@@ -345,15 +293,13 @@ const DICT_ICONS = {
   invernadero: '<path d="M2 22h20M4 22V10l8-8 8 8v12M4 14h16M12 10v12M8 10v12M16 10v12"/>', casa: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
   bodega: '<path d="M3 21V8l9-4 9 4v13M9 21v-5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v5M4 10h16M4 14h16"/>', porton: '<path d="M4 22V2M20 22V2M4 6h16M4 10h16M4 14h16M4 18h16M9 6v16M15 6v16"/>',
   estacionamiento: '<path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11M3 11h18v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6z"/><circle cx="7" cy="15" r="1"/><circle cx="17" cy="15" r="1"/>',
-  pin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>', camara: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
-  wifi: '<path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/>', iot: '<rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><path d="M9 9h6v6H9zM9 1V4M15 1V4M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/>',
-  energia: '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>'
+  pin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>'
 };
 
 const wrapper = document.getElementById('map-wrapper'); const transformEl = document.getElementById('map-transform');
 const imgEl = document.getElementById('map-image'); const svgEl = document.getElementById('map-svg');
 
-let mapState = { mode: 'pan', view: 'map', scale: 1, tx: 0, ty: 0, isDragging: false, startX: 0, startY: 0, clickX: 0, clickY: 0, imgWidth: 0, imgHeight: 0 };
+let mapState = { mode: 'pan', view: 'map', scale: 1, tx: 0, ty: 0, isDragging: false, startX: 0, startY: 0, clickX: 0, clickY: 0, imgWidth: 0, imgHeight: 0, circleCenter: null, tempRadius: 0 };
 let perimeter = []; let zones = []; let markers = []; let currentDraw = []; let selectedItem = { type: null, id: null }; let draggingMarkerId = null;
 
 const firebaseConfig = { apiKey: "AIzaSyCABy9Rpn1wc1gYBzDEm8Mf05x0gu9lpyQ", authDomain: "portonpirque.firebaseapp.com", databaseURL: "https://portonpique-default-rtdb.firebaseio.com/", projectId: "portonpirque" };
@@ -362,152 +308,72 @@ const auth = firebase.auth(); const db = firebase.database(); const ADMIN_EMAIL 
 
 auth.onAuthStateChanged((user) => {
   if(!user || user.email !== ADMIN_EMAIL) window.location.href = 'index.html';
-  else {
-    loadVisuals();
-    db.ref('modulo_riego').once('value').then(snap => {
-      const data = snap.val() || {};
-      if(data.mapa) cargarDatosAlMapa(data.mapa, data.perimeter||[], data.zones||[], data.markers||[], data.view);
-    });
-  }
+  else { loadVisuals(); db.ref('modulo_riego').once('value').then(snap => { const data = snap.val() || {}; if(data.mapa) cargarDatosAlMapa(data.mapa, data.perimeter||[], data.zones||[], data.markers||[], data.view); }); }
 });
 
 function cerrarSesion() { auth.signOut().then(() => window.location.href = 'index.html'); }
-
-function procesarYComprimirImagen(event) {
-  const file = event.target.files[0]; if(!file) return;
-  mostrarToast("Procesando plano...");
-  const reader = new FileReader();
+function procesarYComprimirImagen(e) {
+  const file = e.target.files[0]; if(!file) return; mostrarToast("Procesando plano..."); const reader = new FileReader();
   reader.onload = (e) => { 
-    const imgTemp = new Image();
-    imgTemp.onload = () => {
-      const canvas = document.createElement('canvas');
-      let w = imgTemp.width; let h = imgTemp.height;
+    const img = new Image(); img.onload = () => {
+      const canvas = document.createElement('canvas'); let w = img.width; let h = img.height;
       if (w > 1200) { h = Math.round((h * 1200) / w); w = 1200; }
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(imgTemp, 0, 0, w, h);
+      canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h);
       const b64 = canvas.toDataURL('image/jpeg', 0.6);
-      
-      db.ref('modulo_riego').set({ mapa: b64, perimeter: [], zones: [], markers: [] }).then(() => {
-        cargarDatosAlMapa(b64, [], [], [], null);
-        mostrarToast("¡Plano sincronizado!");
-      });
-    };
-    imgTemp.src = e.target.result; 
+      db.ref('modulo_riego').set({ mapa: b64, perimeter: [], zones: [], markers: [] }).then(() => { cargarDatosAlMapa(b64, [], [], [], null); mostrarToast("¡Plano sincronizado!"); });
+    }; img.src = e.target.result; 
   }; reader.readAsDataURL(file);
 }
-
 function guardarTodoDB() { db.ref('modulo_riego').update({ perimeter, zones, markers }); }
 function guardarVistaDB() { if (mapState.imgWidth > 0) db.ref('modulo_riego/view').set({ tx: mapState.tx, ty: mapState.ty, scale: mapState.scale }); }
 
 function cargarDatosAlMapa(b64, p, z, m, v) {
   document.getElementById('map-ambient-bg').style.backgroundImage = `url(${b64})`;
   if (mapState.view === 'map') document.getElementById('map-ambient-bg').style.opacity = '0.5';
-
   imgEl.onload = () => {
     mapState.imgWidth = imgEl.naturalWidth; mapState.imgHeight = imgEl.naturalHeight;
     transformEl.style.width = mapState.imgWidth + 'px'; transformEl.style.height = mapState.imgHeight + 'px';
     svgEl.setAttribute('viewBox', `0 0 ${mapState.imgWidth} ${mapState.imgHeight}`);
-    
     if (v) { mapState.scale = v.scale; mapState.tx = v.tx; mapState.ty = v.ty; } 
-    else {
-      mapState.scale = Math.min(wrapper.clientWidth/mapState.imgWidth, wrapper.clientHeight/mapState.imgHeight) * 0.9;
-      mapState.tx = (wrapper.clientWidth - (mapState.imgWidth*mapState.scale)) / 2;
-      mapState.ty = (wrapper.clientHeight - (mapState.imgHeight*mapState.scale)) / 2;
-    }
-    perimeter = p; zones = z; markers = m; currentDraw = [];
-    actualizarTransform(); renderSVG();
-  };
-  imgEl.src = b64; imgEl.style.display = 'block';
+    else { mapState.scale = Math.min(wrapper.clientWidth/mapState.imgWidth, wrapper.clientHeight/mapState.imgHeight) * 0.9; mapState.tx = (wrapper.clientWidth - (mapState.imgWidth*mapState.scale)) / 2; mapState.ty = (wrapper.clientHeight - (mapState.imgHeight*mapState.scale)) / 2; }
+    perimeter = p; zones = z; markers = m; currentDraw = []; actualizarTransform(); renderSVG();
+  }; imgEl.src = b64; imgEl.style.display = 'block';
 }
 
 function setView(v) {
-  mapState.view = v;
-  document.getElementById('btn-view-map').classList.remove('active'); document.getElementById('btn-view-minimal').classList.remove('active');
-  document.getElementById('btn-view-' + v).classList.add('active');
+  mapState.view = v; document.getElementById('btn-view-map').classList.remove('active'); document.getElementById('btn-view-minimal').classList.remove('active'); document.getElementById('btn-view-' + v).classList.add('active');
   const ambilight = document.getElementById('map-ambient-bg');
-  if (v === 'map') { wrapper.classList.remove('view-minimal'); imgEl.style.opacity = '1'; ambilight.style.opacity = '0.5'; } 
-  else { wrapper.classList.add('view-minimal'); imgEl.style.opacity = '0'; ambilight.style.opacity = '0'; }
+  if (v === 'map') { wrapper.classList.remove('view-minimal'); imgEl.style.opacity = '1'; ambilight.style.opacity = '0.5'; } else { wrapper.classList.add('view-minimal'); imgEl.style.opacity = '0'; ambilight.style.opacity = '0'; }
   renderSVG();
 }
-
 function setMode(mode) {
-  mapState.mode = mode;
-  document.querySelectorAll('.tool-btn').forEach(b => { if(b.id.startsWith('btn-mode')) b.classList.remove('active'); });
-  document.getElementById('btn-mode-' + mode).classList.add('active');
-  transformEl.className = (mode !== 'pan') ? 'drawing' : '';
-  currentDraw = []; renderSVG();
+  mapState.mode = mode; document.querySelectorAll('.tool-btn').forEach(b => { if(b.id.startsWith('btn-mode')) b.classList.remove('active'); }); document.getElementById('btn-mode-' + mode).classList.add('active');
+  transformEl.className = (mode !== 'pan') ? 'drawing' : ''; currentDraw = []; mapState.circleCenter = null; renderSVG();
 }
-
 function actualizarTransform() { transformEl.style.transform = `translate(${mapState.tx}px, ${mapState.ty}px) scale(${mapState.scale})`; }
-function zoomMap(delta) {
-  const oldScale = mapState.scale; mapState.scale = Math.max(0.1, Math.min(mapState.scale + delta, 5));
-  const cx = wrapper.clientWidth / 2; const cy = wrapper.clientHeight / 2;
-  mapState.tx = cx - (cx - mapState.tx) * (mapState.scale / oldScale); mapState.ty = cy - (cy - mapState.ty) * (mapState.scale / oldScale);
-  actualizarTransform(); guardarVistaDB();
-}
+function zoomMap(delta) { const o = mapState.scale; mapState.scale = Math.max(0.1, Math.min(mapState.scale + delta, 5)); const cx = wrapper.clientWidth / 2; const cy = wrapper.clientHeight / 2; mapState.tx = cx - (cx - mapState.tx) * (mapState.scale / o); mapState.ty = cy - (cy - mapState.ty) * (mapState.scale / o); actualizarTransform(); guardarVistaDB(); }
 wrapper.addEventListener('wheel', (e) => { e.preventDefault(); zoomMap(e.deltaY < 0 ? 0.1 : -0.1); });
 
-function getSVGCoords(clientX, clientY) { const rect = transformEl.getBoundingClientRect(); return { x: (clientX - rect.left) / mapState.scale, y: (clientY - rect.top) / mapState.scale }; }
-function closestPointOnSegment(p, a, b) {
-  let atob = { x: b.x - a.x, y: b.y - a.y }; let atop = { x: p.x - a.x, y: p.y - a.y };
-  let lenSq = atob.x*atob.x + atob.y*atob.y; if (lenSq === 0) return a; 
-  let t = Math.max(0, Math.min(1, (atop.x*atob.x + atop.y*atob.y) / lenSq)); return { x: a.x + atob.x * t, y: a.y + atob.y * t };
-}
+function getSVGCoords(cx, cy) { const r = transformEl.getBoundingClientRect(); return { x: (cx - r.left) / mapState.scale, y: (cy - r.top) / mapState.scale }; }
+function buscarSnap(x, y) { return null; } /* Simplificado para evitar choques en trazados libres */
+function pointInPoly(pt, poly) { let is = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { let xi = poly[i].x, yi = poly[i].y; let xj = poly[j].x, yj = poly[j].y; let ix = ((yi > pt.y) !== (yj > pt.y)) && (pt.x < (xj - xi) * (pt.y - yi) / (yj - yi) + xi); if (ix) is = !is; } return is; }
 
-function buscarSnap(x, y) {
-  const SNAP_DIST = 30 / mapState.scale; let mejorPunto = null; let minD = Infinity;
-  const revisarPts = (pts) => { pts.forEach(p => { const d = Math.hypot(p.x - x, p.y - y); if(d < SNAP_DIST && d < minD) { minD = d; mejorPunto = {...p}; } }); };
-  revisarPts(perimeter); zones.forEach(z => revisarPts(z.points)); if(currentDraw.length>0) revisarPts([currentDraw[0]]); 
-  if (!mejorPunto) {
-    const revisarLins = (poly, cerrado) => {
-      for(let i=0; i<poly.length; i++) {
-        if (!cerrado && i === poly.length - 1) continue;
-        let a = poly[i]; let b = poly[(i+1)%poly.length];
-        let calc = closestPointOnSegment({x,y}, a, b); let d = Math.hypot(calc.x - x, calc.y - y);
-        if(d < SNAP_DIST && d < minD) { minD = d; mejorPunto = calc; }
-      }
-    };
-    if(perimeter.length>1) revisarLins(perimeter, true); zones.forEach(z => revisarLins(z.points, true)); if(currentDraw.length>1) revisarLins(currentDraw, false);
-  } return mejorPunto;
-}
-
-function pointInPoly(pt, poly) {
-  let inside = false;
-  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    let xi = poly[i].x, yi = poly[i].y; let xj = poly[j].x, yj = poly[j].y;
-    let intersect = ((yi > pt.y) !== (yj > pt.y)) && (pt.x < (xj - xi) * (pt.y - yi) / (yj - yi) + xi); if (intersect) inside = !inside;
-  } return inside;
-}
-
-function validarPunto(punto, esSnap) {
-  if (mapState.mode === 'perimeter') return true;
-  if (perimeter.length > 2 && !esSnap && !pointInPoly(punto, perimeter)) { mostrarToast("Rechazado: Fuera del perímetro."); return false; }
-  if (!esSnap) { for (let z of zones) { if (pointInPoly(punto, z.points)) { mostrarToast("Rechazado: Choca con otra zona."); return false; } } } return true;
-}
-
+// LOGICA DE DIBUJO E INTERACCIÓN
 wrapper.addEventListener('pointerdown', (e) => {
   if(e.target.closest('button') && !e.target.closest('.marker-group')) return; if(!e.isPrimary) return; 
   mapState.clickX = e.clientX; mapState.clickY = e.clientY;
-
   const mTarget = e.target.closest('.marker-group');
   if (mTarget && mapState.mode === 'pan') { draggingMarkerId = mTarget.getAttribute('data-id'); wrapper.setPointerCapture(e.pointerId); seleccionarPanel('marker', draggingMarkerId); return; }
 
   if(mapState.mode === 'pan') { mapState.isDragging = true; mapState.startX = e.clientX - mapState.tx; mapState.startY = e.clientY - mapState.ty; wrapper.setPointerCapture(e.pointerId); } 
-  else if (mapState.mode === 'marker') {
-    const c = getSVGCoords(e.clientX, e.clientY); const newId = Date.now().toString();
-    markers.push({ id: newId, x: c.x, y: c.y, name: "Ubicación", iconType: "pin", color: "#3B82F6", scale: 1 });
-    guardarTodoDB(); setMode('pan'); seleccionarPanel('marker', newId);
-  } else {
-    if (mapState.mode === 'zone' && perimeter.length < 3) { mostrarToast("Traza el perímetro primero."); setMode('pan'); return; }
-    const c = getSVGCoords(e.clientX, e.clientY); const snap = buscarSnap(c.x, c.y); const pF = snap ? snap : c;
-    if (!validarPunto(pF, snap != null)) return;
-    if(currentDraw.length > 2 && snap && snap.x === currentDraw[0].x && snap.y === currentDraw[0].y) {
+  else if (mapState.mode === 'marker') { const c = getSVGCoords(e.clientX, e.clientY); const nId = Date.now().toString(); markers.push({ id: nId, x: c.x, y: c.y, name: "Ubicación", iconType: "pin", color: "#3B82F6", scale: 1 }); guardarTodoDB(); setMode('pan'); seleccionarPanel('marker', nId); }
+  else if (mapState.mode === 'circle') { const c = getSVGCoords(e.clientX, e.clientY); mapState.circleCenter = c; wrapper.setPointerCapture(e.pointerId); }
+  else {
+    const c = getSVGCoords(e.clientX, e.clientY); currentDraw.push(c); renderSVG();
+    if(currentDraw.length > 2 && Math.hypot(currentDraw[0].x - c.x, currentDraw[0].y - c.y) < (30/mapState.scale)) {
       if(mapState.mode === 'perimeter') { perimeter = [...currentDraw]; guardarTodoDB(); setMode('pan'); } 
-      else if (mapState.mode === 'zone') {
-        const newId = Date.now().toString(); zones.push({ id: newId, name: "Sector", points: [...currentDraw], config: { dias: [], hora: "06:00", duracion: "15", color: "#00D4FF" } });
-        guardarTodoDB(); setMode('pan'); seleccionarPanel('zone', newId);
-      }
-    } else { currentDraw.push(pF); renderSVG(); }
+      else if (mapState.mode === 'zone') { const nId = Date.now().toString(); zones.push({ id: nId, name: "Sector", points: [...currentDraw], config: { dias: [], hora: "06:00", duracion: "15", color: "#00D4FF" } }); guardarTodoDB(); setMode('pan'); seleccionarPanel('zone', nId); }
+    }
   }
 });
 
@@ -515,22 +381,31 @@ wrapper.addEventListener('pointermove', (e) => {
   if(!e.isPrimary) return;
   if(draggingMarkerId) { const c = getSVGCoords(e.clientX, e.clientY); const m = markers.find(x => x.id === draggingMarkerId); if(m) { m.x = c.x; m.y = c.y; renderSVG(); } } 
   else if(mapState.isDragging) { mapState.tx = e.clientX - mapState.startX; mapState.ty = e.clientY - mapState.startY; actualizarTransform(); } 
-  else if (mapState.mode === 'zone' || mapState.mode === 'perimeter') { if (currentDraw.length > 0) { const c = getSVGCoords(e.clientX, e.clientY); const snap = buscarSnap(c.x, c.y); renderSVG(snap ? snap : c); } }
+  else if (mapState.mode === 'circle' && mapState.circleCenter) { const c = getSVGCoords(e.clientX, e.clientY); mapState.tempRadius = Math.hypot(c.x - mapState.circleCenter.x, c.y - mapState.circleCenter.y); renderSVG(c); }
+  else if (mapState.mode === 'zone' || mapState.mode === 'perimeter') { if (currentDraw.length > 0) { renderSVG(getSVGCoords(e.clientX, e.clientY)); } }
 });
 
 wrapper.addEventListener('pointerup', (e) => {
   if(!e.isPrimary) return; wrapper.releasePointerCapture(e.pointerId);
   if(draggingMarkerId) { draggingMarkerId = null; guardarTodoDB(); return; }
-
-  const wasDragging = mapState.isDragging; mapState.isDragging = false; 
-  const distArrastre = Math.hypot(e.clientX - mapState.clickX, e.clientY - mapState.clickY);
-  if (wasDragging && distArrastre >= 5) { guardarVistaDB(); }
   
-  if (distArrastre < 5 && mapState.mode === 'pan') {
-    const c = getSVGCoords(e.clientX, e.clientY); let clickedZoneId = null;
-    for (let i = zones.length - 1; i >= 0; i--) { if (pointInPoly(c, zones[i].points)) { clickedZoneId = zones[i].id; break; } }
-    if (clickedZoneId) { seleccionarPanel('zone', clickedZoneId); }
-    else if (!e.target.closest('button') && !e.target.closest('.marker-group')) { seleccionarPanel(null, null); }
+  if (mapState.mode === 'circle' && mapState.circleCenter) {
+    if (mapState.tempRadius > 10 / mapState.scale) {
+      const pts = []; const numPts = 32;
+      for(let i=0; i<numPts; i++) { const a = (i/numPts) * Math.PI * 2; pts.push({ x: mapState.circleCenter.x + mapState.tempRadius * Math.cos(a), y: mapState.circleCenter.y + mapState.tempRadius * Math.sin(a) }); }
+      const nId = Date.now().toString(); zones.push({ id: nId, name: "Sector Circular", points: pts, config: { dias: [], hora: "06:00", duracion: "15", color: "#00D4FF" } });
+      guardarTodoDB(); seleccionarPanel('zone', nId);
+    }
+    mapState.circleCenter = null; mapState.tempRadius = 0; setMode('pan');
+  }
+
+  const wD = mapState.isDragging; mapState.isDragging = false; 
+  const dist = Math.hypot(e.clientX - mapState.clickX, e.clientY - mapState.clickY);
+  if (wD && dist >= 5) { guardarVistaDB(); }
+  if (dist < 5 && mapState.mode === 'pan') {
+    const c = getSVGCoords(e.clientX, e.clientY); let zId = null;
+    for (let i = zones.length - 1; i >= 0; i--) { if (pointInPoly(c, zones[i].points)) { zId = zones[i].id; break; } }
+    if (zId) { seleccionarPanel('zone', zId); }
   }
 });
 
@@ -541,82 +416,63 @@ function renderSVG(cursorCoord = null) {
     if (mapState.view === 'map') {
       let dMask = `M 0 0 L ${mapState.imgWidth} 0 L ${mapState.imgWidth} ${mapState.imgHeight} L 0 ${mapState.imgHeight} Z M ${perimeter[0].x} ${perimeter[0].y} `;
       for(let i=1; i<perimeter.length; i++) dMask += `L ${perimeter[i].x} ${perimeter[i].y} `;
-      html += `<path d="${dMask}Z" fill="rgba(0,0,0,${vis.extDark})" fill-rule="evenodd" pointer-events="none" />`;
-      html += `<polygon points="${ptsP}" fill="rgba(100,100,100,0.05)" stroke="none" />`;
+      html += `<path d="${dMask}Z" fill="rgba(0,0,0,${vis.extDark})" fill-rule="evenodd" pointer-events="none" /> <polygon points="${ptsP}" fill="rgba(100,100,100,0.05)" stroke="none" />`;
     }
     html += `<polygon points="${ptsP}" fill="none" stroke="var(--cyan-glow)" stroke-width="${vis.borderW}" filter="drop-shadow(0 0 6px rgba(160,224,255,0.6))" pointer-events="none" />`;
-    perimeter.forEach(p => { html += `<circle cx="${p.x}" cy="${p.y}" r="${parseFloat(vis.borderW)+2}" fill="#FFF" filter="drop-shadow(0 0 3px #FFF)" pointer-events="none"/>`; });
   }
-
   zones.forEach(z => {
     const isSel = (selectedItem.type === 'zone' && selectedItem.id === z.id); const color = z.config?.color || '#00D4FF';
     const pts = z.points.map(p => `${p.x},${p.y}`).join(' '); const alpha = isSel ? Math.min(1, parseFloat(vis.zoneAlpha)+0.2) : vis.zoneAlpha;
     html += `<polygon class="zone-poly ${isSel?'selected':''}" points="${pts}" fill="${color}" fill-opacity="${alpha}" stroke="${isSel?'#fff':color}" stroke-width="${isSel?2.5:1.5}" pointer-events="all" />`;
   });
-
+  if (mapState.mode === 'circle' && mapState.circleCenter && mapState.tempRadius > 0) {
+    html += `<circle cx="${mapState.circleCenter.x}" cy="${mapState.circleCenter.y}" r="${mapState.tempRadius}" fill="rgba(0,212,255,0.2)" stroke="var(--cyan-glow)" stroke-width="2" stroke-dasharray="6 4" pointer-events="none" />`;
+  }
   markers.forEach(m => {
     const isSel = (selectedItem.type === 'marker' && selectedItem.id === m.id); const s = m.scale || 1;
-    const txtWidth = m.name.length * 7 + 16; const svgShape = DICT_ICONS[m.iconType] || DICT_ICONS['gota'];
-    html += `
-    <g class="marker-group ${isSel?'selected':''}" data-id="${m.id}" style="transform: translate(${m.x}px, ${m.y}px) scale(${s}); cursor: grab;" pointer-events="all">
-      <circle cx="0" cy="0" r="24" fill="transparent" />
-      <circle class="icon-bg" cx="0" cy="0" r="14" fill="${m.color}" stroke="${isSel?'#fff':'none'}" stroke-width="2.5" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.5))"/>
-      <svg x="-9" y="-9" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" pointer-events="none">${svgShape}</svg>
-      <rect x="${-txtWidth/2}" y="19" width="${txtWidth}" height="20" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.1)" pointer-events="none"/>
-      <text x="0" y="33" fill="#fff" font-size="10.5" font-weight="600" letter-spacing="0.5" text-anchor="middle" pointer-events="none">${m.name}</text>
-    </g>`;
+    const tW = m.name.length * 7 + 16; const sS = DICT_ICONS[m.iconType] || DICT_ICONS['gota'];
+    html += `<g class="marker-group ${isSel?'selected':''}" data-id="${m.id}" style="transform: translate(${m.x}px, ${m.y}px) scale(${s}); cursor: grab;" pointer-events="all"><circle cx="0" cy="0" r="24" fill="transparent" /><circle class="icon-bg" cx="0" cy="0" r="14" fill="${m.color}" stroke="${isSel?'#fff':'none'}" stroke-width="2.5" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.5))"/><svg x="-9" y="-9" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" pointer-events="none">${sS}</svg><rect x="${-tW/2}" y="19" width="${tW}" height="20" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.1)" pointer-events="none"/><text x="0" y="33" fill="#fff" font-size="10.5" font-weight="600" text-anchor="middle" pointer-events="none">${m.name}</text></g>`;
   });
-
   if(currentDraw.length > 0) {
-    let d = `M ${currentDraw[0].x} ${currentDraw[0].y} `;
-    for(let i=1; i<currentDraw.length; i++) d += `L ${currentDraw[i].x} ${currentDraw[i].y} `;
-    if(cursorCoord) d += `L ${cursorCoord.x} ${cursorCoord.y}`;
+    let d = `M ${currentDraw[0].x} ${currentDraw[0].y} `; for(let i=1; i<currentDraw.length; i++) d += `L ${currentDraw[i].x} ${currentDraw[i].y} `; if(cursorCoord) d += `L ${cursorCoord.x} ${cursorCoord.y}`;
     html += `<path d="${d}" class="draw-line" fill="none" pointer-events="none"/>`;
-    currentDraw.forEach(p => { html += `<circle cx="${p.x}" cy="${p.y}" r="${4/mapState.scale}" class="draw-point" pointer-events="none"/>`; });
-    if(cursorCoord) html += `<circle cx="${cursorCoord.x}" cy="${cursorCoord.y}" r="${6/mapState.scale}" class="snap-point" pointer-events="none"/>`;
   }
   svgEl.innerHTML = html;
 }
 
+// LOGICA DE MODALES DE AJUSTES
 function seleccionarPanel(type, id) {
   selectedItem = { type, id }; renderSVG();
-  document.getElementById('settings-empty').style.display = 'none'; document.getElementById('form-zone').style.display = 'none'; document.getElementById('form-marker').style.display = 'none';
-  if (!type) { document.getElementById('settings-empty').style.display = 'flex'; return; }
+  document.getElementById('form-zone').style.display = 'none'; document.getElementById('form-marker').style.display = 'none';
+  if (!type) return;
+  document.getElementById('config-modal').classList.add('active');
   if (type === 'zone') {
     const z = zones.find(x => x.id === id); if(!z) return;
-    document.getElementById('form-zone').style.display = 'flex';
+    document.getElementById('form-zone').style.display = 'block';
     document.getElementById('z-hora').value = z.config.hora; document.getElementById('z-dur').value = z.config.duracion; document.getElementById('z-color').value = z.config.color;
     document.querySelectorAll('.day-btn').forEach(btn => { if(z.config.dias.includes(btn.getAttribute('data-day'))) btn.classList.add('active'); else btn.classList.remove('active'); });
   } else if (type === 'marker') {
     const m = markers.find(x => x.id === id); if(!m) return;
-    document.getElementById('form-marker').style.display = 'flex';
-    document.getElementById('m-name').value = m.name; document.getElementById('m-icon').value = m.iconType || 'gota';
-    document.getElementById('m-color').value = m.color; document.getElementById('m-scale').value = m.scale;
+    document.getElementById('form-marker').style.display = 'block';
+    document.getElementById('m-name').value = m.name; document.getElementById('m-icon').value = m.iconType || 'gota'; document.getElementById('m-color').value = m.color; document.getElementById('m-scale').value = m.scale;
   }
-  if(window.innerWidth <= 850) { document.querySelector('.riego-settings').scrollIntoView({ behavior: 'smooth' }); }
 }
 
-function guardarZona() {
-  const z = zones.find(x => x.id === selectedItem.id); if(!z) return;
-  z.config.hora = document.getElementById('z-hora').value; z.config.duracion = document.getElementById('z-dur').value; z.config.color = document.getElementById('z-color').value;
-  z.config.dias = []; document.querySelectorAll('.day-btn.active').forEach(btn => z.config.dias.push(btn.getAttribute('data-day')));
-  guardarTodoDB(); renderSVG(); mostrarToast("Configuración guardada.");
+function cerrarPanelConfig() {
+  document.getElementById('config-modal').classList.remove('active');
+  selectedItem = { type: null, id: null }; renderSVG();
 }
 
-function guardarMarcador() {
-  const m = markers.find(x => x.id === selectedItem.id); if(!m) return;
-  m.name = document.getElementById('m-name').value; m.iconType = document.getElementById('m-icon').value; m.color = document.getElementById('m-color').value; m.scale = parseFloat(document.getElementById('m-scale').value);
-  guardarTodoDB(); renderSVG(); mostrarToast("Icono actualizado.");
+// API DEL CUENTAGOTAS
+async function usarCuentagotas(inputId) {
+  if (!window.EyeDropper) return mostrarToast('El cuentagotas no es compatible con este navegador.');
+  try { const ed = new EyeDropper(); const res = await ed.open(); document.getElementById(inputId).value = res.sRGBHex; } catch(e) {}
 }
 
+function guardarZona() { const z = zones.find(x => x.id === selectedItem.id); if(!z) return; z.config.hora = document.getElementById('z-hora').value; z.config.duracion = document.getElementById('z-dur').value; z.config.color = document.getElementById('z-color').value; z.config.dias = []; document.querySelectorAll('.day-btn.active').forEach(btn => z.config.dias.push(btn.getAttribute('data-day'))); guardarTodoDB(); renderSVG(); cerrarPanelConfig(); mostrarToast("Guardado"); }
+function guardarMarcador() { const m = markers.find(x => x.id === selectedItem.id); if(!m) return; m.name = document.getElementById('m-name').value; m.iconType = document.getElementById('m-icon').value; m.color = document.getElementById('m-color').value; m.scale = parseFloat(document.getElementById('m-scale').value); guardarTodoDB(); renderSVG(); cerrarPanelConfig(); mostrarToast("Guardado"); }
 function previewMarkerScale() { const m = markers.find(x => x.id === selectedItem.id); if(m) { m.scale = parseFloat(document.getElementById('m-scale').value); renderSVG(); } }
-
-function eliminarItem(type) {
-  if(confirm(`¿Eliminar este ${type==='zone'?'sector':'icono'}?`)) {
-    if(type === 'zone') zones = zones.filter(x => x.id !== selectedItem.id); else markers = markers.filter(x => x.id !== selectedItem.id);
-    guardarTodoDB(); seleccionarPanel(null, null);
-  }
-}
+function eliminarItem(type) { if(confirm('¿Eliminar este elemento?')) { if(type === 'zone') zones = zones.filter(x => x.id !== selectedItem.id); else markers = markers.filter(x => x.id !== selectedItem.id); guardarTodoDB(); cerrarPanelConfig(); } }
 </script>
 </body>
 </html>
