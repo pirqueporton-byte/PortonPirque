@@ -428,7 +428,7 @@ auth.onAuthStateChanged((user) => {
     loadVisuals(); 
     db.ref('modulo_riego').once('value').then(snap => { const data = snap.val() || {}; if(data.mapa) cargarDatosAlMapa(data.mapa, data.perimeter||[], data.zones||[], data.markers||[], data.view); });
     
-    // MONITOREAR ESTADO DE CONEXIÓN DEL ESP32
+    // MONITOREAR ESTADO DE CONEXIÓN DEL ESP32 (Corrección del indicador en línea)
     db.ref('modulo_riego/estado_riego/ultima_conexion').on('value', (snap) => {
       actualizarIndicadorEstado(snap.val());
     });
@@ -448,8 +448,12 @@ function actualizarIndicadorEstado(timestamp) {
     text.textContent = "Fuera de Línea";
     return;
   }
-  const diferenciaSegundos = (Date.now() - timestamp) / 1000;
-  if (diferenciaSegundos < 20) {
+  // Si el timestamp viene en segundos (ej. epoch unix), lo pasamos a milisegundos
+  const tsMilis = timestamp < 10000000000 ? timestamp * 1000 : timestamp;
+  const diferenciaSegundos = (Date.now() - tsMilis) / 1000;
+  
+  // Ampliamos el rango a 30 segundos para evitar falsos positivos
+  if (diferenciaSegundos >= 0 && diferenciaSegundos < 30) {
     badge.className = "status-badge online";
     text.textContent = "En Línea";
   } else {
@@ -672,16 +676,24 @@ function seleccionarPanel(type, id) {
   abrirPanelLateral(type);
   if (type === 'zone') {
     const z = zones.find(x => x.id === id); if(!z) return;
-    document.getElementById('z-hora').value = z.config.hora; document.getElementById('z-dur').value = z.config.duracion; document.getElementById('z-color').value = z.config.color;
-    document.querySelectorAll('.day-btn').forEach(btn => { if(z.config.dias.includes(btn.getAttribute('data-day'))) btn.classList.add('active'); else btn.classList.remove('active'); });
+    document.getElementById('z-hora').value = z.config?.hora || "06:00"; 
+    document.getElementById('z-dur').value = z.config?.duracion || "15"; 
+    document.getElementById('z-color').value = z.config?.color || "#00D4FF";
+    
+    const diasActivos = z.config?.dias || [];
+    document.querySelectorAll('.day-btn').forEach(btn => { 
+      if(diasActivos.includes(btn.getAttribute('data-day'))) btn.classList.add('active'); 
+      else btn.classList.remove('active'); 
+    });
   } else if (type === 'marker') {
     const m = markers.find(x => x.id === id); if(!m) return;
     document.getElementById('m-name').value = m.name; document.getElementById('m-icon').value = m.iconType || 'gota'; document.getElementById('m-color').value = m.color; document.getElementById('m-scale').value = m.scale;
   }
 }
 
-// VALIDACIÓN DE SOLAPAMIENTO DE HORARIOS Y DÍAS
+// VALIDACIÓN DE SOLAPAMIENTO CORREGIDA
 function validarSolapamiento(nuevaHora, nuevaDuracionMin, nuevosDias, idActual) {
+  if (!nuevosDias || nuevosDias.length === 0) return null;
   const [nHora, nMin] = nuevaHora.split(':').map(Number);
   const inicioNuevoMin = nHora * 60 + nMin;
   const finNuevoMin = inicioNuevoMin + parseInt(nuevaDuracionMin);
@@ -691,7 +703,7 @@ function validarSolapamiento(nuevaHora, nuevaDuracionMin, nuevosDias, idActual) 
     if (!z.config || !z.config.hora || !z.config.duracion || !z.config.dias) continue;
 
     const comparteDia = z.config.dias.some(dia => nuevosDias.includes(dia));
-    if (!compartesDia && nuevosDias.length > 0 && z.config.dias.length > 0) continue;
+    if (!compartesDia) continue;
 
     const [zHora, zMin] = z.config.hora.split(':').map(Number);
     const inicioZMin = zHora * 60 + zMin;
@@ -704,7 +716,7 @@ function validarSolapamiento(nuevaHora, nuevaDuracionMin, nuevosDias, idActual) 
   return null;
 }
 
-// Cuentagotas y guardado de zonas
+// Cuentagotas y guardado de zonas seguro
 async function usarCuentagotas(inputId) {
   if (!window.EyeDropper) return mostrarToast('Cuentagotas no compatible.');
   try { const ed = new EyeDropper(); const res = await ed.open(); document.getElementById(inputId).value = res.sRGBHex; } catch(e) {}
@@ -729,6 +741,7 @@ function guardarZona() {
     return;
   }
 
+  if (!z.config) z.config = {};
   z.config.hora = hora; 
   z.config.duracion = duracion; 
   z.config.color = color; 
