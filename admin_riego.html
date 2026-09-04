@@ -424,18 +424,19 @@ const auth = firebase.auth(); const db = firebase.database(); const ADMIN_EMAIL 
 
 auth.onAuthStateChanged((user) => {
   if(!user || user.email !== ADMIN_EMAIL) window.location.href = 'index.html';
-  else { 
-    loadVisuals(); 
-    db.ref('modulo_riego').once('value').then(snap => { const data = snap.val() || {}; if(data.mapa) cargarDatosAlMapa(data.mapa, data.perimeter||[], data.zones||[], data.markers||[], data.view); });
-    
-    // MONITOREAR ESTADO DE CONEXIÓN DEL ESP32
-    db.ref('modulo_riego/estado_riego/ultima_conexion').on('value', (snap) => {
-      actualizarIndicadorEstado(snap.val());
+  else {
+    loadVisuals();
+    db.ref('modulo_riego').once('value').then(snap => {
+      const data = snap.val() || {};
+      if(data.mapa) cargarDatosAlMapa(data.mapa, data.perimeter||[], data.zones||[], data.markers||[], data.view);
+      actualizarSelectorSectoresManual();
     });
 
-    // ESCUCHAR ESTADO DE RIEGO EN VIVO PARA EL PANEL MANUAL
+    // ESTADO DE CONEXIÓN Y ESTADO REAL DEL ESP32
     db.ref('modulo_riego/estado_riego').on('value', (snap) => {
-      actualizarEstadoEnVivo(snap.val());
+      const estado = snap.val() || {};
+      actualizarIndicadorEstado(estado.ultima_conexion);
+      actualizarEstadoEnVivo(estado);
     });
   }
 });
@@ -443,15 +444,18 @@ auth.onAuthStateChanged((user) => {
 function actualizarIndicadorEstado(timestamp) {
   const badge = document.getElementById('esp-status-badge');
   const text = document.getElementById('esp-status-text');
+
   if (!timestamp) {
     badge.className = "status-badge offline";
     text.textContent = "Fuera de Línea";
     return;
   }
-  const tsMilis = timestamp < 10000000000 ? timestamp * 1000 : timestamp;
+
+  const tsMilis = Number(timestamp) < 10000000000 ? Number(timestamp) * 1000 : Number(timestamp);
   const diferenciaSegundos = (Date.now() - tsMilis) / 1000;
-  
-  if (diferenciaSegundos >= 0 && diferenciaSegundos < 30) {
+
+  // El ESP32 publica heartbeat cada pocos segundos.
+  if (diferenciaSegundos >= -10 && diferenciaSegundos < 20) {
     badge.className = "status-badge online";
     text.textContent = "En Línea";
   } else {
@@ -460,7 +464,15 @@ function actualizarIndicadorEstado(timestamp) {
   }
 }
 
+let estadoRiegoActual = null;
+
 function actualizarEstadoEnVivo(estado) {
+  estadoRiegoActual = estado || null;
+  renderEstadoEnVivo();
+}
+
+function renderEstadoEnVivo() {
+  const estado = estadoRiegoActual;
   const badge = document.getElementById('live-state-badge');
   const nameEl = document.getElementById('live-zone-name');
   const timerEl = document.getElementById('live-countdown');
@@ -475,36 +487,42 @@ function actualizarEstadoEnVivo(estado) {
     return;
   }
 
-  const sectorIdx = estado.sector !== undefined ? estado.sector : 0;
-  const zName = zones[sectorIdx] ? (zones[sectorIdx].name || `Sector ${sectorIdx + 1}`) : `Relé ${sectorIdx + 1}`;
-  
+  const sectorIdx = Number.isFinite(Number(estado.sector)) ? Number(estado.sector) : 0;
+  const zName = zones[sectorIdx]
+    ? (zones[sectorIdx].name || `Sector ${sectorIdx + 1}`)
+    : `Relé ${sectorIdx + 1}`;
+
   if (estado.regando) {
-    badge.textContent = "Regando 💧";
+    badge.textContent = estado.modo === "manual" ? "Regando manual 💧" : "Regando 💧";
     badge.style.color = "var(--success)";
-  } else if (estado.pausa) {
+  } else {
     badge.textContent = "Pausado ⏸️";
     badge.style.color = "var(--warning)";
   }
 
   nameEl.textContent = zName;
 
-  if (estado.finEpoch) {
+  const fin = Number(estado.finEpoch || 0);
+  if (fin > 0) {
     const ahoraEpoch = Math.floor(Date.now() / 1000);
-    const segundosRestantes = estado.finEpoch - ahoraEpoch;
+    const segundosRestantes = Math.max(0, fin - ahoraEpoch);
 
-    if (segundosRestantes > 0) {
-      const mins = Math.floor(segundosRestantes / 60).toString().padStart(2, '0');
-      const secs = (segundosRestantes % 60).toString().padStart(2, '0');
-      timerEl.textContent = `${mins}:${secs}`;
+    const mins = Math.floor(segundosRestantes / 60).toString().padStart(2, '0');
+    const secs = (segundosRestantes % 60).toString().padStart(2, '0');
+    timerEl.textContent = `${mins}:${secs}`;
 
-      const endDate = new Date(estado.finEpoch * 1000);
-      endEl.textContent = endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } else {
-      timerEl.textContent = "00:00";
-      endEl.textContent = "Expirado";
-    }
+    const endDate = new Date(fin * 1000);
+    endEl.textContent = segundosRestantes > 0
+      ? endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      : "Expirado";
+  } else {
+    timerEl.textContent = "00:00";
+    endEl.textContent = "--:--";
   }
 }
+
+// El contador se actualiza localmente cada segundo sin depender de Firebase.
+setInterval(renderEstadoEnVivo, 1000);
 
 function cerrarSesion() { auth.signOut().then(() => window.location.href = 'index.html'); }
 function procesarYComprimirImagen(e) {
@@ -531,7 +549,7 @@ function cargarDatosAlMapa(b64, p, z, m, v) {
     svgEl.setAttribute('viewBox', `0 0 ${mapState.imgWidth} ${mapState.imgHeight}`);
     if (v) { mapState.scale = v.scale; mapState.tx = v.tx; mapState.ty = v.ty; } 
     else { mapState.scale = Math.min(wrapper.clientWidth/mapState.imgWidth, wrapper.clientHeight/mapState.imgHeight) * 0.9; mapState.tx = (wrapper.clientWidth - (mapState.imgWidth*mapState.scale)) / 2; mapState.ty = (wrapper.clientHeight - (mapState.imgHeight*mapState.scale)) / 2; }
-    perimeter = p; zones = z; markers = m; currentDraw = []; actualizarTransform(); renderSVG();
+    perimeter = p; zones = z; markers = m; currentDraw = []; actualizarTransform(); renderSVG(); actualizarSelectorSectoresManual(); renderEstadoEnVivo();
   }; imgEl.src = b64; imgEl.style.display = 'block';
 }
 
@@ -755,13 +773,40 @@ function previewMarkerScale() { const m = markers.find(x => x.id === selectedIte
 function eliminarItem(type) { if(confirm('¿Eliminar este elemento permanentemente?')) { if(type === 'zone') zones = zones.filter(x => x.id !== selectedItem.id); else markers = markers.filter(x => x.id !== selectedItem.id); guardarTodoDB(); cerrarPanelLateral(); } }
 
 function enviarComando(accion) {
-  db.ref('modulo_riego/comando').set({
+  return db.ref('modulo_riego/comando').set({
     accion: accion,
     timestamp: firebase.database.ServerValue.TIMESTAMP
   }).then(() => {
     mostrarToast(`Comando enviado: ${accion}`);
   }).catch((err) => {
+    console.error(err);
     mostrarToast("Error al enviar comando");
+  });
+}
+
+function enviarRiegoManual() {
+  const sector = parseInt(document.getElementById('man-sector').value, 10);
+  const minutos = parseInt(document.getElementById('man-minutos').value, 10);
+
+  if (!Number.isInteger(sector) || sector < 0 || sector >= 8) {
+    mostrarToast("Seleccione un sector válido.");
+    return;
+  }
+  if (!Number.isInteger(minutos) || minutos < 1 || minutos > 120) {
+    mostrarToast("La duración debe ser entre 1 y 120 minutos.");
+    return;
+  }
+
+  db.ref('modulo_riego/comando').set({
+    accion: "manual",
+    sector: sector,
+    minutos: minutos,
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  }).then(() => {
+    mostrarToast(`Riego manual enviado: Sector ${sector + 1} · ${minutos} min`);
+  }).catch((err) => {
+    console.error(err);
+    mostrarToast("Error al iniciar riego manual");
   });
 }
 
