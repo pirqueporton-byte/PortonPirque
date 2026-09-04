@@ -10,6 +10,7 @@
     --bg: #F5F7FA; --surface: #FFFFFF; --border: #E4E7EB; --text-main: #111827; 
     --text-muted: #6B7280; --primary: #0F172A; --primary-text: #FFFFFF;
     --cyan-glow: #00D4FF; --shadow: 0 10px 30px -10px rgba(0,0,0,0.1); --map-bg: #1F2937; --danger: #D93025;
+    --success: #10B981; --warning: #F59E0B;
   }
   [data-theme="dark"] { 
     --bg: #121418; --surface: #1E2128; --border: #2C303A; --text-main: #F3F4F6; 
@@ -38,8 +39,16 @@
   .dash-content { flex: 1; padding: 24px 32px; display: flex; flex-direction: column; height: 100vh; overflow: hidden; min-width: 0; }
   .riego-header-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-shrink: 0; }
   .dash-title { font-size: 26px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.5px; }
-  .dash-subtitle { font-size: 13px; color: var(--text-muted); margin: 0; }
+  .dash-subtitle { font-size: 13px; color: var(--text-muted); margin: 0; display: flex; align-items: center; gap: 8px; }
   
+  /* INDICADOR EN LÍNEA / FUERA DE LÍNEA */
+  .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: rgba(107, 114, 128, 0.1); color: var(--text-muted); }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); transition: 0.3s; }
+  .status-badge.online { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+  .status-badge.online .status-dot { background: var(--success); box-shadow: 0 0 8px var(--success); }
+  .status-badge.offline { background: rgba(217, 48, 37, 0.1); color: var(--danger); }
+  .status-badge.offline .status-dot { background: var(--danger); }
+
   .header-actions { display: flex; gap: 12px; align-items: center; }
   .btn-icon { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--text-main); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; flex-shrink:0;}
   .btn-icon:hover { background: var(--border); }
@@ -68,10 +77,11 @@
   .marker-group { transition: transform 0.1s linear; pointer-events: all; }
   .marker-group.selected circle.icon-bg { stroke: #FFF; stroke-width: 3px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
 
-  /* BOTÓN FLOTANTE DE EDICIÓN EN EL MAPA */
-  .floating-tools-btn { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 12px 28px; border-radius: 99px; font-weight: 700; font-size: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 10; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
-  .floating-tools-btn:hover { background: var(--bg); transform: translateX(-50%) scale(1.05); }
-  .riego-layout.panel-open .floating-tools-btn { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(20px); }
+  /* BOTÓN FLOTANTE DE EDICIÓN Y CONTROLES MANUALES EN EL MAPA */
+  .floating-tools-container { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 10; transition: 0.3s; }
+  .floating-tools-btn { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 12px 24px; border-radius: 99px; font-weight: 700; font-size: 13px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+  .floating-tools-btn:hover { background: var(--bg); transform: scale(1.05); }
+  .riego-layout.panel-open .floating-tools-container { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(20px); }
 
   /* PANEL LATERAL DINÁMICO */
   .side-panel { width: 0; opacity: 0; overflow: hidden; background: var(--surface); border-radius: 20px; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; flex-direction: column; flex-shrink: 0; border: 1px solid transparent; box-shadow: none; position: relative; }
@@ -110,6 +120,7 @@
   .btn-outline { background: transparent; border: 1px solid var(--border); padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-main); transition: 0.2s; width: 100%; }
   .btn-outline:hover { background: rgba(100,100,100,0.1); }
   .btn-danger { color: var(--danger); border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); }
+  .btn-warning { color: var(--warning); border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); }
 
   /* MODAL VISUAL EXTERNO */
   .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
@@ -156,14 +167,22 @@
 
 <main class="dash-content">
   <div class="riego-header-bar">
-    <div><h1 class="dash-title">Riego Inteligente</h1><p class="dash-subtitle">Gemelo Digital del Terreno.</p></div>
+    <div>
+      <h1 class="dash-title">Riego Inteligente</h1>
+      <p class="dash-subtitle">
+        Gemelo Digital del Terreno. 
+        <span id="esp-status-badge" class="status-badge offline">
+          <span class="status-dot"></span> <span id="esp-status-text">Fuera de Línea</span>
+        </span>
+      </p>
+    </div>
     <div class="header-actions">
       <button class="btn-theme theme-btn-icon" onclick="ciclarTema()" id="theme-btn">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="width:16px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> 
         <span>Oscuro</span>
       </button>
       <button class="btn-icon" onclick="document.getElementById('visual-modal').classList.add('active')" title="Ajustes Visuales">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="width:18px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="width:18px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 l2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </button>
       <button class="btn-primary" onclick="document.getElementById('map-upload').click()">Actualizar Plano</button>
       <input type="file" id="map-upload" hidden accept="image/*" onchange="procesarYComprimirImagen(event)">
@@ -179,10 +198,11 @@
         <img id="map-image" src="" style="display:none;">
         <svg id="map-svg"></svg>
       </div>
-      <!-- BOTÓN FLOTANTE (Se oculta al abrir el panel) -->
-      <button class="floating-tools-btn" onclick="abrirPanelLateral('tools')">
-        ✏️ Editar Mapa
-      </button>
+      <!-- BOTONES FLOTANTES EN EL MAPA -->
+      <div class="floating-tools-container">
+        <button class="floating-tools-btn" onclick="abrirPanelLateral('tools')">✏️ Editar Mapa</button>
+        <button class="floating-tools-btn" style="background: var(--primary); color: var(--primary-text);" onclick="abrirPanelLateral('control-manual')">⚡ Control Manual</button>
+      </div>
     </div>
 
     <!-- PANEL LATERAL DESLIZABLE -->
@@ -223,7 +243,7 @@
           </div>
         </div>
 
-        <!-- CONTENIDO 2: FORMULARIO ZONA -->
+        <!-- CONTENIDO 2: FORMULARIO ZONA (CON VALIDACIÓN DE SOLAPAMIENTO) -->
         <div id="panel-zone" style="display:none;">
           <div class="form-group"><label>Días Activos</label>
             <div class="days-grid">
@@ -279,6 +299,40 @@
           <button class="btn-outline" style="margin-top:16px; background:var(--text-main); color:var(--bg);" onclick="guardarMarcador()">Guardar Cambios</button>
           <hr style="border:0; border-top:1px solid var(--border); width:100%; margin:20px 0;">
           <button class="btn-outline btn-danger" onclick="eliminarItem('marker')">Eliminar Icono</button>
+        </div>
+
+        <!-- CONTENIDO 4: PANEL DE CONTROL MANUAL Y PAUSA -->
+        <div id="panel-control-manual" style="display:none; flex-direction:column; gap:16px;">
+          <div class="form-group">
+            <label>Pausar / Continuar Riego en Curso</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+              <button class="btn-outline btn-warning" onclick="enviarComando('pausar')">⏸️ Pausar</button>
+              <button class="btn-outline" style="background:var(--success); color:#fff; border:none;" onclick="enviarComando('continuar')">▶️ Continuar</button>
+            </div>
+            <p style="font-size:11px; color:var(--text-muted); margin:4px 0 0;">Si pasa la hora de programación, presionar continuar ya no activará el relé.</p>
+          </div>
+
+          <div class="form-group">
+            <label>Detener Emergencia</label>
+            <button class="btn-outline btn-danger" onclick="enviarComando('detener')">⏹️ Detener Todo</button>
+          </div>
+
+          <hr style="border:0; border-top:1px solid var(--border); width:100%; margin:10px 0;">
+
+          <div class="form-group">
+            <label>Regar Ahora (Manual sin reprogramar)</label>
+            <div class="form-group" style="margin-bottom:8px;">
+              <label style="font-size:10px;">Seleccionar Sector / Válvula</label>
+              <select id="man-sector" class="form-input">
+                <!-- Se llena dinámicamente -->
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:12px;">
+              <label style="font-size:10px;">Minutos de Duración</label>
+              <input type="number" id="man-minutos" class="form-input" value="5" min="1" max="120">
+            </div>
+            <button class="btn-outline" style="background:var(--primary); color:var(--primary-text); border:none;" onclick="enviarRiegoManual()">🚿 Iniciar Riego Manual</button>
+          </div>
         </div>
 
       </div>
@@ -347,8 +401,37 @@ const auth = firebase.auth(); const db = firebase.database(); const ADMIN_EMAIL 
 
 auth.onAuthStateChanged((user) => {
   if(!user || user.email !== ADMIN_EMAIL) window.location.href = 'index.html';
-  else { loadVisuals(); db.ref('modulo_riego').once('value').then(snap => { const data = snap.val() || {}; if(data.mapa) cargarDatosAlMapa(data.mapa, data.perimeter||[], data.zones||[], data.markers||[], data.view); }); }
+  else { 
+    loadVisuals(); 
+    db.ref('modulo_riego').once('value').then(snap => { const data = snap.val() || {}; if(data.mapa) cargarDatosAlMapa(data.mapa, data.perimeter||[], data.zones||[], data.markers||[], data.view); });
+    
+    // MONITOREAR ESTADO DE CONEXIÓN DEL ESP32 (Última Conexión)
+    db.ref('modulo_riego/estado_riego/ultima_conexion').on('value', (snap) => {
+      const ultimaConexion = snap.val();
+      actualizarIndicadorEstado(ultimaConexion);
+    });
+  }
 });
+
+function actualizarIndicadorEstado(timestamp) {
+  const badge = document.getElementById('esp-status-badge');
+  const text = document.getElementById('esp-status-text');
+  if (!timestamp) {
+    badge.className = "status-badge offline";
+    text.textContent = "Fuera de Línea";
+    return;
+  }
+  const ahora = Date.now();
+  const diferenciaSegundos = (ahora - timestamp) / 1000;
+  // Si la placa reportó en los últimos 20 segundos, está en línea
+  if (diferenciaSegundos < 20) {
+    badge.className = "status-badge online";
+    text.textContent = "En Línea";
+  } else {
+    badge.className = "status-badge offline";
+    text.textContent = "Fuera de Línea";
+  }
+}
 
 function cerrarSesion() { auth.signOut().then(() => window.location.href = 'index.html'); }
 function procesarYComprimirImagen(e) {
@@ -485,6 +568,7 @@ function abrirPanelLateral(tipo) {
   document.getElementById('panel-tools').style.display = 'none';
   document.getElementById('panel-zone').style.display = 'none';
   document.getElementById('panel-marker').style.display = 'none';
+  document.getElementById('panel-control-manual').style.display = 'none';
   
   if (tipo === 'tools') {
     document.getElementById('side-panel-title').textContent = "Edición de Mapa";
@@ -495,6 +579,10 @@ function abrirPanelLateral(tipo) {
   } else if (tipo === 'marker') {
     document.getElementById('side-panel-title').textContent = "Configurar Icono";
     document.getElementById('panel-marker').style.display = 'block';
+  } else if (tipo === 'control-manual') {
+    document.getElementById('side-panel-title').textContent = "Control Manual y Pausa";
+    document.getElementById('panel-control-manual').style.display = 'flex';
+    actualizarSelectorSectoresManual();
   }
 }
 
@@ -520,15 +608,123 @@ function seleccionarPanel(type, id) {
   }
 }
 
-// Cuentagotas y guardado
+// VALIDACIÓN DE SOLAPAMIENTO DE HORARIOS Y DÍAS
+function validarSolapamiento(nuevaHora, nuevaDuracionMin, nuevosDias, idActual) {
+  const [nHora, nMin] = nuevaHora.split(':').map(Number);
+  const inicioNuevoMin = nHora * 60 + nMin;
+  const finNuevoMin = inicioNuevoMin + parseInt(nuevaDuracionMin);
+
+  for (let z of zones) {
+    if (z.id === idActual) continue; // Ignorar el sector actual si se está editando
+    if (!z.config || !z.config.hora || !z.config.duracion || !z.config.dias) continue;
+
+    // Verificar si comparten al menos un día activo
+    const comparteDia = z.config.dias.some(dia => nuevosDias.includes(dia));
+    if (!compartesDia && nuevosDias.length > 0 && z.config.dias.length > 0) continue;
+
+    const [zHora, zMin] = z.config.hora.split(':').map(Number);
+    const inicioZMin = zHora * 60 + zMin;
+    const finZMin = inicioZMin + parseInt(z.config.duracion);
+
+    // Comprobar si hay solapamiento de rangos de minutos
+    if (inicioNuevoMin < finZMin && finNuevoMin > inicioZMin) {
+      return z.name || "Otro Sector";
+    }
+  }
+  return null;
+}
+
+// Cuentagotas y guardado de zonas
 async function usarCuentagotas(inputId) {
   if (!window.EyeDropper) return mostrarToast('Cuentagotas no compatible.');
   try { const ed = new EyeDropper(); const res = await ed.open(); document.getElementById(inputId).value = res.sRGBHex; } catch(e) {}
 }
-function guardarZona() { const z = zones.find(x => x.id === selectedItem.id); if(!z) return; z.config.hora = document.getElementById('z-hora').value; z.config.duracion = document.getElementById('z-dur').value; z.config.color = document.getElementById('z-color').value; z.config.dias = []; document.querySelectorAll('.day-btn.active').forEach(btn => z.config.dias.push(btn.getAttribute('data-day'))); guardarTodoDB(); renderSVG(); mostrarToast("Sector Guardado"); cerrarPanelLateral(); }
+
+function guardarZona() { 
+  const z = zones.find(x => x.id === selectedItem.id); if(!z) return; 
+  const hora = document.getElementById('z-hora').value; 
+  const duracion = document.getElementById('z-dur').value; 
+  const color = document.getElementById('z-color').value; 
+  const dias = []; 
+  document.querySelectorAll('.day-btn.active').forEach(btn => dias.push(btn.getAttribute('data-day'))); 
+
+  if(!hora || !duracion) {
+    mostrarToast("Ingrese hora y duración válidas.");
+    return;
+  }
+
+  // VALIDAR SOLAPAMIENTO ANTES DE GUARDAR
+  const solapadoCon = validarSolapamiento(hora, duracion, dias, z.id);
+  if (solapadoCon) {
+    alert(`⚠️ Conflicto de horario: Este sector se cruza con "${solapadoCon}" en los días seleccionados.`);
+    return;
+  }
+
+  z.config.hora = hora; 
+  z.config.duracion = duracion; 
+  z.config.color = color; 
+  z.config.dias = dias; 
+  
+  guardarTodoDB(); 
+  renderSVG(); 
+  mostrarToast("Sector Guardado"); 
+  cerrarPanelLateral(); 
+}
+
 function guardarMarcador() { const m = markers.find(x => x.id === selectedItem.id); if(!m) return; m.name = document.getElementById('m-name').value; m.iconType = document.getElementById('m-icon').value; m.color = document.getElementById('m-color').value; m.scale = parseFloat(document.getElementById('m-scale').value); guardarTodoDB(); renderSVG(); mostrarToast("Icono Guardado"); cerrarPanelLateral(); }
 function previewMarkerScale() { const m = markers.find(x => x.id === selectedItem.id); if(m) { m.scale = parseFloat(document.getElementById('m-scale').value); renderSVG(); } }
 function eliminarItem(type) { if(confirm('¿Eliminar este elemento permanentemente?')) { if(type === 'zone') zones = zones.filter(x => x.id !== selectedItem.id); else markers = markers.filter(x => x.id !== selectedItem.id); guardarTodoDB(); cerrarPanelLateral(); } }
+
+// FUNCIONES DE CONTROL MANUAL Y COMANDOS A ESP32
+function enviarComando(accion) {
+  db.ref('modulo_riego/comando').set({
+    accion: accion,
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  }).then(() => {
+    mostrarToast(`Comando enviado: ${accion}`);
+  }).catch((err) => {
+    mostrarToast("Error al enviar comando");
+  });
+}
+
+function actualizarSelectorSectoresManual() {
+  const select = document.getElementById('man-sector');
+  select.innerHTML = '';
+  zones.forEach((z, index) => {
+    const opt = document.createElement('option');
+    opt.value = index; // Índice del relé (0 a 7)
+    opt.textContent = `${z.name || 'Sector'} (Relé ${index + 1})`;
+    select.appendChild(opt);
+  });
+  if(zones.length === 0) {
+    const opt = document.createElement('option');
+    opt.value = 0;
+    opt.textContent = "Relé 1 (Por defecto)";
+    select.appendChild(opt);
+  }
+}
+
+function enviarRiegoManual() {
+  const sectorIndex = parseInt(document.getElementById('man-sector').value);
+  const minutos = parseInt(document.getElementById('man-minutos').value);
+  
+  if(!minutos || minutos <= 0) {
+    mostrarToast("Ingrese minutos válidos");
+    return;
+  }
+
+  db.ref('modulo_riego/comando').set({
+    accion: 'manual',
+    sector: sectorIndex,
+    minutos: minutos,
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  }).then(() => {
+    mostrarToast(`Iniciando riego manual en Relé ${sectorIndex + 1}`);
+    cerrarPanelLateral();
+  }).catch((err) => {
+    mostrarToast("Error al enviar riego manual");
+  });
+}
 </script>
 </body>
 </html>
