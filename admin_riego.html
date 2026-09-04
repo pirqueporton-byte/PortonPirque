@@ -723,7 +723,9 @@ async function usarCuentagotas(inputId) {
 }
 
 function guardarZona() { 
-  const z = zones.find(x => x.id === selectedItem.id); if(!z) return; 
+  const z = zones.find(x => x.id === selectedItem.id); 
+  if(!z) return; 
+  
   const hora = document.getElementById('z-hora').value; 
   const duracion = document.getElementById('z-dur').value; 
   const color = document.getElementById('z-color').value; 
@@ -746,10 +748,20 @@ function guardarZona() {
   z.config.duracion = duracion; 
   z.config.color = color; 
   z.config.dias = dias; 
-  
+
+  // --- ACTUALIZACIÓN DIRECTA Y FORZADA EN FIREBASE ---
+  const index = zones.findIndex(x => x.id === selectedItem.id);
+  if (index !== -1) {
+    db.ref(`modulo_riego/zones/${index}`).set(z).then(() => {
+      mostrarToast("¡Sector actualizado en Firebase!");
+    }).catch(err => {
+      console.error("Error al guardar en Firebase:", err);
+      mostrarToast("Error al sincronizar con la nube");
+    });
+  }
+
   guardarTodoDB(); 
   renderSVG(); 
-  mostrarToast("Sector Guardado"); 
   cerrarPanelLateral(); 
 }
 
@@ -785,28 +797,3 @@ function actualizarSelectorSectoresManual() {
     select.appendChild(opt);
   }
 }
-
-function enviarRiegoManual() {
-  const sectorIndex = parseInt(document.getElementById('man-sector').value);
-  const minutos = parseInt(document.getElementById('man-minutos').value);
-  
-  if(!minutos || minutos <= 0) {
-    mostrarToast("Ingrese minutos válidos");
-    return;
-  }
-
-  db.ref('modulo_riego/comando').set({
-    accion: 'manual',
-    sector: sectorIndex,
-    minutos: minutos,
-    timestamp: firebase.database.ServerValue.TIMESTAMP
-  }).then(() => {
-    mostrarToast(`Iniciando riego manual en Relé ${sectorIndex + 1}`);
-    cerrarPanelLateral();
-  }).catch((err) => {
-    mostrarToast("Error al enviar riego manual");
-  });
-}
-</script>
-</body>
-</html>
