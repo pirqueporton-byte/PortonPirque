@@ -77,7 +77,7 @@
   .marker-group { transition: transform 0.1s linear; pointer-events: all; }
   .marker-group.selected circle.icon-bg { stroke: #FFF; stroke-width: 3px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
 
-  /* BOTÓN FLOTANTE DE EDICIÓN Y CONTROLES MANUALES EN EL MAPA */
+  /* BOTONES FLOTANTES EN EL MAPA */
   .floating-tools-container { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 10; transition: 0.3s; }
   .floating-tools-btn { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 12px 24px; border-radius: 99px; font-weight: 700; font-size: 13px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
   .floating-tools-btn:hover { background: var(--bg); transform: scale(1.05); }
@@ -121,6 +121,12 @@
   .btn-outline:hover { background: rgba(100,100,100,0.1); }
   .btn-danger { color: var(--danger); border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); }
   .btn-warning { color: var(--warning); border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); }
+
+  /* TARJETA DE ESTADO EN VIVO */
+  .live-status-card { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+  .live-status-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; }
+  .live-status-value { font-size: 15px; font-weight: 700; color: var(--text-main); }
+  .live-timer { font-size: 22px; font-weight: 800; color: var(--cyan-glow); font-family: monospace; }
 
   /* MODAL VISUAL EXTERNO */
   .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
@@ -182,7 +188,7 @@
         <span>Oscuro</span>
       </button>
       <button class="btn-icon" onclick="document.getElementById('visual-modal').classList.add('active')" title="Ajustes Visuales">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="width:18px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 l2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="width:18px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0l2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </button>
       <button class="btn-primary" onclick="document.getElementById('map-upload').click()">Actualizar Plano</button>
       <input type="file" id="map-upload" hidden accept="image/*" onchange="procesarYComprimirImagen(event)">
@@ -243,7 +249,7 @@
           </div>
         </div>
 
-        <!-- CONTENIDO 2: FORMULARIO ZONA (CON VALIDACIÓN DE SOLAPAMIENTO) -->
+        <!-- CONTENIDO 2: FORMULARIO ZONA -->
         <div id="panel-zone" style="display:none;">
           <div class="form-group"><label>Días Activos</label>
             <div class="days-grid">
@@ -301,15 +307,34 @@
           <button class="btn-outline btn-danger" onclick="eliminarItem('marker')">Eliminar Icono</button>
         </div>
 
-        <!-- CONTENIDO 4: PANEL DE CONTROL MANUAL Y PAUSA -->
+        <!-- CONTENIDO 4: PANEL DE CONTROL MANUAL Y ESTADO EN VIVO -->
         <div id="panel-control-manual" style="display:none; flex-direction:column; gap:16px;">
+          
+          <!-- TARJETA DE ESTADO EN VIVO -->
+          <div class="live-status-card">
+            <div class="live-status-title">
+              <span>Estado del Riego</span>
+              <span id="live-state-badge" style="color: var(--text-muted);">Inactivo</span>
+            </div>
+            <div id="live-zone-name" class="live-status-value">Ninguna zona activa</div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 4px;">
+              <div>
+                <div style="font-size: 10px; color: var(--text-muted);">TIEMPO RESTANTE</div>
+                <div id="live-countdown" class="live-timer">--:--</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 10px; color: var(--text-muted);">FINALIZA A LAS</div>
+                <div id="live-end-time" style="font-size: 13px; font-weight: 600;">--:--</div>
+              </div>
+            </div>
+          </div>
+
           <div class="form-group">
-            <label>Pausar / Continuar Riego en Curso</label>
+            <label>Acciones de Pausa</label>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
               <button class="btn-outline btn-warning" onclick="enviarComando('pausar')">⏸️ Pausar</button>
               <button class="btn-outline" style="background:var(--success); color:#fff; border:none;" onclick="enviarComando('continuar')">▶️ Continuar</button>
             </div>
-            <p style="font-size:11px; color:var(--text-muted); margin:4px 0 0;">Si pasa la hora de programación, presionar continuar ya no activará el relé.</p>
           </div>
 
           <div class="form-group">
@@ -320,12 +345,10 @@
           <hr style="border:0; border-top:1px solid var(--border); width:100%; margin:10px 0;">
 
           <div class="form-group">
-            <label>Regar Ahora (Manual sin reprogramar)</label>
+            <label>Regar Ahora (Manual)</label>
             <div class="form-group" style="margin-bottom:8px;">
               <label style="font-size:10px;">Seleccionar Sector / Válvula</label>
-              <select id="man-sector" class="form-input">
-                <!-- Se llena dinámicamente -->
-              </select>
+              <select id="man-sector" class="form-input"></select>
             </div>
             <div class="form-group" style="margin-bottom:12px;">
               <label style="font-size:10px;">Minutos de Duración</label>
@@ -405,10 +428,14 @@ auth.onAuthStateChanged((user) => {
     loadVisuals(); 
     db.ref('modulo_riego').once('value').then(snap => { const data = snap.val() || {}; if(data.mapa) cargarDatosAlMapa(data.mapa, data.perimeter||[], data.zones||[], data.markers||[], data.view); });
     
-    // MONITOREAR ESTADO DE CONEXIÓN DEL ESP32 (Última Conexión)
+    // MONITOREAR ESTADO DE CONEXIÓN DEL ESP32
     db.ref('modulo_riego/estado_riego/ultima_conexion').on('value', (snap) => {
-      const ultimaConexion = snap.val();
-      actualizarIndicadorEstado(ultimaConexion);
+      actualizarIndicadorEstado(snap.val());
+    });
+
+    // ESCUCHAR ESTADO DE RIEGO EN VIVO PARA EL PANEL MANUAL
+    db.ref('modulo_riego/estado_riego').on('value', (snap) => {
+      actualizarEstadoEnVivo(snap.val());
     });
   }
 });
@@ -421,15 +448,60 @@ function actualizarIndicadorEstado(timestamp) {
     text.textContent = "Fuera de Línea";
     return;
   }
-  const ahora = Date.now();
-  const diferenciaSegundos = (ahora - timestamp) / 1000;
-  // Si la placa reportó en los últimos 20 segundos, está en línea
+  const diferenciaSegundos = (Date.now() - timestamp) / 1000;
   if (diferenciaSegundos < 20) {
     badge.className = "status-badge online";
     text.textContent = "En Línea";
   } else {
     badge.className = "status-badge offline";
     text.textContent = "Fuera de Línea";
+  }
+}
+
+// ACTUALIZAR DATOS VISUALES EN EL PANEL DE CONTROL MANUAL
+function actualizarEstadoEnVivo(estado) {
+  const badge = document.getElementById('live-state-badge');
+  const nameEl = document.getElementById('live-zone-name');
+  const timerEl = document.getElementById('live-countdown');
+  const endEl = document.getElementById('live-end-time');
+
+  if (!estado || (!estado.regando && !estado.pausa)) {
+    badge.textContent = "Inactivo";
+    badge.style.color = "var(--text-muted)";
+    nameEl.textContent = "Ninguna zona activa";
+    timerEl.textContent = "00:00";
+    endEl.textContent = "--:--";
+    return;
+  }
+
+  const sectorIdx = estado.sector !== undefined ? estado.sector : 0;
+  const zName = zones[sectorIdx] ? (zones[sectorIdx].name || `Sector ${sectorIdx + 1}`) : `Relé ${sectorIdx + 1}`;
+  
+  if (estado.regando) {
+    badge.textContent = "Regando 💧";
+    badge.style.color = "var(--success)";
+  } else if (estado.pausa) {
+    badge.textContent = "Pausado ⏸️";
+    badge.style.color = "var(--warning)";
+  }
+
+  nameEl.textContent = zName;
+
+  if (estado.finEpoch) {
+    const ahoraEpoch = Math.floor(Date.now() / 1000);
+    const segundosRestantes = estado.finEpoch - ahoraEpoch;
+
+    if (segundosRestantes > 0) {
+      const mins = Math.floor(segundosRestantes / 60).toString().padStart(2, '0');
+      const secs = (segundosRestantes % 60).toString().padStart(2, '0');
+      timerEl.textContent = `${mins}:${secs}`;
+
+      const endDate = new Date(estado.finEpoch * 1000);
+      endEl.textContent = endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else {
+      timerEl.textContent = "00:00";
+      endEl.textContent = "Expirado";
+    }
   }
 }
 
@@ -580,7 +652,7 @@ function abrirPanelLateral(tipo) {
     document.getElementById('side-panel-title').textContent = "Configurar Icono";
     document.getElementById('panel-marker').style.display = 'block';
   } else if (tipo === 'control-manual') {
-    document.getElementById('side-panel-title').textContent = "Control Manual y Pausa";
+    document.getElementById('side-panel-title').textContent = "Control Manual y Estado";
     document.getElementById('panel-control-manual').style.display = 'flex';
     actualizarSelectorSectoresManual();
   }
@@ -615,10 +687,9 @@ function validarSolapamiento(nuevaHora, nuevaDuracionMin, nuevosDias, idActual) 
   const finNuevoMin = inicioNuevoMin + parseInt(nuevaDuracionMin);
 
   for (let z of zones) {
-    if (z.id === idActual) continue; // Ignorar el sector actual si se está editando
+    if (z.id === idActual) continue;
     if (!z.config || !z.config.hora || !z.config.duracion || !z.config.dias) continue;
 
-    // Verificar si comparten al menos un día activo
     const comparteDia = z.config.dias.some(dia => nuevosDias.includes(dia));
     if (!compartesDia && nuevosDias.length > 0 && z.config.dias.length > 0) continue;
 
@@ -626,7 +697,6 @@ function validarSolapamiento(nuevaHora, nuevaDuracionMin, nuevosDias, idActual) 
     const inicioZMin = zHora * 60 + zMin;
     const finZMin = inicioZMin + parseInt(z.config.duracion);
 
-    // Comprobar si hay solapamiento de rangos de minutos
     if (inicioNuevoMin < finZMin && finNuevoMin > inicioZMin) {
       return z.name || "Otro Sector";
     }
@@ -653,7 +723,6 @@ function guardarZona() {
     return;
   }
 
-  // VALIDAR SOLAPAMIENTO ANTES DE GUARDAR
   const solapadoCon = validarSolapamiento(hora, duracion, dias, z.id);
   if (solapadoCon) {
     alert(`⚠️ Conflicto de horario: Este sector se cruza con "${solapadoCon}" en los días seleccionados.`);
@@ -692,7 +761,7 @@ function actualizarSelectorSectoresManual() {
   select.innerHTML = '';
   zones.forEach((z, index) => {
     const opt = document.createElement('option');
-    opt.value = index; // Índice del relé (0 a 7)
+    opt.value = index; 
     opt.textContent = `${z.name || 'Sector'} (Relé ${index + 1})`;
     select.appendChild(opt);
   });
