@@ -60,7 +60,7 @@
   .riego-layout.panel-open { gap: 24px; }
 
   /* MAPA RECTANGULAR */
-  .riego-map-wrapper { flex: 1; background: var(--map-bg); border-radius: 20px; position: relative; overflow: hidden; border: 1px solid var(--border); box-shadow: inset 0 0 50px rgba(0,0,0,0.6), var(--shadow); touch-action: none; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); min-width: 0; }
+  .riego-map-wrapper { flex: 1; background: var(--map-bg); border-radius: 20px; position: relative; overflow: hidden; border: 1px solid var(--border); box-shadow: inset 0 0 50px rgba(0,0,0,0.6), var(--shadow); touch-action: none; transition: filter 0.4s ease, border-radius 0.4s ease; min-width: 0; }
   .riego-map-wrapper.view-minimal { background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px); background-size: 24px 24px; }
   
   .ambient-bg { position: absolute; top: -10%; left: -10%; width: 120%; height: 120%; background-size: cover; background-position: center; filter: blur(40px); opacity: 0; transition: opacity 0.6s ease; pointer-events: none; z-index: 0; }
@@ -138,70 +138,59 @@
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--text-main); cursor: pointer; margin-top: -6px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 
   /* ==========================================================
-     MEDIA QUERIES MEJORADAS Y OPTIMIZADAS PARA CELULAR 
+     NUEVA VERSIÓN PREMIUM CELULAR (BOTTOM SHEET Y AUTO-AJUSTE)
      ========================================================== */
   @media (max-width: 850px) {
-    /* Mantenemos el scroll principal oculto para simular app nativa */
-    body { flex-direction: column; overflow: hidden; }
+    body { flex-direction: column; overflow: hidden; } /* Bloquea el scroll exterior para simular app nativa */
     
-    /* Barra de navegación anclada abajo */
     .dash-sidebar { 
-      position: fixed; 
-      bottom: 0; 
-      left: 0; 
-      width: 100%; 
-      height: 70px; 
-      flex-direction: row; 
-      order: unset; 
-      border-right: none; 
-      border-top: 1px solid var(--border); 
-      justify-content: space-around; 
-      padding: 0; 
-      z-index: 1000; 
-      background: var(--bg);
+      position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; flex-direction: row; order: unset; 
+      border-right: none; border-top: 1px solid var(--border); justify-content: space-around; padding: 0; z-index: 2500; background: var(--bg);
     }
     .dash-logo-icon { display: none; }
     .dash-nav-item { margin: 0; width: 44px; height: 44px; }
     .dash-footer { padding: 0 12px; border-top: none; border-left: 1px solid var(--border); width: auto; margin-top: 0; align-items: center; }
     
-    /* El contenido scrollea internamente y deja espacio para la nav inferior */
     .dash-content { 
-      padding: 16px; 
-      padding-bottom: 90px; /* Evita que el menú tape contenido */
-      height: 100vh; 
-      overflow-y: auto; 
-      overflow-x: hidden;
-      order: unset;
+      padding: 16px; padding-bottom: 70px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; order: unset; 
     }
-    
-    /* Cabecera ordenada para no apretar botones */
-    .riego-header-bar { flex-direction: column; gap: 16px; align-items: flex-start; }
+    .riego-header-bar { flex-direction: column; gap: 12px; align-items: flex-start; margin-bottom: 16px; flex-shrink: 0; }
     .header-actions { width: 100%; display: flex; justify-content: space-between; flex-wrap: wrap; }
-    .btn-theme span { display: none; } /* Oculta texto Oscuro/Claro para ganar espacio */
+    .btn-theme span { display: none; } 
     .dash-title { font-size: 22px; }
     
-    .riego-layout { flex-direction: column; overflow-y: visible; gap: 16px !important; }
+    .riego-layout { flex: 1; flex-direction: column; gap: 0 !important; min-height: 0; position: relative; }
     
-    /* Mapa con dimensiones inteligentes */
+    /* El mapa ocupa todo el espacio libre de la pantalla */
     .riego-map-wrapper { 
-      min-height: 300px; 
-      height: 45vh; /* Se adapta a la altura de la pantalla */
-      max-height: none; 
-      flex: none; 
-      width: 100%;
-      border-radius: 16px;
+      flex: 1; height: auto; min-height: 0; width: 100%; border-radius: 16px; transition: filter 0.4s ease;
     }
     
-    /* Botones flotantes del mapa adaptados */
-    .floating-tools-container { width: 95%; bottom: 12px; gap: 8px; }
+    /* Efecto premium: Oscurece y desenfoca el mapa al abrir el panel de opciones */
+    .riego-layout.panel-open .riego-map-wrapper { 
+      filter: brightness(0.3) blur(4px); pointer-events: auto; /* Permite clickear fuera para cerrar */
+    }
+    
+    .floating-tools-container { width: 95%; bottom: 16px; gap: 8px; z-index: 10; }
     .floating-tools-btn { flex: 1; justify-content: center; padding: 10px 8px; font-size: 11px; text-align: center; }
     
-    /* Ajustes perfectos al panel lateral de opciones */
-    .side-panel { width: 100% !important; height: auto; opacity: 1; display: none; border-radius: 16px; }
-    .riego-layout.panel-open .side-panel { display: flex; border-color: var(--border); margin-bottom: 20px; }
-    .side-panel-content { width: 100%; padding: 16px; overflow-y: visible; }
+    /* PANEL TIPO BOTTOM SHEET (Sube desde abajo) */
+    .side-panel { 
+      position: fixed !important; bottom: 70px; left: 0; width: 100% !important; max-height: calc(100vh - 120px); 
+      border-radius: 24px 24px 0 0; background: var(--surface); z-index: 2000; 
+      transform: translateY(120%); display: flex !important; opacity: 1; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); 
+      border: none; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); 
+    }
     
-    /* Botones de días con mejor respiro */
+    /* Píldora decorativa en la parte superior del panel */
+    .side-panel::before { 
+      content: ''; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); 
+      width: 40px; height: 5px; background: var(--border); border-radius: 10px; z-index: 10; 
+    }
+    
+    .riego-layout.panel-open .side-panel { transform: translateY(0); }
+    .side-panel-content { width: 100%; padding: 24px 20px; padding-top: 32px; overflow-y: auto; }
+    
     .days-grid { gap: 4px; }
     .day-btn { padding: 8px 0; font-size: 11px; }
   }
@@ -508,7 +497,6 @@ function actualizarIndicadorEstado(timestamp) {
   const tsMilis = Number(timestamp) < 10000000000 ? Number(timestamp) * 1000 : Number(timestamp);
   const diferenciaSegundos = (Date.now() - tsMilis) / 1000;
 
-  // El ESP32 publica heartbeat cada pocos segundos.
   if (diferenciaSegundos >= -10 && diferenciaSegundos < 20) {
     badge.className = "status-badge online";
     text.textContent = "En Línea";
@@ -575,7 +563,6 @@ function renderEstadoEnVivo() {
   }
 }
 
-// El contador se actualiza localmente cada segundo sin depender de Firebase.
 setInterval(renderEstadoEnVivo, 1000);
 
 function cerrarSesion() { auth.signOut().then(() => window.location.href = 'index.html'); }
@@ -594,6 +581,30 @@ function procesarYComprimirImagen(e) {
 function guardarTodoDB() { db.ref('modulo_riego').update({ perimeter, zones, markers }); }
 function guardarVistaDB() { if (mapState.imgWidth > 0) db.ref('modulo_riego/view').set({ tx: mapState.tx, ty: mapState.ty, scale: mapState.scale }); }
 
+// -- FUNCIÓN NUEVA: Auto-encuadra el mapa usando el perímetro en móviles --
+function ajustarMapaMovil() {
+  if (window.innerWidth > 850) return;
+  let targetW = mapState.imgWidth, targetH = mapState.imgHeight;
+  let minX = 0, minY = 0;
+  
+  if (perimeter && perimeter.length > 2) {
+    const xs = perimeter.map(p => p.x);
+    const ys = perimeter.map(p => p.y);
+    minX = Math.min(...xs); 
+    minY = Math.min(...ys);
+    targetW = Math.max(...xs) - minX;
+    targetH = Math.max(...ys) - minY;
+  }
+  
+  const pad = 40; // Espaciado en los bordes
+  const scaleX = (wrapper.clientWidth - pad * 2) / (targetW || 1);
+  const scaleY = (wrapper.clientHeight - pad * 2) / (targetH || 1);
+  
+  mapState.scale = Math.min(scaleX, scaleY);
+  mapState.tx = (wrapper.clientWidth / 2) - ((minX + targetW / 2) * mapState.scale);
+  mapState.ty = (wrapper.clientHeight / 2) - ((minY + targetH / 2) * mapState.scale);
+}
+
 function cargarDatosAlMapa(b64, p, z, m, v) {
   document.getElementById('map-ambient-bg').style.backgroundImage = `url(${b64})`;
   if (mapState.view === 'map') document.getElementById('map-ambient-bg').style.opacity = '0.5';
@@ -603,7 +614,13 @@ function cargarDatosAlMapa(b64, p, z, m, v) {
     svgEl.setAttribute('viewBox', `0 0 ${mapState.imgWidth} ${mapState.imgHeight}`);
     if (v) { mapState.scale = v.scale; mapState.tx = v.tx; mapState.ty = v.ty; } 
     else { mapState.scale = Math.min(wrapper.clientWidth/mapState.imgWidth, wrapper.clientHeight/mapState.imgHeight) * 0.9; mapState.tx = (wrapper.clientWidth - (mapState.imgWidth*mapState.scale)) / 2; mapState.ty = (wrapper.clientHeight - (mapState.imgHeight*mapState.scale)) / 2; }
-    perimeter = p; zones = z; markers = m; currentDraw = []; actualizarTransform(); renderSVG(); actualizarSelectorSectoresManual(); renderEstadoEnVivo();
+    
+    perimeter = p; zones = z; markers = m; currentDraw = []; 
+    
+    // Se aplica el ajuste dinámico SÓLO si es la versión móvil
+    if (window.innerWidth <= 850) { ajustarMapaMovil(); }
+
+    actualizarTransform(); renderSVG(); actualizarSelectorSectoresManual(); renderEstadoEnVivo();
   }; imgEl.src = b64; imgEl.style.display = 'block';
 }
 
@@ -758,7 +775,6 @@ function seleccionarPanel(type, id) {
   }
 }
 
-// CORRECCIÓN: variable "comparteDia" corregida y sincronización completa mediante guardarTodoDB()
 function validarSolapamiento(nuevaHora, nuevaDuracionMin, nuevosDias, idActual) {
   if (!nuevosDias || nuevosDias.length === 0) return null;
   const [nHora, nMin] = nuevaHora.split(':').map(Number);
@@ -815,7 +831,6 @@ function guardarZona() {
   z.config.color = color; 
   z.config.dias = dias; 
 
-  // Sincronización segura y completa del array de zonas en Firebase
   guardarTodoDB(); 
   renderSVG(); 
   cerrarPanelLateral(); 
