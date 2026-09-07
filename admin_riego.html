@@ -137,19 +137,73 @@
   input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; background: var(--border); border-radius: 3px; cursor: pointer; }
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--text-main); cursor: pointer; margin-top: -6px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 
+  /* ==========================================================
+     MEDIA QUERIES MEJORADAS Y OPTIMIZADAS PARA CELULAR 
+     ========================================================== */
   @media (max-width: 850px) {
-    body { flex-direction: column; overflow: auto; }
-    .dash-sidebar { width: 100%; height: 70px; flex-direction: row; order: 2; border-right: none; border-top: 1px solid var(--border); justify-content: space-around; padding: 0; z-index: 100; }
+    /* Mantenemos el scroll principal oculto para simular app nativa */
+    body { flex-direction: column; overflow: hidden; }
+    
+    /* Barra de navegación anclada abajo */
+    .dash-sidebar { 
+      position: fixed; 
+      bottom: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 70px; 
+      flex-direction: row; 
+      order: unset; 
+      border-right: none; 
+      border-top: 1px solid var(--border); 
+      justify-content: space-around; 
+      padding: 0; 
+      z-index: 1000; 
+      background: var(--bg);
+    }
     .dash-logo-icon { display: none; }
     .dash-nav-item { margin: 0; width: 44px; height: 44px; }
     .dash-footer { padding: 0 12px; border-top: none; border-left: 1px solid var(--border); width: auto; margin-top: 0; align-items: center; }
-    .dash-content { padding: 20px; order: 1; padding-bottom: 20px; height: auto; overflow: visible; }
     
-    .riego-layout { flex-direction: column; overflow-y: visible; gap:16px !important; }
-    .riego-map-wrapper { min-height: 400px; max-height: 50vh; flex: none; }
-    .side-panel { width: 100% !important; height: auto; opacity: 1; display: none; }
-    .riego-layout.panel-open .side-panel { display: flex; border-color: var(--border); }
-    .side-panel-content { width: 100%; padding: 20px; }
+    /* El contenido scrollea internamente y deja espacio para la nav inferior */
+    .dash-content { 
+      padding: 16px; 
+      padding-bottom: 90px; /* Evita que el menú tape contenido */
+      height: 100vh; 
+      overflow-y: auto; 
+      overflow-x: hidden;
+      order: unset;
+    }
+    
+    /* Cabecera ordenada para no apretar botones */
+    .riego-header-bar { flex-direction: column; gap: 16px; align-items: flex-start; }
+    .header-actions { width: 100%; display: flex; justify-content: space-between; flex-wrap: wrap; }
+    .btn-theme span { display: none; } /* Oculta texto Oscuro/Claro para ganar espacio */
+    .dash-title { font-size: 22px; }
+    
+    .riego-layout { flex-direction: column; overflow-y: visible; gap: 16px !important; }
+    
+    /* Mapa con dimensiones inteligentes */
+    .riego-map-wrapper { 
+      min-height: 300px; 
+      height: 45vh; /* Se adapta a la altura de la pantalla */
+      max-height: none; 
+      flex: none; 
+      width: 100%;
+      border-radius: 16px;
+    }
+    
+    /* Botones flotantes del mapa adaptados */
+    .floating-tools-container { width: 95%; bottom: 12px; gap: 8px; }
+    .floating-tools-btn { flex: 1; justify-content: center; padding: 10px 8px; font-size: 11px; text-align: center; }
+    
+    /* Ajustes perfectos al panel lateral de opciones */
+    .side-panel { width: 100% !important; height: auto; opacity: 1; display: none; border-radius: 16px; }
+    .riego-layout.panel-open .side-panel { display: flex; border-color: var(--border); margin-bottom: 20px; }
+    .side-panel-content { width: 100%; padding: 16px; overflow-y: visible; }
+    
+    /* Botones de días con mejor respiro */
+    .days-grid { gap: 4px; }
+    .day-btn { padding: 8px 0; font-size: 11px; }
   }
   
   .toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px); background: var(--text-main); color: var(--bg); padding: 12px 24px; border-radius: 99px; font-size: 13px; font-weight: 600; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
